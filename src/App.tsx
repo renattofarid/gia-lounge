@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import HomePage from "./pages/home/components/Homepage";
 import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
+import SignInPage from "./pages/auth/components/SignInPage";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {
@@ -10,7 +11,7 @@ const isAuthenticated = () => {
 
 // Componente de ruta protegida
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  return isAuthenticated() ? children : <Navigate to="/" />;
+  return isAuthenticated() ? children : <Navigate to="/login" />;
 }
 
 export default function App() {
@@ -19,6 +20,14 @@ export default function App() {
       <Routes>
         {/* Ruta pública */}
         <Route
+          path="/login"
+          element={
+            isAuthenticated() ? <Navigate to="/inicio" /> : <SignInPage />
+          }
+        />
+
+        {/* Ruta protegida */}
+        <Route
           path="/"
           element={
             <ProtectedRoute>
@@ -26,8 +35,6 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-
-        {/* Ruta protegida */}
         <Route
           path="/inicio"
           element={
