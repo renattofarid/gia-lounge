@@ -59,14 +59,24 @@ export default function RolPage() {
 
   return (
     <Layout options={options}>
-      <div className="flex justify-between items-center mb-6">
+      <div className="grid grid-cols-2 grid-rows-2 gap-4 w-full justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-semibol font-inter">Roles</h1>
           <p className="text-gray-500 font-inter">
             Gestionar rol de los usuarios
           </p>
         </div>
-        <div>
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Buscar usuario..."
+              className="w-[300px] font-poopins"
+            />
+            <Button className="">
+              <Search className="w-4 h-4 text-white" />
+            </Button>
+          </div>
+
           <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
             <DialogTrigger asChild>
               <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
@@ -80,18 +90,7 @@ export default function RolPage() {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex gap-2">
-            <Input
-              placeholder="Buscar usuario..."
-              className="w-[300px] font-poopins"
-            />
-            <Button className="">
-              <Search className="w-4 h-4 text-white" />
-            </Button>
-          </div>
-        </div>
-        <div className="rounded-lg border">
+        <div className="rounded-lg col-span-2">
           <Table>
             <TableHeader>
               <TableRow>
@@ -142,20 +141,17 @@ export default function RolPage() {
                   </TableCell>
                 </TableRow>
               ))}
-              {/* Dialogo de permisos */}
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline">Abrir Permisos</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Permisos</DialogTitle>
-                  </DialogHeader>
-                  <PermissionsDialog />
-                </DialogContent>
-              </Dialog>
             </TableBody>
           </Table>
+          {/* Dialogo de permisos */}
+          <Dialog>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Permisos</DialogTitle>
+              </DialogHeader>
+              <PermissionsDialog />
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </Layout>

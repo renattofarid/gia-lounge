@@ -152,16 +152,6 @@ export default function UserPage() {
               ))}
             </TableBody>
           </Table>
-
-          {/* Dialogo de permisos */}
-          <Dialog>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Permisos</DialogTitle>
-              </DialogHeader>
-              {/* <PermissionsDialog /> */}
-            </DialogContent>
-          </Dialog>
         </div>
       </div>
     </Layout>
