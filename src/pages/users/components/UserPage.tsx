@@ -103,11 +103,8 @@ export default function UserPage() {
                   </TableCell>
 
                   <TableCell className="font-inter">
-                    {user.person.names +
-                      " " +
-                      user.person.father_surname +
-                      " " +
-                      user.person.mother_surname}
+                    {user.person.names} {user.person.father_surname ?? ""}{" "}
+                    {user.person.mother_surname ?? ""}
                   </TableCell>
                   <TableCell className="font-inter">
                     <div className="flex gap-2 justify-start items-center font-bold">
