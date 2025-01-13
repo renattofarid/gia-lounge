@@ -66,7 +66,7 @@ export default function RolPage() {
             Gestionar rol de los usuarios
           </p>
         </div>
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-end gap-2 w-full">
           <div className="flex gap-2">
             <Input
               placeholder="Buscar usuario..."
@@ -87,6 +87,7 @@ export default function RolPage() {
               <DialogHeader>
                 <DialogTitle className="font-inter">Agregar Rol</DialogTitle>
               </DialogHeader>
+              
             </DialogContent>
           </Dialog>
         </div>
