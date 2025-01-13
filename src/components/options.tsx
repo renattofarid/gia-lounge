@@ -1,5 +1,6 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
+import { useEffect, useState } from "react";
 
 export interface OptionsProps {
   options: Option[];
@@ -12,9 +13,23 @@ export interface Option {
 
 export default function Options({ options }: OptionsProps) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const handleNavigate = (link: string) => {
     navigate(link);
   };
+
+  const [itemActive, setItemActive] = useState<string>("");
+
+  useEffect(() => {
+    const path = "/" + pathname.split("/").slice(1, 3).join("/");
+    
+    if (path === "/") {
+      setItemActive("/home");
+      return;
+    } else {
+      setItemActive(path);
+    }
+  }, [pathname]);
 
   return (
     <div className="flex justify-between">
@@ -27,9 +42,11 @@ export default function Options({ options }: OptionsProps) {
             {options.map((option, index) => (
               <Button
                 key={index}
-                variant="ghost"
+                variant={option.link === itemActive ? "secondary" : "ghost"}
                 size="sm"
-                className="h-6 hover:text-black text-white font-normal rounded-full"
+                className={`h-6 hover:text-black text-white font-normal rounded-full ${
+                  option.link === itemActive ? "text-black" : ""
+                }`}
                 onClick={() => handleNavigate(option.link)}
               >
                 {option.name}

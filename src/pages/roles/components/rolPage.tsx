@@ -8,13 +8,14 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
+  Table,
   TableBody,
   TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreVertical, Search, Table } from "lucide-react";
+import { MoreVertical, Search } from "lucide-react";
 import { useState } from "react";
 import {
   DropdownMenu,
@@ -33,6 +34,7 @@ interface Rol {
 
 export default function RolPage() {
   const options = [
+    { name: "Usuarios", link: "/usuarios" },
     { name: "Roles", link: "/usuarios/roles" },
     { name: "Permisos", link: "/usuarios/permisos" },
   ];
