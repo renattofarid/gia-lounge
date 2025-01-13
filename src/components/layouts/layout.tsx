@@ -1,8 +1,14 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "../header";
-import Options from "../options";
+import Options, { Option } from "../options";
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function Layout({
+  children,
+  options,
+}: {
+  children: React.ReactNode;
+  options: Option[];
+}) {
   return (
     <div className="flex min-h-svh flex-col">
       <Header />
@@ -10,7 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AppSidebar />
         <main className="w-full p-4">
           <div className="bg-secondary h-full rounded-3xl">
-            <Options />
+            <Options options={options} />
             <div className="h-[calc(100%-3rem)] p-4">{children}</div>
           </div>
         </main>
