@@ -24,6 +24,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { login } from "../service/auth.actions";
+import { errorToast, successToast } from "@/lib/core.function";
 
 const formSchema = z.object({
   user: z.string()
@@ -54,11 +55,13 @@ export default function SignInPage() {
       });
 
       console.log("Inicio de sesión exitoso:", response);
+      successToast("Inicio de sesión exitoso");
       navigate("/inicio");
     } catch (error: any) {
       const errorMessage = error.response?.data?.message || "Error al iniciar sesión.";
       console.log("Error al iniciar sesión:", errorMessage);
       console.error("Detalles del error:", error);
+      errorToast("Error al iniciar sesión", errorMessage);
     }
   };
 

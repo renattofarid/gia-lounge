@@ -64,10 +64,7 @@ export default function CreateUserPage() {
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="mx-auto max-w-5xl">
-        <div className="mb-4">
-          <h2 className="text-lg font-medium font-inter">Crear usuario</h2>
-          <p className="text-sm text-gray-500">Gestionar todos los datos del usuario</p>
-        </div>
+        
         
         <Form {...form}>
           <form onSubmit={handleSubmit}>
