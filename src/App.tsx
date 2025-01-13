@@ -8,9 +8,9 @@ export default function App() {
       <Routes>
         <Route path="/" element={<SignInPage />}></Route>
         <Route
-              path="/inicio"
-              element={<Layout children={<div></div>} />}
-            ></Route>
+          path="/inicio"
+          element={<Layout children={<div></div>} />}
+        ></Route>
       </Routes>
     </BrowserRouter>
   );
