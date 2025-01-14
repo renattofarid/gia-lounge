@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -22,15 +22,26 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
+import {
+  createUser,
+  searchPersonByDNI,
+  searchPersonByRUC,
+} from "../lib/user.actions";
+import { errorToast, successToast } from "@/lib/core.function";
+import { useRolStore } from "@/pages/roles/lib/rol.store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const UserSchema = z.object({
   username: z.string().nonempty(),
   password: z.string().nonempty(),
-  rol: z.string().nonempty(),
-  type_document: z.enum(["dni", "ruc", "ce"]),
+  rol: z.string().optional(),
+  type_document: z.enum(["DNI", "RUC", "CE"]),
   type_person: z.enum(["Individual", "Business"]),
-  documentNumber: z.string().nonempty(),
+  number_document: z.string().nonempty(),
+  business_name: z.string().optional(),
   names: z.string().nonempty(),
+  father_surname: z.string().optional(),
+  mother_surname: z.string().optional(),
   address: z.string().nonempty(),
   phone: z.string().nonempty(),
   email: z.string().email(),
@@ -47,10 +58,13 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
       username: "",
       password: "",
       rol: "",
-      type_document: "dni",
+      type_document: "DNI",
       type_person: "Individual",
-      documentNumber: "",
+      number_document: "",
       names: "",
+      business_name: "",
+      father_surname: "",
+      mother_surname: "",
       address: "",
       phone: "",
       email: "",
@@ -59,15 +73,68 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { roles, loading, loadRoles } = useRolStore();
+
+  useEffect(() => {
+    loadRoles(1);
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
-    // Add form submission logic here
-    setIsLoading(false);
+    try {
+      setIsLoading(true);
+      const data = form.getValues();
+      await createUser(data);
+      successToast("Usuario guardado correctamente");
+      setIsLoading(false);
+    } catch (error) {
+      errorToast("Ocurrió un error al guardar el usuario");
+    }
+    onClose();
   };
 
+  const handleSearchPerson = async () => {
+    try {
+      const typeDocument = form.getValues("type_document");
+      const number_document = form.getValues("number_document");
+      let person = null;
+      if (typeDocument === "DNI") {
+        person = await searchPersonByDNI(number_document);
+        form.setValue("names", person.nombres);
+        form.setValue("father_surname", person.apepat);
+        form.setValue("mother_surname", person.apemat);
+      } else if (typeDocument === "RUC") {
+        person = await searchPersonByRUC(number_document);
+        form.setValue("business_name", person.RazonSocial);
+        form.setValue("names", person.RazonSocial);
+        form.setValue("address", person.Direccion);
+      } else {
+        return;
+      }
+      if (person.code === 9) {
+        errorToast("No se encontró la persona");
+      }
+    } catch (error) {
+      errorToast("No se encontró la persona");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-white">
+        <Skeleton className="w-full h-4"></Skeleton>
+        <Skeleton className="w-full h-4"></Skeleton>
+        <Skeleton className="w-full h-4"></Skeleton>
+        <Skeleton className="w-full h-4"></Skeleton>
+        <Skeleton className="w-full h-4"></Skeleton>
+        <Skeleton className="w-full h-4"></Skeleton>
+        <Skeleton className="w-full h-4"></Skeleton>
+      </div>
+    );
+  }
+
   return (
-    <div className=" bg-white p-6">
+    <div className="bg-white p-6">
       <div className="flex flex-col gap-6 ">
         <Form {...form}>
           <form onSubmit={handleSubmit}>
@@ -120,14 +187,26 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                   name="rol"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">Rol</FormLabel>
-                      <FormControl>
-                        <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Rol"
-                          {...field}
-                        />
-                      </FormControl>
+                      <FormLabel className="text-sm font-normal">
+                        Roles
+                      </FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccione tipo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {roles.map((rol) => (
+                            <SelectItem key={rol.id} value={rol.id.toString()}>
+                              {rol.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -176,8 +255,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                         </FormLabel>
                         <FormControl>
                           <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          type="email"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            type="email"
                             placeholder="E-mail"
                             {...field}
                           />
@@ -200,15 +279,14 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                           defaultValue={field.value}
                         >
                           <FormControl>
-                            <SelectTrigger                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            >
+                            <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
                               <SelectValue placeholder="Seleccione documento" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="dni">DNI</SelectItem>
-                            <SelectItem value="ruc">RUC</SelectItem>
-                            <SelectItem value="ce">CE</SelectItem>
+                            <SelectItem value="DNI">DNI</SelectItem>
+                            <SelectItem value="RUC">RUC</SelectItem>
+                            <SelectItem value="CE">CE</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -226,8 +304,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                         </FormLabel>
                         <FormControl>
                           <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Dirección"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Dirección"
                             {...field}
                           />
                         </FormControl>
@@ -238,7 +316,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
 
                   <FormField
                     control={form.control}
-                    name="documentNumber"
+                    name="number_document"
                     render={({ field }) => (
                       <FormItem className="relative">
                         <FormLabel className="text-sm font-normal">
@@ -247,13 +325,21 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                         <FormControl>
                           <div className="relative">
                             <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Número de documento"
+                              className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              placeholder="Número de documento"
+                              maxLength={
+                                form.getValues("type_document") === "DNI"
+                                  ? 8
+                                  : form.getValues("type_document") === "RUC"
+                                  ? 11
+                                  : 15
+                              }
                               {...field}
                             />
                             <button
                               type="button"
                               className="absolute right-2 top-1/2 -translate-y-1/2 text-purple-500"
+                              onClick={handleSearchPerson}
                             >
                               <svg width="20" height="20" viewBox="0 0 24 24">
                                 <path
@@ -279,8 +365,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                         </FormLabel>
                         <FormControl>
                           <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Teléfono"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Teléfono"
                             {...field}
                           />
                         </FormControl>
@@ -295,12 +381,52 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm font-normal">
-                          Nombres
+                          Nombres / Razón Social
                         </FormLabel>
                         <FormControl>
                           <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Nombres"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Nombres"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="father_surname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal">
+                          Apellido Paterno
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Nombres"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="mother_surname"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal">
+                          Apellido Materno
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Nombres"
                             {...field}
                           />
                         </FormControl>
