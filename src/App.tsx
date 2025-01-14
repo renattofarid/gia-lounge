@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
-import HomePage from "./pages/home/components/Homepage";
 import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
 import SignInPage from "./pages/auth/components/SignInPage";
+import HomePage from "./pages/home/components/HomePage";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {

@@ -1,6 +1,6 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
-import { UserCollection } from "./user.interface";
+import { PersonDNI, PersonRUC, UserCollection } from "./user.interface";
 
 export interface getUsersProps {
   page: number;
@@ -14,7 +14,7 @@ export const getUsers = async ({
       page,
     },
   };
-  const response = await api.get(`/user?page=${page}`, config);
+  const response = await api.get(`/user`, config);
   return response.data;
 };
 
@@ -36,4 +36,14 @@ export const updateUser = async (id: number, data: any) => {
 export const deleteUser = async (id: number) => {
   const response = await api.delete(`/user/${id}`);
   return response.data;
+};
+
+export const searchPersonByDNI = async (dni: string): Promise<PersonDNI> => {
+  const response = await api.get(`/searchByDni/${dni}`);
+  return response.data[0];
+};
+
+export const searchPersonByRUC = async (ruc: string): Promise<PersonRUC> => {
+  const response = await api.get(`/searchByRuc/${ruc}`);
+  return response.data[0];
 };

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 
 interface PermissionGroup {
@@ -36,6 +36,12 @@ const permissionGroups: PermissionGroup[] = [
 export default function PermissionsDialog() {
   const [open, setOpen] = useState(false)
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
+
+  useEffect(() => {
+    if (open) {
+      setSelectedPermissions([])
+    }
+  }, [open])
 
   const togglePermission = (permissionId: string) => {
     setSelectedPermissions(current =>

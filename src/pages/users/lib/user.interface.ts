@@ -43,3 +43,23 @@ export interface Permission {
   name: string;
   type: string;
 }
+
+export interface PersonDNI {
+  code: number;
+  dni: string;
+  apepat: string;
+  apemat: string;
+  apcas: string;
+  nombres: string;
+  fecnac: Date;
+  ubigeo: string;
+}
+
+export interface PersonRUC {
+  code: number;
+  RUC: string;
+  RazonSocial: string;
+  Direccion: string;
+  Tipo: null;
+  Inscripcion: null;
+}

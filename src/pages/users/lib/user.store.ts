@@ -7,6 +7,7 @@ interface UserStore {
   users: UserItem[];
   links: Links;
   meta: Meta;
+  loading: boolean;
   loadUsers: (page: number) => void;
 }
 
@@ -28,12 +29,15 @@ export const useUserStore = create<UserStore>((set) => ({
     to: 0,
     total: 0,
   },
+  loading: false,
   loadUsers: async (page: number) => {
+    set(() => ({ loading: true }));
     const response: UserCollection = await getUsers({ page });
     set(() => ({
       users: response.data,
       links: response.links,
       meta: response.meta,
+      loading: false,
     }));
   },
 }));
