@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -25,11 +26,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import CreateRolPage from "./rolAdd";
+import CreateRolPage from "./addRol";
 import DeleteDialog from "@/components/delete-dialog";
 import { RolItem } from "../lib/rol.interface";
 import { deleteRol } from "../lib/rol.actions";
 import { errorToast, successToast } from "@/lib/core.function";
+import UpdateRolPage from "./updateRol";
 
 export default function RolPage() {
   const options = [
@@ -152,7 +154,7 @@ export default function RolPage() {
                     <TableCell className="font-inter py-2 px-2 text-sm">
                       <strong>{rol.name}</strong>
                     </TableCell>
-                    <TableCell className="font-inter py-2 px-2 text-sm">
+                    <TableCell className="font-inter py-2 px-2 text-sm flex justify-center">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
@@ -192,6 +194,22 @@ export default function RolPage() {
               </TableBody>
             </Table>
           </div>
+          <Dialog
+            open={isUpdateDialogOpen}
+            onOpenChange={setIsUpdateDialogOpen}
+          >
+            <DialogContent className="p-6">
+              <DialogHeader>
+                <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
+
+                <DialogDescription className="font-poopins text-sm">
+                  Actualiza la información del rol seleccionado
+                </DialogDescription>
+              </DialogHeader>
+              <UpdateRolPage onClose={handleUpdateClose} rol={roleSelected} />
+            </DialogContent>
+          </Dialog>
+
           <DeleteDialog
             isOpen={isDeleteDialogOpen}
             onConfirm={handleDelete}
