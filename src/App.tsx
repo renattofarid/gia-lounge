@@ -2,7 +2,8 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
 import SignInPage from "./pages/auth/components/SignInPage";
-import HomePage from "./pages/home/components/HomePage";
+import HomePage from "./pages/home/components/Homepage";
+import CompanyPage from "./pages/company/components/companyPage";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {
@@ -64,6 +65,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <UserPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/empresa"
+          element={
+            <ProtectedRoute>
+              <CompanyPage />
             </ProtectedRoute>
           }
         />

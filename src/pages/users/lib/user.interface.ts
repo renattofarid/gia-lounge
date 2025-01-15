@@ -65,4 +65,5 @@ export interface PersonRUC {
   Direccion: string;
   Tipo: null;
   Inscripcion: null;
+  phone: string;
 }

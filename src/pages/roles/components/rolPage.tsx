@@ -47,6 +47,7 @@ export default function RolPage() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false);
 
   const [roleSelected, setRoleSelected] = useState({} as RolItem);
   const [idSelected, setIdSelected] = useState(0);
@@ -168,7 +169,7 @@ export default function RolPage() {
                         <DropdownMenuContent className="w-48">
                           {/* Editar opción */}
                           <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                            className="flex items-center space-x-2 hover:bg-green-200 cursor-pointer"
                             onClick={() => handleClickUpdate(rol)}
                           >
                             <span className="font-inter">Editar</span>
@@ -181,7 +182,7 @@ export default function RolPage() {
 
                           {/* Eliminar opción */}
                           <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                            className="flex items-center space-x-2 hover:bg-red-200 cursor-pointer"
                             onClick={() => handleClickDelete(rol.id)}
                           >
                             <span>Eliminar</span>
@@ -209,6 +210,24 @@ export default function RolPage() {
               <UpdateRolPage onClose={handleUpdateClose} rol={roleSelected} />
             </DialogContent>
           </Dialog>
+
+          <Dialog
+            open={isPermissionDialogOpen}
+            onOpenChange={setIsPermissionDialogOpen}
+          >
+            <DialogContent className="p-6">
+              <DialogHeader>
+                <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
+
+                <DialogDescription className="font-poopins text-sm">
+                  Actualiza la información del rol seleccionado
+                </DialogDescription>
+              </DialogHeader>
+              <UpdateRolPage onClose={handleUpdateClose} rol={roleSelected} />
+            </DialogContent>
+          </Dialog>
+
+          
 
           <DeleteDialog
             isOpen={isDeleteDialogOpen}
