@@ -27,6 +27,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import CreateUserPage from "./addUser";
 import { Badge } from "@/components/ui/badge";
+import UpdateUserPage from "./updateUser";
+import { UserItem } from "../lib/user.interface";
+import { DialogDescription } from "@radix-ui/react-dialog";
+import DeleteDialog from "@/components/delete-dialog";
+import { deleteUser } from "../lib/user.actions";
+import { errorToast, successToast } from "@/lib/core.function";
 
 export default function UserPage() {
   const options = [
@@ -40,10 +46,42 @@ export default function UserPage() {
 
   // STATE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const [userSelected, setUserSelected] = useState({} as UserItem);
+  const [idSelected, setIdSelected] = useState(0);
 
   const handleClose = () => {
     setIsAddDialogOpen(false);
     loadUsers(1);
+  };
+
+  const handleUpdateClose = () => {
+    setIsUpdateDialogOpen(false);
+    loadUsers(1);
+  };
+
+  const handleClickDelete = (id: number) => {
+    setIsDeleteDialogOpen(true);
+    setIdSelected(id);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(idSelected).then(() => {
+        setIsDeleteDialogOpen(false);
+        successToast("Usuario eliminado correctamente");
+        loadUsers(1);
+      });
+    } catch (error) {
+      errorToast("Error al eliminar el usuario");
+    }
+  };
+
+  const handleClickUpdate = (user: UserItem) => {
+    setUserSelected(user);
+    setIsUpdateDialogOpen(true);
   };
 
   useEffect(() => {
@@ -134,14 +172,16 @@ export default function UserPage() {
                         <IdCard className="w-5 h-5" />{" "}
                         {user.person.type_document}
                       </div>
-                      <div className="ps-7 pb-2">{user.person.number_document}</div>
+                      <div className="ps-7 pb-2">
+                        {user.person.number_document}
+                      </div>
                       <div className="flex gap-2 justify-start items-center font-bold">
                         <Phone className="w-5 h-5" /> {user.person.phone}
                       </div>
                       {/* <div className="ps-7">{user.person.number_document}</div> */}
                     </TableCell>
                     <TableCell className="font-inter text-center py-2 px-2 text-sm">
-                      {user.rol.name && (
+                      {typeof user.rol !== "string" && user.rol.name && (
                         <Badge className="rounded-full">{user.rol.name}</Badge>
                       )}
                     </TableCell>
@@ -160,7 +200,7 @@ export default function UserPage() {
                           {/* Editar opción */}
                           <DropdownMenuItem
                             className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            // onClick={() => handleClickUpdate(sparepartId)}
+                            onClick={() => handleClickUpdate(user)}
                           >
                             <span className="font-inter">Editar</span>
                           </DropdownMenuItem>
@@ -171,7 +211,10 @@ export default function UserPage() {
                           </DropdownMenuItem>
 
                           {/* Eliminar opción */}
-                          <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                          <DropdownMenuItem
+                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleClickDelete(user.id)}
+                          >
                             <span>Eliminar</span>
                           </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -183,6 +226,19 @@ export default function UserPage() {
             </Table>
           </div>
         </div>
+        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+          <DialogContent className="max-w-5xl p-6">
+            <DialogHeader>
+              <DialogTitle className="font-inter">
+                Actualizar Usuario
+              </DialogTitle>
+              <DialogDescription />
+            </DialogHeader>
+            <UpdateUserPage onClose={handleUpdateClose} user={userSelected} />
+          </DialogContent>
+        </Dialog>
+
+        <DeleteDialog isOpen={isDeleteDialogOpen} onConfirm={handleDelete} />
       </div>
     </Layout>
   );
