@@ -238,7 +238,7 @@ export default function UserPage() {
           </DialogContent>
         </Dialog>
 
-        <DeleteDialog isOpen={isDeleteDialogOpen} onConfirm={handleDelete} />
+        <DeleteDialog isOpen={isDeleteDialogOpen} onConfirm={handleDelete} onCancel={() => setIsDeleteDialogOpen(false)} />
       </div>
     </Layout>
   );

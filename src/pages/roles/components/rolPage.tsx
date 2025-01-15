@@ -25,7 +25,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import PermissionsDialog from "./permissionsAdd";
 import CreateRolPage from "./rolAdd";
 import DeleteDialog from "@/components/delete-dialog";
 import { RolItem } from "../lib/rol.interface";
@@ -69,8 +68,8 @@ export default function RolPage() {
     try {
       await deleteRol(idSelected).then(() => {
         setIsDeleteDialogOpen(false);
-        successToast("Rol eliminado correctamente");
         loadRoles(1);
+        successToast("Rol eliminado correctamente");
       });
     } catch (error) {
       errorToast("Error al eliminar el rol");
@@ -196,6 +195,7 @@ export default function RolPage() {
           <DeleteDialog
             isOpen={isDeleteDialogOpen}
             onConfirm={handleDelete}
+            onCancel={() => setIsDeleteDialogOpen(false)}
           />
         </div>
       </div>

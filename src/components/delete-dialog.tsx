@@ -12,10 +12,15 @@ import { buttonVariants } from "./ui/button";
 
 export interface DeleteDialogProps {
   onConfirm: () => void;
+  onCancel: () => void;
   isOpen: boolean;
 }
 
-export default function DeleteDialog({ onConfirm, isOpen }: DeleteDialogProps) {
+export default function DeleteDialog({
+  onConfirm,
+  onCancel,
+  isOpen,
+}: DeleteDialogProps) {
   return (
     <AlertDialog open={isOpen}>
       <AlertDialogContent>
@@ -27,7 +32,7 @@ export default function DeleteDialog({ onConfirm, isOpen }: DeleteDialogProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCancel}>Cancelar</AlertDialogCancel>
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive" })}
             onClick={onConfirm}
