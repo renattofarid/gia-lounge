@@ -12,6 +12,9 @@ import { useComapanyStore } from "../lib/company.store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreateCompanyPage from "./addCompany";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { errorToast } from "@/lib/core.function";
 
 export default function CompanyPage() {
   const options = [
@@ -25,6 +28,7 @@ export default function CompanyPage() {
 
   const { companies, loadCompanies, loading } = useComapanyStore();
   const [selectedCompany, setSelectedCompany] = useState<number | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadCompanies(1);
@@ -32,6 +36,7 @@ export default function CompanyPage() {
 
   const handleSelectCompany = (id: number) => {
     setSelectedCompany(id);
+    navigate("/empresas/salones");
   };
 
   const handleClose = () => {
@@ -39,11 +44,14 @@ export default function CompanyPage() {
     loadCompanies(1);
   };
 
+
   const handleConfirm = () => {
     if (selectedCompany) {
       console.log("Empresa seleccionada:", selectedCompany);
+      navigate("/empresas/salones");
+
     } else {
-      alert("Por favor, selecciona una empresa.");
+      errorToast("Por favor, selecciona una empresa.");
     }
   };
 
