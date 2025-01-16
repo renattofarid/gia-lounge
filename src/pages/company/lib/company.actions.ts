@@ -1,7 +1,6 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
-import { CompanyCollection, CompanyItem } from "./company.interfaz";
-
+import { CompanyCollection, CompanyItem } from "./company.interface";
 
 export interface getCompanysProps {
   page: number;
@@ -25,12 +24,22 @@ export const getCompany = async (id: number) => {
 };
 
 export const createCompany = async (data: any) => {
-  const response = await api.post(`/company`, data);
+  const axiosConfig: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await api.post(`/company`, data, axiosConfig);
   return response.data;
 };
 
 export const updateCompany = async (id: number, data: any) => {
-  const response = await api.put(`/company/${id}`, data);
+  const axiosConfig: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await api.post(`/company/${id}`, data, axiosConfig);
   return response.data;
 };
 

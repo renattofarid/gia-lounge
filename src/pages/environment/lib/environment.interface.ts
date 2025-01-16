@@ -1,4 +1,4 @@
-import { CompanyItem } from "@/pages/company/lib/company.interfaz";
+import { CompanyItem } from "@/pages/company/lib/company.interface";
 
 export interface EnvironmentCollection {
     data:  EnvironmentItem[];

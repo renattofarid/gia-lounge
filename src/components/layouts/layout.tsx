@@ -17,7 +17,7 @@ export default function Layout({
         <main className="w-full p-4">
           <div className="bg-secondary h-full rounded-3xl">
             <Options options={options} />
-            <div className="h-[calc(100%-3rem)] p-4">{children}</div>
+            <div className="h-[calc(100%-3rem)] p-4 flex justify-center">{children}</div>
           </div>
         </main>
       </div>

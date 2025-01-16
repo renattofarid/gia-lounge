@@ -17,9 +17,9 @@ import {
 
 import { errorToast, successToast } from "@/lib/core.function";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createCompany } from "../lib/company.actions";
+import { createCompany, updateCompany } from "../lib/company.actions";
 import { searchPersonByRUC } from "@/pages/users/lib/user.actions";
-import { CompanyRequest } from "../lib/company.interface";
+import { CompanyItem, CompanyRequest } from "../lib/company.interface";
 
 const CompanySchema = z.object({
   ruc: z.string().nonempty(),
@@ -32,9 +32,13 @@ const CompanySchema = z.object({
 
 interface AddCompanyProps {
   onClose: () => void;
+  company: CompanyItem;
 }
 
-export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
+export default function UpdateCompanyPage({
+  onClose,
+  company,
+}: AddCompanyProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -42,11 +46,11 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
     defaultValues: {
-      ruc: "",
-      business_name: "",
-      address: "",
-      phone: "",
-      email: "",
+      ruc: company.ruc,
+      business_name: company.business_name,
+      address: company.address,
+      phone: company.phone,
+      email: company.email,
       route: "",
     },
   });
@@ -75,10 +79,9 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
         address: data.address,
         phone: data.phone,
         email: data.email,
-        status: true,
         route: file ?? undefined,
       };
-      await createCompany(companyData);
+      await updateCompany(company.id, companyData);
       successToast("Empresa guardada correctamente");
       setIsLoading(false);
       onClose();
@@ -94,7 +97,7 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
       if (!number_document) return;
 
       const company = await searchPersonByRUC(number_document);
-      if (company.code === 9) {
+      if (company.code === 11) {
         errorToast("No se encontró la Empresa");
         return;
       }
@@ -246,7 +249,7 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
               <FormField
                 control={form.control}
                 name="route"
-                render={() => (
+                render={({ field }) => (
                   <FormItem className="col-span-2">
                     <FormLabel className="text-sm font-normal">
                       Imagen de la empresa

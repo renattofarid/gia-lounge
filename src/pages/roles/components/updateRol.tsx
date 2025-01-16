@@ -18,7 +18,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 
 import { errorToast, successToast } from "@/lib/core.function";
 import { Skeleton } from "@/components/ui/skeleton";
-import {  updateRol } from "../lib/rol.actions";
+import { updateRol } from "../lib/rol.actions";
 import { useRolStore } from "../lib/rol.store";
 import { useState } from "react";
 import { RolItem } from "../lib/rol.interface";
@@ -36,20 +36,19 @@ export default function UpdateRolPage({ onClose, rol }: UpdateRolProps) {
   const form = useForm<z.infer<typeof RolSchema>>({
     resolver: zodResolver(RolSchema),
     defaultValues: {
-      name: rol.name ,
+      name: rol.name,
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { loading} = useRolStore();
-  
+  const { loading } = useRolStore();
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setIsSubmitting(true);
       const data = form.getValues();
-      await updateRol(rol.id,data);
+      await updateRol(rol.id, data);
       successToast("Rol guardado correctamente");
       onClose();
     } catch (error) {

@@ -32,12 +32,12 @@ import { RolItem } from "../lib/rol.interface";
 import { deleteRol } from "../lib/rol.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import UpdateRolPage from "./updateRol";
+import PermissionsDialog from "./permissionsAdd";
 
 export default function RolPage() {
   const options = [
     { name: "Usuarios", link: "/usuarios" },
     { name: "Roles", link: "/usuarios/roles" },
-    { name: "Permisos", link: "/usuarios/permisos" },
   ];
 
   // STORE
@@ -50,6 +50,7 @@ export default function RolPage() {
   const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false);
 
   const [roleSelected, setRoleSelected] = useState({} as RolItem);
+  const [rolePermissions, setRolePermissions] = useState({} as RolItem);
   const [idSelected, setIdSelected] = useState(0);
 
   const handleClose = () => {
@@ -77,6 +78,16 @@ export default function RolPage() {
     } catch (error) {
       errorToast("Error al eliminar el rol");
     }
+  };
+
+  const handleClosePermission = () => {
+    setIsPermissionDialogOpen(false);
+    loadRoles(1);
+  };
+
+  const handleClickPermission = (rol: RolItem) => {
+    setRolePermissions(rol);
+    setIsPermissionDialogOpen(true);
   };
 
   const handleClickUpdate = (rol: RolItem) => {
@@ -176,7 +187,10 @@ export default function RolPage() {
                           </DropdownMenuItem>
 
                           {/* Permisos */}
-                          <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                          <DropdownMenuItem
+                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleClickPermission(rol)}
+                          >
                             <span>Permisos</span>
                           </DropdownMenuItem>
 
@@ -218,16 +232,17 @@ export default function RolPage() {
             <DialogContent className="p-6">
               <DialogHeader>
                 <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
-
                 <DialogDescription className="font-poopins text-sm">
                   Actualiza la información del rol seleccionado
                 </DialogDescription>
               </DialogHeader>
-              <UpdateRolPage onClose={handleUpdateClose} rol={roleSelected} />
+              <PermissionsDialog
+                id={rolePermissions.id}
+                onClose={handleClosePermission}
+                permissionsRol={rolePermissions.permissions}
+              />
             </DialogContent>
           </Dialog>
-
-          
 
           <DeleteDialog
             isOpen={isDeleteDialogOpen}

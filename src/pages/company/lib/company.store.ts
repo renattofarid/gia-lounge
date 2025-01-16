@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { Links, Meta } from "@/lib/global.interface";
-import { CompanyCollection, CompanyItem } from "./company.interfaz";
+import { CompanyCollection, CompanyItem } from "./company.interface";
 import { getCompanys } from "./company.actions";
 
 interface CompanyStore {

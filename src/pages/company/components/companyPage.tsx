@@ -8,13 +8,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useComapanyStore } from "../lib/company.store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import CreateCompanyPage from "./addCompany";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
-import { errorToast } from "@/lib/core.function";
+import { errorToast, successToast } from "@/lib/core.function";
+import { MoreVertical, Pen, Trash2 } from "lucide-react";
+import { CompanyItem } from "../lib/company.interface";
+import UpdateCompanyPage from "./updateCompany";
+import { deleteCompany } from "../lib/company.actions";
+import DeleteDialog from "@/components/delete-dialog";
+import { prodAssetURL } from "@/lib/config";
 
 export default function CompanyPage() {
   const options = [
@@ -28,6 +39,13 @@ export default function CompanyPage() {
 
   const { companies, loadCompanies, loading } = useComapanyStore();
   const [selectedCompany, setSelectedCompany] = useState<number | null>(null);
+  const [companyUpdate, setCompanyUpdate] = useState<CompanyItem>(
+    {} as CompanyItem
+  );
+  const [idDeleteSelected, setIdDeleteSelected] = useState<number>(0);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,7 +54,6 @@ export default function CompanyPage() {
 
   const handleSelectCompany = (id: number) => {
     setSelectedCompany(id);
-    navigate("/empresas/salones");
   };
 
   const handleClose = () => {
@@ -44,15 +61,40 @@ export default function CompanyPage() {
     loadCompanies(1);
   };
 
-
   const handleConfirm = () => {
     if (selectedCompany) {
       console.log("Empresa seleccionada:", selectedCompany);
       navigate("/empresas/salones");
-
     } else {
       errorToast("Por favor, selecciona una empresa.");
     }
+  };
+
+  const handleClickUpdate = (company: CompanyItem) => {
+    setCompanyUpdate(company);
+    setIsUpdateDialogOpen(true);
+  };
+
+  const handleClickDelete = (id: number) => {
+    setIsDeleteDialogOpen(true);
+    setIdDeleteSelected(id);
+  };
+
+  const handleUpdateClose = () => {
+    setIsUpdateDialogOpen(false);
+    loadCompanies(1);
+  };
+
+  const handleDelete = async () => {
+    await deleteCompany(idDeleteSelected)
+      .then(() => {
+        setIsDeleteDialogOpen(false);
+        loadCompanies(1);
+        successToast("Empresa eliminada correctamente");
+      })
+      .catch(() => {
+        errorToast("No se pudo eliminar la empresa");
+      });
   };
 
   return (
@@ -84,7 +126,7 @@ export default function CompanyPage() {
         </div>
 
         {/* Lista de Empresas */}
-        <div className="flex gap-6 justify-center items-center flex-wrap">
+        <div className="grid grid-cols-3 gap-6 justify-center items-center flex-wrap">
           {loading ? (
             <p className="text-gray-500">Cargando empresas...</p>
           ) : (
@@ -103,11 +145,13 @@ export default function CompanyPage() {
                   }`}
                 >
                   <Avatar className="w-20 h-20">
-                    <AvatarImage
-                      src={company.route ? company.route : "/logo.jpg"}
-                      alt={company.business_name}
-                      className="w-full h-full object-cover rounded-full"
-                    />
+                    {company.route && (
+                      <AvatarImage
+                        src={company.route}
+                        alt={company.business_name}
+                        className="w-full h-auto object-contain rounded-full"
+                      />
+                    )}
                     <AvatarFallback className="bg-gray-200 text-gray-600 flex items-center justify-center w-full h-full rounded-full">
                       {company.business_name[0]?.toUpperCase() || "E"}
                     </AvatarFallback>
@@ -115,15 +159,41 @@ export default function CompanyPage() {
                 </div>
 
                 {/* Nombre de la empresa */}
-                <p
-                  className={`text-base font-medium uppercase pt-3 font-inter ${
-                    selectedCompany === company.id
-                      ? "text-violet-500"
-                      : "text-gray-800"
-                  }`}
-                >
-                  {company.business_name}
-                </p>
+                <div className="flex justify-center items-center gap-2">
+                  <p
+                    className={`text-base font-medium uppercase font-inter ${
+                      selectedCompany === company.id
+                        ? "text-violet-500"
+                        : "text-gray-800"
+                    }`}
+                  >
+                    {company.business_name}
+                  </p>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreVertical className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-48">
+                      {/* Editar opción */}
+                      <DropdownMenuItem
+                        className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleClickUpdate(company)}
+                      >
+                        <span className="font-inter">Editar</span>
+                      </DropdownMenuItem>
+
+                      {/* Eliminar opción */}
+                      <DropdownMenuItem
+                        className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                        onClick={() => handleClickDelete(company.id)}
+                      >
+                        <span>Eliminar</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             ))
           )}
@@ -135,6 +205,27 @@ export default function CompanyPage() {
         >
           Confirmar
         </Button>
+
+        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+          <DialogContent className="max-w-5xl p-6">
+            <DialogHeader>
+              <DialogTitle className="font-inter">
+                Actualizar Usuario
+              </DialogTitle>
+              <DialogDescription />
+            </DialogHeader>
+            <UpdateCompanyPage
+              onClose={handleUpdateClose}
+              company={companyUpdate}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <DeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onConfirm={handleDelete}
+          onCancel={() => setIsDeleteDialogOpen(false)}
+        />
       </div>
     </Layout>
   );

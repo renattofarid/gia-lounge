@@ -2,9 +2,9 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
 import SignInPage from "./pages/auth/components/SignInPage";
-import HomePage from "./pages/home/components/Homepage";
 import CompanyPage from "./pages/company/components/companyPage";
 import EnvioronmentPage from "./pages/environment/components/environmentPage";
+import HomePage from "./pages/home/components/HomePage";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {
@@ -62,29 +62,24 @@ export default function App() {
           }
         />
         <Route
-          path="/usuarios/permisos"
-          element={
-            <ProtectedRoute>
-              <UserPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route 
-          path="/empresa"
+          path="/empresas"
           element={
             <ProtectedRoute>
               <CompanyPage />
             </ProtectedRoute>
           }
         />
-        <Route 
-          path="/salones"
+        <Route
+          path="/empresas/salones"
           element={
             <ProtectedRoute>
-              <EnvioronmentPage/>
+              <EnvioronmentPage />
             </ProtectedRoute>
           }
         />
+
+        {/* 404 */}
+        <Route path="*" element={<Navigate to="/inicio" />} />
       </Routes>
     </BrowserRouter>
   );

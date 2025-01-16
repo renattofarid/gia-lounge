@@ -38,7 +38,6 @@ export default function UserPage() {
   const options = [
     { name: "Usuarios", link: "/usuarios" },
     { name: "Roles", link: "/usuarios/roles" },
-    { name: "Permisos", link: "/usuarios/permisos" },
   ];
 
   // STORE
