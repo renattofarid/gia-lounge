@@ -3,9 +3,10 @@ import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
 import SignInPage from "./pages/auth/components/SignInPage";
 import CompanyPage from "./pages/company/components/companyPage";
-import HomePage from "./pages/home/components/HomePage";
 import EnvironmentPage from "./pages/environment/components/environmentPage";
 import StationPage from "./pages/station/components/stationPage";
+import HomePage from "./pages/home/components/Homepage";
+import { ThemeProvider } from "next-themes";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {
@@ -19,6 +20,7 @@ function ProtectedRoute({ children }: { children: JSX.Element }) {
 
 export default function App() {
   return (
+    <ThemeProvider attribute="class" defaultTheme="light">
     <BrowserRouter>
       <Routes>
         {/* Ruta pública */}
@@ -93,5 +95,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/inicio" />} />
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }

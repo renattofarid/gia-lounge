@@ -54,10 +54,19 @@ export default function EnvironmentPage() {
     { name: "Mesas/Box", link: "/empresas/mesas" },
   ];
 
+  // const handleSelectEnvironment = (id: number) => {
+  //   console.log("Salón seleccionado:", id);
+  //   setSelectedEnvironment(id);
+  // };
+
   const handleSelectEnvironment = (id: number) => {
-    console.log("Salón seleccionado:", id);
-    setSelectedEnvironment(id);
+    if (selectedEnvironment === id) {
+      setSelectedEnvironment(null);
+    } else {
+      setSelectedEnvironment(id);
+    }
   };
+  
 
   const handleClickUpdate = (environment: EnvironmentItem) => {
     setEnvironmentUpdate(environment);
@@ -91,7 +100,7 @@ export default function EnvironmentPage() {
       console.log("Salón seleccionado:", selectedEnvironment);
       navigate(`/empresas/mesas/${selectedEnvironment}`);
     } else {
-      alert("Por favor, selecciona un salon.");
+      errorToast("Por favor, selecciona un salon.");
     }
   };
 
