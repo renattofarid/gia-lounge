@@ -194,11 +194,6 @@ export default function StationPage() {
                           <span className="font-inter">Editar</span>
                         </DropdownMenuItem>
 
-                        {/* Permisos */}
-                        <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
-                          <span>Permisos</span>
-                        </DropdownMenuItem>
-
                         {/* Eliminar opción */}
                         <DropdownMenuItem
                           className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
