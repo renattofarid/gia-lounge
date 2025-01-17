@@ -2,27 +2,40 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
 import SignInPage from "./pages/auth/components/SignInPage";
+import CompanyPage from "./pages/company/components/companyPage";
+import EnvironmentPage from "./pages/environment/components/environmentPage";
+import StationPage from "./pages/station/components/stationPage";
+import { ThemeProvider } from "next-themes";
+import { useAuthStore } from "./pages/auth/lib/auth.store";
 import HomePage from "./pages/home/components/HomePage";
 
-// Simular autenticación (deberías usar contexto o un servicio real)
-const isAuthenticated = () => {
-  return localStorage.getItem("token") !== null; // O cualquier lógica que determines
-};
+// const isAuthenticated = () => {
+//   return localStorage.getItem("token") !== null; 
+// };
 
-// Componente de ruta protegida
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  const {token} = useAuthStore();
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
 export default function App() {
+
+  const { token } = useAuthStore();
+
+
   return (
+    <ThemeProvider attribute="class" defaultTheme="light">
     <BrowserRouter>
       <Routes>
         {/* Ruta pública */}
         <Route
           path="/login"
           element={
-            isAuthenticated() ? <Navigate to="/inicio" /> : <SignInPage />
+           token? <Navigate to="/inicio" /> : <SignInPage />
           }
         />
 
@@ -60,14 +73,36 @@ export default function App() {
           }
         />
         <Route
-          path="/usuarios/permisos"
+          path="/empresas"
           element={
             <ProtectedRoute>
-              <UserPage />
+              <CompanyPage />
             </ProtectedRoute>
           }
         />
+        <Route path="/empresas/salones" element={<EnvironmentPage />} />
+        <Route path="/empresas/mesas" element={<StationPage />} />
+        <Route
+          path="/empresas/salones/:companyId"
+          element={
+            <ProtectedRoute>
+              <EnvironmentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/empresas/mesas/:environmentId"
+          element={
+            <ProtectedRoute>
+              <StationPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 */}
+        <Route path="*" element={<Navigate to="/inicio" />} />
       </Routes>
     </BrowserRouter>
+    </ThemeProvider>
   );
 }

@@ -48,7 +48,7 @@ export const menuItems: MenuItem[] = [
     id: 4,
     name: "Ajustes",
     icon: "Settings",
-    link: "/",
+    link: "/empresas",
   },
   {
     id: 5,

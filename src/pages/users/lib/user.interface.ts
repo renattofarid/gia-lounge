@@ -13,13 +13,16 @@ export interface UserItem {
   person_id: number;
   rol_id: number;
   person: Person;
-  rol: Rol;
+  rol: Rol | string;
 }
+
+export type TypeDocument = "DNI" | "RUC";
+export type PersonType = "NATURAL" | "JURIDICA";
 
 export interface Person {
   id: number;
-  type_document: string;
-  type_person: string;
+  type_document: TypeDocument;
+  type_person: PersonType;
   number_document: string;
   names: string;
   father_surname: string;
@@ -62,4 +65,5 @@ export interface PersonRUC {
   Direccion: string;
   Tipo: null;
   Inscripcion: null;
+  phone: string;
 }

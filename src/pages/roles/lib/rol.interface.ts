@@ -17,3 +17,19 @@ export interface Permission {
   name: string;
   type: string;
 }
+
+export interface PermissionResource {
+  id: number;
+  name: string;
+  type: string;
+  status: string;
+}
+
+export interface TypePermission {
+  name: string;
+  permissions: PermissionResource[];
+}
+
+export interface SetAccessRol {
+  access: number[];
+}

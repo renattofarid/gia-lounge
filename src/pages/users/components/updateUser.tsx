@@ -23,20 +23,21 @@ import {
 } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
 import {
-  createUser,
   searchPersonByDNI,
   searchPersonByRUC,
+  updateUser,
 } from "../lib/user.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import { useRolStore } from "@/pages/roles/lib/rol.store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { UserItem } from "../lib/user.interface";
 
 const UserSchema = z.object({
   username: z.string().nonempty(),
   password: z.string().nonempty(),
   rol: z.string().optional(),
   type_document: z.enum(["DNI", "RUC", "CE"]),
-  type_person: z.enum(["Individual", "Business"]),
+  type_person: z.enum(["NATURAL", "JURIDICA"]),
   number_document: z.string().nonempty(),
   business_name: z.string().optional(),
   names: z.string().nonempty(),
@@ -47,27 +48,28 @@ const UserSchema = z.object({
   email: z.string().email(),
 });
 
-interface AddUserProps {
+interface UpdateUserProps {
   onClose: () => void;
+  user: UserItem;
 }
 
-export default function CreateUserPage({ onClose }: AddUserProps) {
+export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
   const form = useForm<z.infer<typeof UserSchema>>({
     resolver: zodResolver(UserSchema),
     defaultValues: {
-      username: "",
+      username: user.username ?? "",
       password: "",
-      rol: "",
-      type_document: "DNI",
-      type_person: "Individual",
-      number_document: "",
-      names: "",
-      business_name: "",
-      father_surname: "",
-      mother_surname: "",
-      address: "",
-      phone: "",
-      email: "",
+      rol: "", // change on API
+      type_document: user.person.type_document ?? "",
+      type_person: user.person.type_person ?? "",
+      number_document: user.person.number_document ?? "",
+      names: user.person.names ?? "",
+      business_name: user.person.business_name ?? "",
+      father_surname: user.person.father_surname ?? "",
+      mother_surname: user.person.mother_surname ?? "",
+      address: user.person.address ?? "",
+      phone: user.person.phone ?? "",
+      email: user.person.email ?? "",
     },
   });
 
@@ -84,7 +86,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
     try {
       setIsLoading(true);
       const data = form.getValues();
-      await createUser(data);
+      await updateUser(user.id, data);
       successToast("Usuario guardado correctamente");
       setIsLoading(false);
     } catch (error) {
@@ -234,10 +236,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Individual">
-                              Individual
-                            </SelectItem>
-                            <SelectItem value="Business">Empresa</SelectItem>
+                            <SelectItem value="NATURAL">NATURAL</SelectItem>
+                            <SelectItem value="JURIDICA">JURIDICA</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
