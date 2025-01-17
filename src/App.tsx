@@ -6,8 +6,8 @@ import CompanyPage from "./pages/company/components/companyPage";
 import EnvironmentPage from "./pages/environment/components/environmentPage";
 import StationPage from "./pages/station/components/stationPage";
 import { ThemeProvider } from "next-themes";
-import HomePage from "./pages/home/components/Homepage";
 import { useAuthStore } from "./pages/auth/lib/auth.store";
+import HomePage from "./pages/home/components/HomePage";
 
 // const isAuthenticated = () => {
 //   return localStorage.getItem("token") !== null; 
