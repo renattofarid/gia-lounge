@@ -16,27 +16,26 @@ import {
 } from "@/components/ui/form";
 import { errorToast, successToast } from "@/lib/core.function";
 import { updateStation } from "../lib/station.actions";
-import {
-  StationItem,
-  StationRequest,
-} from "../lib/station.interface";
+import { StationItem, StationRequest } from "../lib/station.interface";
 import { LoaderCircle } from "lucide-react";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
   description: z.string().optional(),
+  type: z.string().nonempty(),
   status: z.string().nonempty(),
+  route: z.string().optional(),
 });
 
 interface AddStationProps {
   station: StationItem;
-  companyId: number;
+  environmentId: number;
   onClose: () => void;
 }
 
 export default function UpdateStation({
   station,
-  companyId,
+  environmentId,
   onClose,
 }: AddStationProps) {
   // const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -48,7 +47,8 @@ export default function UpdateStation({
     resolver: zodResolver(StationSchema),
     defaultValues: {
       name: station.name,
-      description: station.description,
+      description: "",
+      status: "1",
     },
   });
 
@@ -72,8 +72,9 @@ export default function UpdateStation({
       const companyData: StationRequest = {
         name: data.name,
         description: data.description ?? "",
+        type: data.type,
         status: 1,
-        company_id: companyId,
+        environment_id: environmentId,
         // route: file ?? undefined,
       };
       await updateStation(station.id, companyData);

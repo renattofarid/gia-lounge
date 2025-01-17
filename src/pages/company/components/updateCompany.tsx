@@ -17,7 +17,7 @@ import {
 
 import { errorToast, successToast } from "@/lib/core.function";
 import { Skeleton } from "@/components/ui/skeleton";
-import { createCompany, updateCompany } from "../lib/company.actions";
+import { updateCompany } from "../lib/company.actions";
 import { searchPersonByRUC } from "@/pages/users/lib/user.actions";
 import { CompanyItem, CompanyRequest } from "../lib/company.interface";
 
@@ -249,7 +249,7 @@ export default function UpdateCompanyPage({
               <FormField
                 control={form.control}
                 name="route"
-                render={({ field }) => (
+                render={({}) => (
                   <FormItem className="col-span-2">
                     <FormLabel className="text-sm font-normal">
                       Imagen de la empresa

@@ -221,7 +221,7 @@ export default function StationPage() {
                 <DialogDescription />
               </DialogHeader>
               <UpdateStation
-                companyId={Number(environmentId)}
+                environmentId={Number(environmentId)}
                 onClose={handleUpdateClose}
                 station={stationUpdate}
               />
