@@ -89,7 +89,7 @@ export default function UserPage() {
 
   return (
     <Layout options={options}>
-      <div className="flex w-full justify-center items-center">
+      <div className="flex w-full justify-center items-start">
         <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
           <div className="flex flex-col sm:flex-row w-full gap-2">
             <div className="w-full flex flex-col">
@@ -237,7 +237,11 @@ export default function UserPage() {
           </DialogContent>
         </Dialog>
 
-        <DeleteDialog isOpen={isDeleteDialogOpen} onConfirm={handleDelete} onCancel={() => setIsDeleteDialogOpen(false)} />
+        <DeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onConfirm={handleDelete}
+          onCancel={() => setIsDeleteDialogOpen(false)}
+        />
       </div>
     </Layout>
   );

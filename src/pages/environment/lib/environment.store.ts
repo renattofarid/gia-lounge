@@ -11,10 +11,10 @@ interface Environmenttore {
   links: Links;
   meta: Meta;
   loading: boolean;
-  loadEnvironments: (page: number) => void;
+  loadEnvironments: (page: number, companyId: number) => void;
 }
 
-export const useComapanyStore = create<Environmenttore>((set) => ({
+export const useEnvironmentStore = create<Environmenttore>((set) => ({
   environments: [],
   links: {
     first: "",
@@ -33,9 +33,12 @@ export const useComapanyStore = create<Environmenttore>((set) => ({
     total: 0,
   },
   loading: false,
-  loadEnvironments: async (page: number) => {
+  loadEnvironments: async (page: number, companyId: number) => {
     set(() => ({ loading: true }));
-    const response: EnvironmentCollection = await getEnvironment({ page });
+    const response: EnvironmentCollection = await getEnvironment({
+      page,
+      companyId,
+    });
     set(() => ({
       environments: response.data,
       links: response.links,

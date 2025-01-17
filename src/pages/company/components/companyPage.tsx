@@ -64,7 +64,7 @@ export default function CompanyPage() {
   const handleConfirm = () => {
     if (selectedCompany) {
       console.log("Empresa seleccionada:", selectedCompany);
-      navigate("/empresas/salones");
+      navigate(`/empresas/salones/${selectedCompany}`);
     } else {
       errorToast("Por favor, selecciona una empresa.");
     }
