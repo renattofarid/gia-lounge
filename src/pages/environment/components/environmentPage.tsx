@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DynamicAvatar } from "@/components/dinamyc-avatar";
 import { Check, MoreVertical } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEnvironmentStore } from "../lib/environment.store";
 import { EnvironmentItem } from "../lib/environment.interface";
 import DeleteDialog from "@/components/delete-dialog";
@@ -26,12 +26,14 @@ import { deleteEnvironment } from "../lib/environment.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import UpdateEnvironment from "./updateEnvironment";
 import SkeletonTable from "@/components/skeleton-table";
-// import { useNavigate } from "react-router-dom";
 
-export default function EnvioronmentPage() {
+export default function EnvironmentPage() {
   const { companyId } = useParams<{ companyId: string }>();
   const { environments, loadEnvironments, loading } = useEnvironmentStore();
 
+  const [selectedEnvironment, setSelectedEnvironment] = useState<number | null>(
+    null
+  );
   const [environmentUpdate, setEnvironmentUpdate] = useState<EnvironmentItem>(
     {} as EnvironmentItem
   );
@@ -39,6 +41,8 @@ export default function EnvioronmentPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (companyId) loadEnvironments(1, Number(companyId));
@@ -50,11 +54,9 @@ export default function EnvioronmentPage() {
     { name: "Mesas/Box", link: "/empresas/mesas" },
   ];
 
-  const [selectedSalon, setSelectedSalon] = useState<number | null>(null);
-  //   const navigate = useNavigate();
-
-  const handleSelectSalon = (id: number) => {
-    setSelectedSalon(id);
+  const handleSelectEnvironment = (id: number) => {
+    console.log("Salón seleccionado:", id);
+    setSelectedEnvironment(id);
   };
 
   const handleClickUpdate = (environment: EnvironmentItem) => {
@@ -85,10 +87,11 @@ export default function EnvioronmentPage() {
   };
 
   const handleConfirm = () => {
-    if (selectedSalon) {
-      console.log("Salón seleccionado:", selectedSalon);
+    if (selectedEnvironment) {
+      console.log("Salón seleccionado:", selectedEnvironment);
+      navigate(`/empresas/mesas/${selectedEnvironment}`);
     } else {
-      alert("Por favor, selecciona un salón.");
+      alert("Por favor, selecciona un salon.");
     }
   };
 
@@ -108,7 +111,7 @@ export default function EnvioronmentPage() {
             <div>
               <h1 className="text-2xl font-bold font-inter">Salones</h1>
               <p className="text-gray-500 text-base font-inter">
-                Gestione salones de la empresa.
+                Gestione salones de la empresa
               </p>
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -138,9 +141,9 @@ export default function EnvioronmentPage() {
             {environments.map((environment) => (
               <div
                 key={environment.id}
-                onClick={() => handleSelectSalon(environment.id)}
+                onClick={() => handleSelectEnvironment(environment.id)}
                 className={`relative flex flex-col items-center gap-3 cursor-pointer p-4 rounded-lg shadow-lg transition-transform duration-300 ${
-                  selectedSalon === environment.id
+                  selectedEnvironment === environment.id
                     ? "ring-4 ring-violet-500 scale-105 bg-gradient-to-br from-purple-500 to-purple-700"
                     : "hover:ring-4 hover:ring-gray-300 bg-white"
                 }`}
@@ -156,7 +159,7 @@ export default function EnvioronmentPage() {
                   {/* Nombre del salón */}
                   <p
                     className={`text-base font-medium uppercase text-center font-inter ${
-                      selectedSalon === environment.id
+                      selectedEnvironment === environment.id
                         ? "text-white"
                         : "text-gray-800"
                     }`}
@@ -191,7 +194,7 @@ export default function EnvioronmentPage() {
                 </div>
 
                 {/* Indicador de selección */}
-                {selectedSalon === environment.id && (
+                {selectedEnvironment === environment.id && (
                   <Check className="absolute top-2 right-2 w-6 h-6 bg-green-600  text-white rounded-full" />
                 )}
               </div>

@@ -20,12 +20,11 @@ import CreateCompanyPage from "./addCompany";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
 import { errorToast, successToast } from "@/lib/core.function";
-import { MoreVertical, Pen, Trash2 } from "lucide-react";
+import { MoreVertical } from "lucide-react";
 import { CompanyItem } from "../lib/company.interface";
 import UpdateCompanyPage from "./updateCompany";
 import { deleteCompany } from "../lib/company.actions";
 import DeleteDialog from "@/components/delete-dialog";
-import { prodAssetURL } from "@/lib/config";
 
 export default function CompanyPage() {
   const options = [
@@ -126,7 +125,15 @@ export default function CompanyPage() {
         </div>
 
         {/* Lista de Empresas */}
-        <div className="grid grid-cols-3 gap-6 justify-center items-center flex-wrap">
+        <div
+          className={`grid ${
+            companies.length <= 1
+              ? "grid-cols-1"
+              : companies.length === 2
+              ? "grid-cols-2"
+              : "grid-cols-3"
+          }  gap-6 justify-center items-center flex-wrap`}
+        >
           {loading ? (
             <p className="text-gray-500">Cargando empresas...</p>
           ) : (

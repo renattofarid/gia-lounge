@@ -3,8 +3,9 @@ import UserPage from "./pages/users/components/UserPage";
 import RolPage from "./pages/roles/components/rolPage";
 import SignInPage from "./pages/auth/components/SignInPage";
 import CompanyPage from "./pages/company/components/companyPage";
-import EnvioronmentPage from "./pages/environment/components/environmentPage";
 import HomePage from "./pages/home/components/HomePage";
+import EnvironmentPage from "./pages/environment/components/environmentPage";
+import StationPage from "./pages/station/components/stationPage";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {
@@ -75,7 +76,15 @@ export default function App() {
           path="/empresas/salones/:companyId"
           element={
             <ProtectedRoute>
-              <EnvioronmentPage />
+              <EnvironmentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/empresas/mesas/:environmentId"
+          element={
+            <ProtectedRoute>
+              <StationPage />
             </ProtectedRoute>
           }
         />
