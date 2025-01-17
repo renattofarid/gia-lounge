@@ -8,7 +8,7 @@ interface Stationtore {
   links: Links;
   meta: Meta;
   loading: boolean;
-  loadStations: (page: number, environmentId: number) => void;
+  loadStations: (page: number, environmentId?: number) => void;
 }
 
 export const useStationStore = create<Stationtore>((set) => ({
@@ -30,7 +30,7 @@ export const useStationStore = create<Stationtore>((set) => ({
     total: 0,
   },
   loading: false,
-  loadStations: async (page: number, environmentId: number) => {
+  loadStations: async (page: number, environmentId?: number) => {
     set(() => ({ loading: true }));
     const response: StationCollection = await getStation({
       page,

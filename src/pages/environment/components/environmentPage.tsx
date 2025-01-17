@@ -45,7 +45,7 @@ export default function EnvironmentPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (companyId) loadEnvironments(1, Number(companyId));
+    loadEnvironments(1, companyId ? Number(companyId) : undefined);
   }, [loadEnvironments, companyId]);
 
   const options = [
@@ -66,7 +66,6 @@ export default function EnvironmentPage() {
       setSelectedEnvironment(id);
     }
   };
-  
 
   const handleClickUpdate = (environment: EnvironmentItem) => {
     setEnvironmentUpdate(environment);
@@ -80,13 +79,13 @@ export default function EnvironmentPage() {
 
   const handleClose = () => {
     setIsDialogOpen(false);
-    loadEnvironments(1, Number(companyId));
+    loadEnvironments(1, companyId ? Number(companyId) : undefined);
   };
 
   const handleDelete = () => {
     deleteEnvironment(idDeleteSelected)
       .then(() => {
-        loadEnvironments(1, Number(companyId));
+        loadEnvironments(1, companyId ? Number(companyId) : undefined);
         setIsDeleteDialogOpen(false);
         successToast("Salón eliminado correctamente");
       })
@@ -106,7 +105,7 @@ export default function EnvironmentPage() {
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
-    loadEnvironments(1, Number(companyId));
+    loadEnvironments(1, companyId ? Number(companyId) : undefined);
   };
 
   return (
@@ -125,7 +124,7 @@ export default function EnvironmentPage() {
             </div>
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
+                <Button className="bg-violet-500 hover:bg-violet-600 text-secondary font-inter">
                   Agregar salón
                 </Button>
               </DialogTrigger>
@@ -154,7 +153,7 @@ export default function EnvironmentPage() {
                 className={`relative flex flex-col items-center gap-3 cursor-pointer p-4 rounded-lg shadow-lg transition-transform duration-300 ${
                   selectedEnvironment === environment.id
                     ? "ring-4 ring-violet-500 scale-105 bg-gradient-to-br from-purple-500 to-purple-700"
-                    : "hover:ring-4 hover:ring-gray-300 bg-white"
+                    : "hover:ring-4 hover:ring-gray-300 bg-secondary"
                 }`}
               >
                 {/* Reemplazamos el Avatar por DynamicAvatar */}
@@ -169,8 +168,8 @@ export default function EnvironmentPage() {
                   <p
                     className={`text-base font-medium uppercase text-center font-inter ${
                       selectedEnvironment === environment.id
-                        ? "text-white"
-                        : "text-gray-800"
+                        ? "text-secondary"
+                        : "text-foreground/90"
                     }`}
                   >
                     {environment.name}
@@ -204,7 +203,7 @@ export default function EnvironmentPage() {
 
                 {/* Indicador de selección */}
                 {selectedEnvironment === environment.id && (
-                  <Check className="absolute top-2 right-2 w-6 h-6 bg-green-600  text-white rounded-full" />
+                  <Check className="absolute top-2 right-2 w-6 h-6 bg-green-600  text-secondary rounded-full" />
                 )}
               </div>
             ))}
@@ -212,7 +211,7 @@ export default function EnvironmentPage() {
 
           <Button
             onClick={handleConfirm}
-            className="mt-6 bg-violet-500 hover:bg-violet-600 px-6 py-2 rounded-lg text-white font-inter"
+            className="mt-6 bg-violet-500 hover:bg-violet-600 px-6 py-2 rounded-lg text-secondary font-inter"
           >
             Confirmar
           </Button>

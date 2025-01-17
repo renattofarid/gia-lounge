@@ -121,7 +121,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-6 p-6 bg-white">
+      <div className="flex flex-col gap-6 p-6 bg-secondary">
         <Skeleton className="w-full h-4"></Skeleton>
         <Skeleton className="w-full h-4"></Skeleton>
         <Skeleton className="w-full h-4"></Skeleton>
@@ -134,7 +134,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
   }
 
   return (
-    <div className="bg-white p-6">
+    <div className="bg-secondary p-6">
       <div className="flex flex-col gap-6 ">
         <Form {...form}>
           <form onSubmit={handleSubmit}>
@@ -444,14 +444,14 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                   variant="outline"
                   type="button"
                   onClick={onClose}
-                  className="bg-black text-white font-inter hover:bg-black/95 hover:text-white text-sm"
+                  className="bg-foreground text-secondary font-inter hover:bg-foreground/95 hover:text-secondary text-sm"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="bg-[#818cf8] hover:bg-[#6366f1]"
+                  className="bg-[#6366f1] hover:bg-[#818cf8]"
                 >
                   Guardar
                 </Button>

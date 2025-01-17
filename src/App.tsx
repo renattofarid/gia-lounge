@@ -5,8 +5,8 @@ import SignInPage from "./pages/auth/components/SignInPage";
 import CompanyPage from "./pages/company/components/companyPage";
 import EnvironmentPage from "./pages/environment/components/environmentPage";
 import StationPage from "./pages/station/components/stationPage";
-import HomePage from "./pages/home/components/Homepage";
 import { ThemeProvider } from "next-themes";
+import HomePage from "./pages/home/components/HomePage";
 
 // Simular autenticación (deberías usar contexto o un servicio real)
 const isAuthenticated = () => {
@@ -72,8 +72,8 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/empresas/salones" element={<Navigate to="/empresas" />} />
-        <Route path="/empresas/mesas" element={<Navigate to="/empresas" />} />
+        <Route path="/empresas/salones" element={<EnvironmentPage />} />
+        <Route path="/empresas/mesas" element={<StationPage />} />
         <Route
           path="/empresas/salones/:companyId"
           element={

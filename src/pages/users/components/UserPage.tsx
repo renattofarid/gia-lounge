@@ -107,9 +107,9 @@ export default function UserPage() {
                   />
                   <Button
                     size="icon"
-                    className="bg-black hover:bg-gray-800 text-white min-w-9 h-9"
+                    className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
                   >
-                    <Search className="min-w-4 min-h-4 text-white" />
+                    <Search className="min-w-4 min-h-4 text-secondary" />
                   </Button>
                 </div>
                 <Dialog

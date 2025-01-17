@@ -11,7 +11,7 @@ interface Environmenttore {
   links: Links;
   meta: Meta;
   loading: boolean;
-  loadEnvironments: (page: number, companyId: number) => void;
+  loadEnvironments: (page: number, companyId?: number) => void;
 }
 
 export const useEnvironmentStore = create<Environmenttore>((set) => ({
@@ -33,7 +33,7 @@ export const useEnvironmentStore = create<Environmenttore>((set) => ({
     total: 0,
   },
   loading: false,
-  loadEnvironments: async (page: number, companyId: number) => {
+  loadEnvironments: async (page: number, companyId?: number) => {
     set(() => ({ loading: true }));
     const response: EnvironmentCollection = await getEnvironment({
       page,

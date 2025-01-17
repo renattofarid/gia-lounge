@@ -31,7 +31,7 @@ export default function Header() {
           </Button>
           <Button
             size="icon"
-            className="rounded-full bg-black hover:bg-black/80"
+            className="rounded-full bg-foreground hover:bg-foreground/80"
           >
             <Store className="min-w-5 min-h-5" />
           </Button>

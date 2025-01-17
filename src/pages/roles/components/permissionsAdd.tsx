@@ -99,14 +99,14 @@ export default function PermissionsDialog({
         <Button
           type="button"
           variant="outline"
-          className="bg-black text-white hover:bg-gray-800 border-0"
+          className="bg-foreground text-secondary hover:bg-gray-800 border-0"
           onClick={onClose}
         >
           Cancelar
         </Button>
         <Button
           type="submit"
-          className="bg-[#818cf8] hover:bg-[#6366f1] text-white"
+          className="bg-[#818cf8] hover:bg-[#6366f1] text-secondary"
           onClick={handleSubmit}
         >
           Guardar

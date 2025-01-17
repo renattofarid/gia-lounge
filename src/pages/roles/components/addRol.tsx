@@ -56,7 +56,7 @@ export default function CreateRolPage({ onClose }: AddRolProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-6 p-6 bg-white">
+      <div className="flex flex-col gap-6 p-6 bg-secondary">
         <Skeleton className="w-full h-4" />
         <Skeleton className="w-full h-4" />
       </div>
@@ -64,7 +64,7 @@ export default function CreateRolPage({ onClose }: AddRolProps) {
   }
 
   return (
-    <div className="bg-white p-5 ">
+    <div className="bg-secondary p-5 ">
       <div className="flex flex-col gap-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
@@ -100,7 +100,7 @@ export default function CreateRolPage({ onClose }: AddRolProps) {
                   variant="outline"
                   type="button"
                   onClick={onClose}
-                  className="bg-black text-white font-inter hover:bg-black/95 hover:text-white text-sm"
+                  className="bg-foreground text-secondary font-inter hover:bg-foreground/95 hover:text-secondary text-sm"
                 >
                   Cancelar
                 </Button>

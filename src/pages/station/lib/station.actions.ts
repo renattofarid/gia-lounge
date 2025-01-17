@@ -4,7 +4,7 @@ import { StationCollection } from "./station.interface";
 
 export interface getStationProps {
   page: number;
-  environmentId: number;
+  environmentId?: number;
 }
 
 export const getStation = async ({

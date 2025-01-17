@@ -4,7 +4,7 @@ import { EnvironmentCollection } from "./environment.interface";
 
 export interface getEnvironmentProps {
   page: number;
-  companyId: number;
+  companyId?: number;
 }
 
 export const getEnvironment = async ({

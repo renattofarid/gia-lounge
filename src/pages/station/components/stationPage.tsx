@@ -49,7 +49,7 @@ export default function StationPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   useEffect(() => {
-    if (environmentId) loadStations(1, Number(environmentId));
+    loadStations(1, environmentId ? Number(environmentId) : undefined);
   }, [loadStations, environmentId]);
 
   const options = [
@@ -70,13 +70,13 @@ export default function StationPage() {
 
   const handleClose = () => {
     setIsDialogOpen(false);
-    loadStations(1, Number(environmentId));
+    loadStations(1, environmentId ? Number(environmentId) : undefined);
   };
 
   const handleDelete = () => {
     deleteStation(idDeleteSelected)
       .then(() => {
-        loadStations(1, Number(environmentId));
+        loadStations(1, environmentId ? Number(environmentId) : undefined);
         setIsDeleteDialogOpen(false);
         successToast("Mesa eliminado correctamente");
       })
@@ -87,7 +87,7 @@ export default function StationPage() {
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
-    loadStations(1, Number(environmentId));
+    loadStations(1, environmentId ? Number(environmentId) : undefined);
   };
 
   return (

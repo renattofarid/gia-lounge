@@ -171,7 +171,7 @@ export default function CompanyPage() {
                     className={`text-base font-medium uppercase font-inter ${
                       selectedCompany === company.id
                         ? "text-violet-500"
-                        : "text-gray-800"
+                        : "text-foreground/90"
                     }`}
                   >
                     {company.business_name}
@@ -208,7 +208,7 @@ export default function CompanyPage() {
 
         <Button
           onClick={handleConfirm}
-          className="mt-6 bg-violet-500 hover:bg-violet-600 px-6 py-2 rounded-lg text-white font-inter"
+          className="mt-6 bg-violet-500 hover:bg-violet-600 px-6 py-2 rounded-lg text-secondary font-inter"
         >
           Confirmar
         </Button>

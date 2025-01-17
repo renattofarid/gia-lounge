@@ -80,7 +80,7 @@ export default function SignInPage() {
         </div>
 
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold font-inter text-gray-800">
+          <CardTitle className="text-center text-2xl font-semibold font-inter text-foreground/90">
             Iniciar Sesión
           </CardTitle>
         </CardHeader>

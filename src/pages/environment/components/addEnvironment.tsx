@@ -83,7 +83,7 @@ export default function CreateEnvironment({
 
   if (isLoading) {
     return (
-      <div className="flex flex-col gap-6 p-6 bg-white">
+      <div className="flex flex-col gap-6 p-6 bg-secondary">
         {[...Array(7)].map((_, i) => (
           <Skeleton key={i} className="w-full h-4" />
         ))}
@@ -92,7 +92,7 @@ export default function CreateEnvironment({
   }
 
   return (
-    <div className="bg-white p-6">
+    <div className="bg-secondary p-6">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
@@ -186,14 +186,14 @@ export default function CreateEnvironment({
               variant="outline"
               type="reset"
               onClick={onClose}
-              className="bg-black text-white font-inter hover:bg-black/95 hover:text-white text-sm"
+              className="bg-foreground text-secondary font-inter hover:bg-foreground/95 hover:text-secondary text-sm"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={isLoading}
-              className="bg-[#818cf8] hover:bg-[#6366f1]"
+              className="bg-[#6366f1] hover:bg-[#818cf8]"
             >
               Guardar
             </Button>

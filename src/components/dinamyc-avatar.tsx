@@ -56,7 +56,7 @@ export function DynamicAvatar({
           className="w-full h-full object-cove rounded-fullr"
         />
         <AvatarFallback
-          className="w-full h-full flex items-center justify-center text-white font-semibold"
+          className="w-full h-full flex items-center justify-center text-secondary font-semibold"
           style={{
             background: "transparent",
           }}

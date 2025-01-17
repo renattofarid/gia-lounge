@@ -71,7 +71,7 @@
 //                 placeholder="Buscar usuario..."
 //                 className="w-[300px] font-inter focus:outline-none focus:ring-1 focus:ring-offset-1 focus:ring-violet-500"
 //               />
-//               <Button size="icon" className="bg-black hover:bg-black/80">
+//               <Button size="icon" className="bg-foreground hover:bg-foreground/80">
 //                 <Search className="h-4 w-4" />
 //               </Button>
 //             </div>
@@ -97,10 +97,10 @@
 //           <Table>
 //             <TableHeader>
 //               <TableRow>
-//                 <TableHead className="font-inter text-base text-black">Usuario</TableHead>
-//                 <TableHead className="font-inter text-base text-black">Nombres</TableHead>
-//                 <TableHead className="font-inter text-base text-black">Datos</TableHead>
-//                 <TableHead className="font-inter text-base text-black">Rol</TableHead>
+//                 <TableHead className="font-inter text-base text-foreground">Usuario</TableHead>
+//                 <TableHead className="font-inter text-base text-foreground">Nombres</TableHead>
+//                 <TableHead className="font-inter text-base text-foreground">Datos</TableHead>
+//                 <TableHead className="font-inter text-base text-foreground">Rol</TableHead>
 //                 <TableHead className="w-[50px]"></TableHead>
 //               </TableRow>
 //             </TableHeader>

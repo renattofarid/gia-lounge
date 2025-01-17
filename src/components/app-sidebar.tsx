@@ -43,35 +43,25 @@ export function AppSidebar() {
         );
       })}
 
-<div className="pt-12 flex flex-col gap-4">
-<Button
-        size="icon"
-        variant="ghost"
-        className={`rounded-full h-10 w-10 ${
-          resolvedTheme === "dark"
-            ? "bg-primary/60 text-white"
-            : "bg-primary/10 hover:bg-primary/20"
-        }`}
-        onClick={() => toggleTheme("dark")}
-      >
-        <Moon className="h-5 w-5" />
-      </Button>
+      <div className="pt-12 flex flex-col gap-4">
+        <Button
+          size="icon"
+          variant={resolvedTheme === "dark" ? "default" : "ghost"}
+          className={`rounded-full h-10 w-10`}
+          onClick={() => toggleTheme("dark")}
+        >
+          <Moon className="h-5 w-5" />
+        </Button>
 
-      <Button
-        size="icon"
-        variant="ghost"
-        className={`rounded-full h-10 w-10 ${
-          resolvedTheme === "light"
-            ? "bg-primary/60 text-white"
-            : "bg-primary/10 hover:bg-primary/20"
-        }`}
-        onClick={() => toggleTheme("light")}
-      >
-        <Sun className="h-5 w-5" />
-      </Button>
-
-</div>
-      
+        <Button
+          size="icon"
+          variant={resolvedTheme === "light" ? "default" : "ghost"}
+          className={`rounded-full h-10 w-10`}
+          onClick={() => toggleTheme("light")}
+        >
+          <Sun className="h-5 w-5" />
+        </Button>
+      </div>
     </div>
   );
 }
