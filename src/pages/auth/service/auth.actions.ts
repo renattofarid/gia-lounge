@@ -36,7 +36,15 @@ export async function getAuthenticatedUser(): Promise<User | null> {
     });
     return data;
   } catch (error: any) {
-    console.error("Error al obtener el usuario autenticado:", error.response?.data || error.message);
+    console.error(
+      "Error al obtener el usuario autenticado:",
+      error.response?.data || error.message
+    );
+
+    // Si el error es de autenticación, limpia el estado y redirige
+    const { clearAuth } = useAuthStore.getState();
+    clearAuth();
+    window.location.href = "/login"; // Redirige manualmente al login
     return null;
   }
 }
@@ -55,6 +63,9 @@ export async function logout(): Promise<void> {
     // Limpiar el estado de autenticación
     clearAuth();
   } catch (error: any) {
-    console.error("Error al cerrar sesión:", error.response?.data || error.message);
+    console.error(
+      "Error al cerrar sesión:",
+      error.response?.data || error.message
+    );
   }
 }

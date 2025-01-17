@@ -6,19 +6,27 @@ import CompanyPage from "./pages/company/components/companyPage";
 import EnvironmentPage from "./pages/environment/components/environmentPage";
 import StationPage from "./pages/station/components/stationPage";
 import { ThemeProvider } from "next-themes";
-import HomePage from "./pages/home/components/HomePage";
+import HomePage from "./pages/home/components/Homepage";
+import { useAuthStore } from "./pages/auth/lib/auth.store";
 
-// Simular autenticación (deberías usar contexto o un servicio real)
-const isAuthenticated = () => {
-  return localStorage.getItem("token") !== null; // O cualquier lógica que determines
-};
+// const isAuthenticated = () => {
+//   return localStorage.getItem("token") !== null; 
+// };
 
-// Componente de ruta protegida
 function ProtectedRoute({ children }: { children: JSX.Element }) {
-  return isAuthenticated() ? children : <Navigate to="/login" />;
+  const {token} = useAuthStore();
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
 }
 
 export default function App() {
+
+  const { token } = useAuthStore();
+
+
   return (
     <ThemeProvider attribute="class" defaultTheme="light">
     <BrowserRouter>
@@ -27,7 +35,7 @@ export default function App() {
         <Route
           path="/login"
           element={
-            isAuthenticated() ? <Navigate to="/inicio" /> : <SignInPage />
+           token? <Navigate to="/inicio" /> : <SignInPage />
           }
         />
 
