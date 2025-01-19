@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -17,6 +17,13 @@ import {
 import { errorToast, successToast } from "@/lib/core.function";
 import { createStation } from "../lib/station.actions";
 import { StationRequest } from "../lib/station.interface";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
@@ -35,31 +42,32 @@ export default function CreateStation({
   environmentId,
   onClose,
 }: AddStationProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  // const [previewImage, setPreviewImage] = useState<string | null>(null);
   // const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof StationSchema>>({
     resolver: zodResolver(StationSchema),
     defaultValues: {
       name: "",
+      type: "",
       description: "",
-      status: "1",
+      status: "",
     },
   });
 
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        const imageUrl = URL.createObjectURL(file);
-        setPreviewImage(imageUrl);
-        setFile(file);
-      }
-    },
-    [form]
-  );
+  // const handleFileChange = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     if (event.target.files && event.target.files[0]) {
+  //       const file = event.target.files[0];
+  //       const imageUrl = URL.createObjectURL(file);
+  //       setPreviewImage(imageUrl);
+  //       setFile(file);
+  //     }
+  //   },
+  //   [form]
+  // );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,9 +78,9 @@ export default function CreateStation({
         name: data.name,
         description: data.description ?? "",
         type: data.type,
-        status: 1,
+        status: data.status,
         environment_id: environmentId,
-        route: file ?? undefined,
+        // route: file ?? undefined,
       };
       await createStation(stationData);
       successToast("Mesa guardada correctamente");
@@ -95,13 +103,13 @@ export default function CreateStation({
   // }
 
   return (
-    <div className="bg-secondary p-2">
+    <div className="p-2 ">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary rounded-lg">
             {/* Formulario */}
             <div className="flex flex-col gap-4">
-              <div className="w-full rounded-lg bg-secondary p-4 text-sm space-y-4 font-inter">
+              <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
                 <FormField
                   control={form.control}
                   name="name"
@@ -143,32 +151,64 @@ export default function CreateStation({
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Tipo
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Tipo"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
 
-            {/* Image Upload Section */}
-            <div className="flex flex-col gap-4 bg-secondary rounded-lg p-4">
+            <div className="flex flex-col gap-4  rounded-lg p-4">
               <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Tipo</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                          <SelectValue placeholder="Seleccione tipo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Mesa">Mesa</SelectItem>
+                        <SelectItem value="Box">Box</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Estado
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                          <SelectValue placeholder="Seleccione estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Disponible">Disponible</SelectItem>
+                        <SelectItem value="Reservado">Reservado</SelectItem>
+                        <SelectItem value="Inhabilitado">Inhabilitado</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
                 control={form.control}
                 name="route"
                 render={() => (
@@ -200,7 +240,7 @@ export default function CreateStation({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
           </div>
 

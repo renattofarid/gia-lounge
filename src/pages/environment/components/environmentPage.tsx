@@ -223,7 +223,7 @@ export default function EnvironmentPage() {
             <DialogContent className="max-w-xl p-6">
               <DialogHeader>
                 <DialogTitle className="font-inter">
-                  Actualizar Usuario
+                  Actualizar Salón
                 </DialogTitle>
                 <DialogDescription />
               </DialogHeader>

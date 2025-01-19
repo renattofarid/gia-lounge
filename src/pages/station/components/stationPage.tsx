@@ -15,7 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical } from "lucide-react";
+import { Hash, MoreVertical } from "lucide-react";
 import { useParams } from "react-router-dom";
 import { useStationStore } from "../lib/station.store";
 import { StationItem } from "../lib/station.interface";
@@ -129,7 +129,7 @@ export default function StationPage() {
           <Table className="">
             <TableHeader>
               <TableRow>
-                <TableHead className="font-inter text-base text-foreground text-center p-2">
+                <TableHead className="font-inter text-base text-foreground text-star p-2">
                   Nombre
                 </TableHead>
                 <TableHead className="font-inter text-base text-foreground text-center p-2">
@@ -139,7 +139,7 @@ export default function StationPage() {
                   Estado
                 </TableHead>
                 <TableHead className="font-inter text-base text-foreground text-center p-2">
-                  Rol
+                  Acciones
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -147,19 +147,20 @@ export default function StationPage() {
               {stations.map((station) => (
                 <TableRow key={station.id}>
                   <TableCell className="font-inter py-2 px-2 text-sm flex gap-2 items-center">
-                    {station.route ? (
+                    {/* {station.route ? (
                       <img
                         src={station.route}
                         alt="Avatar"
                         className="w-8 h-8 rounded-lg"
                       />
                     ) : (
-                      <img
-                        src="/logo.jpg"
-                        alt="Avatar"
-                        className="w-8 h-8 rounded-lg"
-                      />
-                    )}
+                      // <img
+                      //   src="/logo.jpg"
+                      //   alt="Avatar"
+                      //   className="w-8 h-8 rounded-lg"
+                      // /> */}
+                        <Hash className="w-3 h-4" />
+                    {/* )} */}
                     {station.name}
                   </TableCell>
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
@@ -167,11 +168,15 @@ export default function StationPage() {
                   </TableCell>
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
                     <Badge
-                      variant={
-                        station.status === "1" ? "default" : "destructive"
-                      }
+                      className={`${
+                        station.status === "Reservado"
+                          ? "text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE]"
+                          : station.status === "Disponible"
+                          ? "text-[#96C451] bg-[#E5FFBD99] hover:bg-[#E5FFBD]"
+                          : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5]"
+                      }`}
                     >
-                      {station.status === "1" ? "Activo" : "Inactivo"}
+                      {station.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
@@ -213,10 +218,10 @@ export default function StationPage() {
             open={isUpdateDialogOpen}
             onOpenChange={setIsUpdateDialogOpen}
           >
-            <DialogContent className="max-w-xl p-6">
+              <DialogContent className="p-6 max-w-3xl">
               <DialogHeader>
                 <DialogTitle className="font-inter">
-                  Actualizar Usuario
+                  Actualizar Mesa
                 </DialogTitle>
                 <DialogDescription />
               </DialogHeader>

@@ -17,6 +17,13 @@ import {
 import { errorToast, successToast } from "@/lib/core.function";
 import { updateStation } from "../lib/station.actions";
 import { StationItem, StationRequest } from "../lib/station.interface";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { LoaderCircle } from "lucide-react";
 
 const StationSchema = z.object({
@@ -47,8 +54,9 @@ export default function UpdateStation({
     resolver: zodResolver(StationSchema),
     defaultValues: {
       name: station.name,
-      description: "",
-      status: "1",
+      description: station.description,
+      type: station.type,
+      status: station.status,
     },
   });
 
@@ -69,20 +77,20 @@ export default function UpdateStation({
     try {
       setIsSending(true);
       const data = form.getValues();
-      const companyData: StationRequest = {
+      const stantionData: StationRequest = {
         name: data.name,
         description: data.description ?? "",
         type: data.type,
-        status: 1,
+        status: data.status,
         environment_id: environmentId,
         // route: file ?? undefined,
       };
-      await updateStation(station.id, companyData);
-      successToast("Empresa guardada correctamente");
+      await updateStation(station.id, stantionData);
+      successToast("Mesa guardada correctamente");
       setIsSending(false);
       onClose();
     } catch (error) {
-      errorToast("Ocurrió un error al guardar la empresa");
+      errorToast("Ocurrió un error al guardar la mesa");
       setIsSending(false);
     }
   };
@@ -98,105 +106,157 @@ export default function UpdateStation({
   // }
 
   return (
-    <div className="bg-secondary p-6">
-      <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            {/* Formulario */}
-            <div className="flex flex-col gap-4">
-              <div className="w-full rounded-lg bg-secondary p-4 text-sm space-y-4 font-inter">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="relative">
-                      <FormLabel className="text-sm font-normal">
-                        Nombre
-                      </FormLabel>
-                      <FormControl>
-                        <div className="relative">
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombre del ambiente"
-                            {...field}
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-normal">
-                        Descripción
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Descripción"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Image Upload Section */}
-            {/* <div className="flex flex-col gap-4">
+    <div className="p-2 ">
+    <Form {...form}>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary rounded-lg">
+          {/* Formulario */}
+          <div className="flex flex-col gap-4">
+            <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
               <FormField
                 control={form.control}
-                name="route"
-                render={() => (
-                  <FormItem className="col-span-2">
-                    <FormLabel className="text-sm font-normal">
-                      Imagen de la empresa
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="relative">
+                    <FormLabel className="text-sm font-medium">
+                      Nombre
                     </FormLabel>
                     <FormControl>
-                      <div className="flex flex-col items-start gap-4">
-                        <div className="flex-1">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          />
-                        </div>
-                        {previewImage && (
-                          <div className="relative size-32 border flex justify-center items-center overflow-hidden rounded-full">
-                            <img
-                              src={previewImage}
-                              alt="Preview"
-                              className="object-cover rounded-full"
-                            />
-                          </div>
-                        )}
+                      <div className="relative">
+                        <Input
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Nombre del ambiente"
+                          {...field}
+                        />
                       </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div> */}
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Descripción
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                        placeholder="Descripción"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
 
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
-              type="button"
-              onClick={onClose}
-              className="bg-foreground text-secondary font-inter hover:bg-foreground/95 hover:text-secondary text-sm"
-            >
-              Cancelar
-            </Button>
-            <Button
+          <div className="flex flex-col gap-4  rounded-lg p-4">
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Tipo</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                        <SelectValue placeholder="Seleccione tipo" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Mesa">Mesa</SelectItem>
+                      <SelectItem value="Box">Box</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="status"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">
+                    Estado
+                  </FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                        <SelectValue placeholder="Seleccione estado" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Disponible">Disponible</SelectItem>
+                      <SelectItem value="Reservado">Reservado</SelectItem>
+                      <SelectItem value="Inhabilitado">Inhabilitado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* <FormField
+              control={form.control}
+              name="route"
+              render={() => (
+                <FormItem className="col-span-2">
+                  <FormLabel className="text-sm font-medium">
+                    Imagen de la empresa
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col items-start gap-4">
+                      <div className="flex-1">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                        />
+                      </div>
+                      {previewImage && (
+                        <div className="relative w-full flex justify-center items-center overflow-hidden rounded-full">
+                          <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="object-cover size-24 flex justify-center items-center rounded-full"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2">
+          <Button
+            variant="outline"
+            type="reset"
+            onClick={onClose}
+            className="bg-foreground text-white font-inter hover:bg-foreground/95 hover:text-white text-sm"
+          >
+            Cancelar
+          </Button>
+          <Button
               type="submit"
               disabled={isSending}
               className="bg-[#6366f1] hover:bg-[#818cf8]"
@@ -206,9 +266,10 @@ export default function UpdateStation({
                 <LoaderCircle className="animate-spin h-6 w-6" />
               ) : null}
             </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
+          </div><div className="flex justify-end gap-2">
+        </div>
+      </form>
+    </Form>
+  </div>
   );
 }

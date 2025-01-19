@@ -11,6 +11,7 @@ export interface StationItem {
   name: string;
   type: string;
   status: string;
+  description: string;
   server_id: null;
   route: null;
   environment_id: number;
@@ -43,7 +44,7 @@ export interface StationRequest {
   name: string;
   description: string; // no debe ir
   type: string;
-  status: number;
+  status: string;
   environment_id: number;
   route?: File;
 }

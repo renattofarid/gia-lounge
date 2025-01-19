@@ -92,7 +92,7 @@ export default function CreateEnvironment({
   }
 
   return (
-    <div className="bg-secondary p-6">
+    <div className="p-6 rounded-lg">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6">
