@@ -72,11 +72,11 @@ export default function CreateEnvironment({
         // route: file ?? undefined,
       };
       await createEnvironment(companyData);
-      successToast("Empresa guardada correctamente");
+      successToast("Salón guardada correctamente");
       setIsLoading(false);
       onClose();
     } catch (error) {
-      errorToast("Ocurrió un error al guardar la empresa");
+      errorToast("Ocurrió un error al guardar la salón");
       setIsLoading(false);
     }
   };

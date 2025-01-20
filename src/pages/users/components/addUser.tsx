@@ -35,8 +35,8 @@ const UserSchema = z.object({
   username: z.string().nonempty(),
   password: z.string().nonempty(),
   rol: z.string().optional(),
-  type_document: z.enum(["DNI", "RUC", "CE"]),
-  type_person: z.enum(["Individual", "Business"]),
+  type_document: z.enum(["", "DNI", "RUC", "CE"]),
+  type_person: z.enum(["", "Individual", "Business"]),
   number_document: z.string().nonempty(),
   business_name: z.string().optional(),
   names: z.string().nonempty(),
@@ -58,8 +58,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
       username: "",
       password: "",
       rol: "",
-      type_document: "DNI",
-      type_person: "Individual",
+      type_document: "",
+      type_person: "",
       number_document: "",
       names: "",
       business_name: "",
@@ -78,6 +78,20 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
   useEffect(() => {
     loadRoles(1);
   }, []);
+
+  useEffect(() => {
+    const typePerson = form.getValues("type_person")
+    if (typePerson) {
+      form.setValue("type_document", typePerson === "Individual" ? "DNI" : "RUC")
+      if (typePerson === "Individual") {
+        form.setValue("business_name", "")
+      } else {
+        form.setValue("names", "")
+        form.setValue("father_surname", "")
+        form.setValue("mother_surname", "")
+      }
+    }
+  }, [form.watch("type_person")])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -118,6 +132,9 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
       errorToast("No se encontró la persona");
     }
   };
+
+  const typeDocumentOptions =
+    form.getValues("type_person") === "Individual" ? ["DNI", "CE"] : ["RUC"];
 
   if (loading) {
     return (
@@ -247,27 +264,6 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
 
                   <FormField
                     control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          E-mail
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            type="email"
-                            placeholder="E-mail"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
                     name="type_document"
                     render={({ field }) => (
                       <FormItem>
@@ -284,31 +280,13 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="DNI">DNI</SelectItem>
-                            <SelectItem value="RUC">RUC</SelectItem>
-                            <SelectItem value="CE">CE</SelectItem>
+                            {typeDocumentOptions.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Dirección
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Dirección"
-                            {...field}
-                          />
-                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -357,6 +335,47 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
 
                   <FormField
                     control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal">
+                          Dirección
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Dirección"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal">
+                          E-mail
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            type="email"
+                            placeholder="E-mail"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
@@ -367,6 +386,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                           <Input
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Teléfono"
+                            maxLength={9}
                             {...field}
                           />
                         </FormControl>
@@ -375,65 +395,88 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="names"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Nombres / Razón Social
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombres"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {form.getValues("type_person") === "Individual" ? (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="names"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-normal">
+                              Nombres
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                                placeholder="Nombres"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="father_surname"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Apellido Paterno
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombres"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="mother_surname"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Apellido Materno
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombres"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="father_surname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-normal">
+                              Apellido Paterno
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                                placeholder="Nombres"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="mother_surname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-normal">
+                              Apellido Materno
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                                placeholder="Nombres"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
+                  ) : (
+                    <FormField
+                      control={form.control}
+                      name="business_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-normal">
+                            Razón Social
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              placeholder="Razón Social"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </div>
             </div>
