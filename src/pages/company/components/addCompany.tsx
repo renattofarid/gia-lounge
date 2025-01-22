@@ -22,10 +22,16 @@ import { searchPersonByRUC } from "@/pages/users/lib/user.actions";
 import { CompanyRequest } from "../lib/company.interface";
 
 const CompanySchema = z.object({
-  ruc: z.string().nonempty(),
+  ruc: z
+    .string()
+    .nonempty("El RUC es obligatorio")
+    .length(11, "El RUC debe tener exactamente 11 dígitos"),
   business_name: z.string().optional(),
   address: z.string().nonempty(),
-  phone: z.string().nonempty(),
+  phone: z
+  .string()
+  .nonempty("El teléfono es obligatorio")
+  .regex(/^\d{9}$/, "El teléfono debe tener 9 dígitos"),
   email: z.string().email(),
   route: z.string().optional(),
 });
@@ -128,7 +134,7 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
                 <FormField
                   control={form.control}
                   name="ruc"
-                  render={({ field }) => (
+                  render={({ field}) => (
                     <FormItem className="relative">
                       <FormLabel className="text-sm font-normal">RUC</FormLabel>
                       <FormControl>
@@ -210,6 +216,7 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                           placeholder="Teléfono"
+                          maxLength={9}
                           {...field}
                         />
                       </FormControl>

@@ -41,7 +41,7 @@ export default function UserPage() {
   ];
 
   // STORE
-  const { users, loadUsers } = useUserStore();
+  const { users, loadUsers, filter, setFilter } = useUserStore();
 
   // STATE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -83,6 +83,14 @@ export default function UserPage() {
     setIsUpdateDialogOpen(true);
   };
 
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.target.value);
+  };
+
+  const handleSearch = () => {
+    loadUsers(1);
+  };
+
   useEffect(() => {
     loadUsers(1);
   }, [loadUsers]);
@@ -104,10 +112,13 @@ export default function UserPage() {
                   <Input
                     placeholder="Busqueda ..."
                     className="sm:w-[300px] font-poopins text-sm"
+                    value={filter}
+                    onChange={handleFilterChange}
                   />
                   <Button
                     size="icon"
                     className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+                    onClick={handleSearch}
                   >
                     <Search className="min-w-4 min-h-4 text-secondary" />
                   </Button>

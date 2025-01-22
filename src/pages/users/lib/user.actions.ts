@@ -4,14 +4,17 @@ import { PersonDNI, PersonRUC, UserCollection } from "./user.interface";
 
 export interface getUsersProps {
   page: number;
+  username?: string;
 }
 
 export const getUsers = async ({
   page,
+  username,
 }: getUsersProps): Promise<UserCollection> => {
   const config: AxiosRequestConfig = {
     params: {
       page,
+      username,
     },
   };
   const response = await api.get(`/user`, config);

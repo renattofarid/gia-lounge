@@ -8,10 +8,12 @@ interface UserStore {
   links: Links;
   meta: Meta;
   loading: boolean;
+  filter: string
+  setFilter: (filter: string) => void
   loadUsers: (page: number) => void;
 }
 
-export const useUserStore = create<UserStore>((set) => ({
+export const useUserStore = create<UserStore>((set, get) => ({
   users: [],
   links: {
     first: "",
@@ -30,9 +32,12 @@ export const useUserStore = create<UserStore>((set) => ({
     total: 0,
   },
   loading: false,
+  filter: "",
+  setFilter: (filter: string) => set({ filter }),
   loadUsers: async (page: number) => {
     set(() => ({ loading: true }));
-    const response: UserCollection = await getUsers({ page });
+    const filter = get().filter
+    const response: UserCollection = await getUsers({ page, username: filter });
     set(() => ({
       users: response.data,
       links: response.links,
