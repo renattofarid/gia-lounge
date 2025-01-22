@@ -167,6 +167,7 @@ export default function UpdateStation({
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
@@ -174,8 +175,8 @@ export default function UpdateStation({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Mesa">Mesa</SelectItem>
-                      <SelectItem value="Box">Box</SelectItem>
+                      <SelectItem value="MESA">Mesa</SelectItem>
+                      <SelectItem value="BOX">Box</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

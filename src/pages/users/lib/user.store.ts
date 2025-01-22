@@ -37,7 +37,7 @@ export const useUserStore = create<UserStore>((set, get) => ({
   loadUsers: async (page: number) => {
     set(() => ({ loading: true }));
     const filter = get().filter
-    const response: UserCollection = await getUsers({ page, username: filter });
+    const response: UserCollection = await getUsers({ page, name: filter });
     set(() => ({
       users: response.data,
       links: response.links,

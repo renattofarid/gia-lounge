@@ -18,7 +18,7 @@ import { UserItem } from "../lib/user.interface"
 const UserSchema = z.object({
   username: z.string().nonempty(),
   password: z.string().optional(), // Make password optional for editing
-  rol: z.string().optional(),
+  rol_id: z.string().optional(),
   type_document: z.enum(["", "DNI", "RUC", "CE"]),
   type_person: z.enum(["", "NATURAL", "JURIDICA"]),
   number_document: z.string().nonempty(),
@@ -44,7 +44,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
     defaultValues: {
       username: user.username ?? "",
       password: "",
-      rol: "", // change on API
+      rol_id: "", // change on API
       type_document: user.person.type_document ?? "",
       type_person: user.person.type_person ?? "",
       number_document: user.person.number_document ?? "",
@@ -187,7 +187,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
 
                 <FormField
                   control={form.control}
-                  name="rol"
+                  name="rol_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-normal">Roles</FormLabel>
@@ -227,7 +227,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="NATURAL">NATURAL</SelectItem>
+                            <SelectItem value="Individual">NATURAL</SelectItem>
                             <SelectItem value="JURIDICA">JURIDICA</SelectItem>
                           </SelectContent>
                         </Select>

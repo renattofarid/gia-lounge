@@ -171,8 +171,8 @@ export default function CreateStation({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="Mesa">Mesa</SelectItem>
-                        <SelectItem value="Box">Box</SelectItem>
+                        <SelectItem value="MESA">Mesa</SelectItem>
+                        <SelectItem value="BOX">Box</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />

@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 const UserSchema = z.object({
   username: z.string().nonempty(),
   password: z.string().nonempty(),
-  rol: z.string().optional(),
+  rol_id: z.string().optional(),
   type_document: z.enum(["", "DNI", "RUC", "CE"]),
   type_person: z.enum(["", "NATURAL", "JURIDICA"]),
   number_document: z.string().nonempty(),
@@ -43,7 +43,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
     defaultValues: {
       username: "",
       password: "",
-      rol: "",
+      rol_id: "",
       type_document: "",
       type_person: "",
       number_document: "",
@@ -188,14 +188,14 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
 
                 <FormField
                   control={form.control}
-                  name="rol"
+                  name="rol_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-normal">Roles</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                            <SelectValue placeholder="Seleccione tipo" />
+                            <SelectValue placeholder="Seleccione rol" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -228,8 +228,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="NATURAL">NATURAL</SelectItem>
-                            <SelectItem value="JURIDICA">JURIDICA</SelectItem>
+                            <SelectItem value="Individual">NATURAL</SelectItem>
+                            <SelectItem value="Juridica">JURIDICA</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
