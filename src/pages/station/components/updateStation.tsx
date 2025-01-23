@@ -45,7 +45,6 @@ interface AddStationProps {
 
 export default function UpdateStation({
   station,
-  environmentId,
   onClose,
 }: AddStationProps) {
   // const [previewImage, setPreviewImage] = useState<string | null>(null);
