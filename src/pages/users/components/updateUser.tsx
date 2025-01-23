@@ -44,7 +44,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
     defaultValues: {
       username: user.username ?? "",
       password: "",
-      rol_id: "", // change on API
+      rol_id: user.rol_id.toString(), // change on API
       type_document: user.person.type_document ?? "",
       type_person: user.person.type_person ?? "",
       number_document: user.person.number_document ?? "",
