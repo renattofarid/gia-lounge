@@ -191,9 +191,13 @@ export default function UserPage() {
                       {/* <div className="ps-7">{user.person.number_document}</div> */}
                     </TableCell>
                     <TableCell className="font-inter text-center py-2 px-2 text-sm">
-                      {typeof user.rol !== "string" && user.rol.name && (
-                        <Badge className="rounded-full">{user.rol.name}</Badge>
-                      )}
+                      {user.rol &&
+                        typeof user.rol !== "string" &&
+                        user.rol.name && (
+                          <Badge className="rounded-full">
+                            {user.rol.name}
+                          </Badge>
+                        )}
                     </TableCell>
                     <TableCell className="font-inter er py-2 px-2 text-sm">
                       <DropdownMenu>
