@@ -17,9 +17,9 @@ import { Skeleton } from "@/components/ui/skeleton"
 const UserSchema = z.object({
   username: z.string().nonempty(),
   password: z.string().nonempty(),
-  rol_id: z.string().optional(),
+  rol_id: z.string().nonempty(),
   type_document: z.enum(["", "DNI", "RUC", "CE"]),
-  type_person: z.enum(["", "NATURAL", "JURIDICA"]),
+  type_person: z.enum(["", "Individual", "JURIDICA"]),
   number_document: z.string().nonempty(),
   business_name: z.string().optional(),
   names: z.string().nonempty(),
@@ -68,12 +68,12 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
   useEffect(() => {
     const typePerson = form.getValues("type_person")
     if (typePerson) {
-      if (typePerson === "NATURAL") {
+      if (typePerson === "Individual") {
         form.setValue("type_document", "DNI")
       } else {
         form.setValue("type_document", "RUC")
       }
-      if (typePerson === "NATURAL") {
+      if (typePerson === "Individual") {
         form.setValue("business_name", "")
       } else {
         form.setValue("names", "")
@@ -125,7 +125,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
     }
   }
 
-  const typeDocumentOptions = form.getValues("type_person") === "NATURAL" ? ["DNI", "CE"] : ["RUC"]
+  const typeDocumentOptions = form.getValues("type_person") === "Individual" ? ["DNI", "CE"] : ["RUC"]
 
   if (loading) {
     return (
@@ -357,7 +357,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                     )}
                   />
 
-                  {form.getValues("type_person") === "NATURAL" ? (
+                  {form.getValues("type_person") === "Individual" ? (
                     <>
                       <FormField
                         control={form.control}

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -24,9 +24,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
+  environment_id: z.number(),
   description: z.string().optional(),
   type: z.string().nonempty(),
   status: z.string().nonempty(),
@@ -54,6 +57,7 @@ export default function CreateStation({
       type: "",
       description: "",
       status: "",
+      environment_id: environmentId,
     },
   });
 
@@ -69,6 +73,12 @@ export default function CreateStation({
   //   [form]
   // );
 
+  const { environments, loading, loadEnvironments } = useEnvironmentStore();
+
+  useEffect(() => {
+    loadEnvironments(1);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
@@ -79,7 +89,7 @@ export default function CreateStation({
         description: data.description ?? "",
         type: data.type,
         status: data.status,
-        environment_id: environmentId,
+        environment_id: Number(data.environment_id),
         // route: file ?? undefined,
       };
       await createStation(stationData);
@@ -92,15 +102,15 @@ export default function CreateStation({
     }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex flex-col gap-6 p-6 bg-secondary">
-  //       {[...Array(7)].map((_, i) => (
-  //         <Skeleton key={i} className="w-full h-4" />
-  //       ))}
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-secondary">
+        {[...Array(7)].map((_, i) => (
+          <Skeleton key={i} className="w-full h-4" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="p-2 ">
@@ -110,6 +120,44 @@ export default function CreateStation({
             {/* Formulario */}
             <div className="flex flex-col gap-4">
               <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
+                <FormField
+                  control={form.control}
+                  name="environment_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-normal">
+                        Salon
+                      </FormLabel>
+                      {/* <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value.toString()}
+                      > */}
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))} // Convierte a número
+                        defaultValue={
+                          field.value ? field.value.toString() : undefined
+                        } 
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccione salon" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {environments.map((environment) => (
+                            <SelectItem
+                              key={environment.id}
+                              value={environment.id.toString()}
+                            >
+                              {environment.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="name"
@@ -200,7 +248,9 @@ export default function CreateStation({
                       <SelectContent>
                         <SelectItem value="Disponible">Disponible</SelectItem>
                         <SelectItem value="Reservado">Reservado</SelectItem>
-                        <SelectItem value="Inhabilitado">Inhabilitado</SelectItem>
+                        <SelectItem value="Inhabilitado">
+                          Inhabilitado
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
