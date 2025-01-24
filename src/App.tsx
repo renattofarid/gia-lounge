@@ -8,6 +8,7 @@ import StationPage from "./pages/station/components/stationPage";
 import { ThemeProvider } from "next-themes";
 import { useAuthStore } from "./pages/auth/lib/auth.store";
 import HomePage from "./pages/home/components/Homepage";
+import ReservationsPage from "./pages/reservations/components/reservationsPage";
 
 // const isAuthenticated = () => {
 //   return localStorage.getItem("token") !== null; 
@@ -96,6 +97,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <StationPage />
+            </ProtectedRoute>
+          }
+        />
+         <Route
+          path="/empresas/reservas"
+          element={
+            <ProtectedRoute>
+              <ReservationsPage />
             </ProtectedRoute>
           }
         />
