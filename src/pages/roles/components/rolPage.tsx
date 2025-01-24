@@ -41,7 +41,7 @@ export default function RolPage() {
   ];
 
   // STORE
-  const { roles, loadRoles } = useRolStore();
+  const { roles, loadRoles, filter, setFilter } = useRolStore();
 
   // STATE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -95,6 +95,14 @@ export default function RolPage() {
     setIsUpdateDialogOpen(true);
   };
 
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.target.value);
+  };
+
+  const handleSearch = () => {
+    loadRoles(1);
+  };
+
   useEffect(() => {
     loadRoles(1);
   }, [loadRoles]);
@@ -116,10 +124,13 @@ export default function RolPage() {
                   <Input
                     placeholder="Buscar rol..."
                     className="sm:w-[300px] font-poopins text-sm"
+                    value={filter}
+                    onChange={handleFilterChange}
                   />
                   <Button
                     size="icon"
                     className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+                    onClick={handleSearch}
                   >
                     <Search className="min-w-4 min-h-4 text-secondary" />
                   </Button>

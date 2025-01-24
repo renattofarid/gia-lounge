@@ -217,7 +217,7 @@ export default function CompanyPage() {
           <DialogContent className="max-w-5xl p-6">
             <DialogHeader>
               <DialogTitle className="font-inter">
-                Actualizar Usuario
+                Actualizar Empresa
               </DialogTitle>
               <DialogDescription />
             </DialogHeader>

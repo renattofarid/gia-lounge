@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -17,7 +17,16 @@ import {
 import { errorToast, successToast } from "@/lib/core.function";
 import { updateStation } from "../lib/station.actions";
 import { StationItem, StationRequest } from "../lib/station.interface";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { LoaderCircle } from "lucide-react";
+import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
@@ -25,6 +34,7 @@ const StationSchema = z.object({
   type: z.string().nonempty(),
   status: z.string().nonempty(),
   route: z.string().optional(),
+  environment_id: z.number(),
 });
 
 interface AddStationProps {
@@ -35,7 +45,6 @@ interface AddStationProps {
 
 export default function UpdateStation({
   station,
-  environmentId,
   onClose,
 }: AddStationProps) {
   // const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -47,8 +56,10 @@ export default function UpdateStation({
     resolver: zodResolver(StationSchema),
     defaultValues: {
       name: station.name,
-      description: "",
-      status: "1",
+      description: station.description,
+      type: station.type,
+      status: station.status,
+      environment_id: station.environment_id,
     },
   });
 
@@ -64,53 +75,94 @@ export default function UpdateStation({
   //   [form]
   // );
 
+  const { environments, loading, loadEnvironments } = useEnvironmentStore();
+
+  useEffect(() => {
+    loadEnvironments(1);
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       setIsSending(true);
       const data = form.getValues();
-      const companyData: StationRequest = {
+      const stantionData: StationRequest = {
         name: data.name,
         description: data.description ?? "",
         type: data.type,
-        status: 1,
-        environment_id: environmentId,
+        status: data.status,
+        environment_id: Number(data.environment_id),
         // route: file ?? undefined,
       };
-      await updateStation(station.id, companyData);
-      successToast("Empresa guardada correctamente");
+      await updateStation(station.id, stantionData);
+      successToast("Mesa guardada correctamente");
       setIsSending(false);
       onClose();
     } catch (error) {
-      errorToast("Ocurrió un error al guardar la empresa");
+      errorToast("Ocurrió un error al guardar la mesa");
       setIsSending(false);
     }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex flex-col gap-6 p-6 bg-secondary">
-  //       {[...Array(7)].map((_, i) => (
-  //         <Skeleton key={i} className="w-full h-4" />
-  //       ))}
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-secondary">
+        {[...Array(7)].map((_, i) => (
+          <Skeleton key={i} className="w-full h-4" />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-secondary p-6">
+    <div className="p-2 ">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary rounded-lg">
             {/* Formulario */}
             <div className="flex flex-col gap-4">
-              <div className="w-full rounded-lg bg-secondary p-4 text-sm space-y-4 font-inter">
+              <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
+                <FormField
+                  control={form.control}
+                  name="environment_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-normal">
+                        Salon
+                      </FormLabel>
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))} // Convierte a número
+                        defaultValue={
+                          field.value ? field.value.toString() : undefined
+                        }
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccione salon" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {environments.map((environment) => (
+                            <SelectItem
+                              key={environment.id}
+                              value={environment.id.toString()}
+                            >
+                              {environment.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem className="relative">
-                      <FormLabel className="text-sm font-normal">
+                      <FormLabel className="text-sm font-medium">
                         Nombre
                       </FormLabel>
                       <FormControl>
@@ -132,7 +184,7 @@ export default function UpdateStation({
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">
+                      <FormLabel className="text-sm font-medium">
                         Descripción
                       </FormLabel>
                       <FormControl>
@@ -149,50 +201,105 @@ export default function UpdateStation({
               </div>
             </div>
 
-            {/* Image Upload Section */}
-            {/* <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4  rounded-lg p-4">
               <FormField
                 control={form.control}
-                name="route"
-                render={() => (
-                  <FormItem className="col-span-2">
-                    <FormLabel className="text-sm font-normal">
-                      Imagen de la empresa
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex flex-col items-start gap-4">
-                        <div className="flex-1">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          />
-                        </div>
-                        {previewImage && (
-                          <div className="relative size-32 border flex justify-center items-center overflow-hidden rounded-full">
-                            <img
-                              src={previewImage}
-                              alt="Preview"
-                              className="object-cover rounded-full"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Tipo</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      value={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                          <SelectValue placeholder="Seleccione tipo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="MESA">Mesa</SelectItem>
+                        <SelectItem value="BOX">Box</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div> */}
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Estado
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                          <SelectValue placeholder="Seleccione estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Disponible">Disponible</SelectItem>
+                        <SelectItem value="Reservado">Reservado</SelectItem>
+                        <SelectItem value="Inhabilitado">
+                          Inhabilitado
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
+              control={form.control}
+              name="route"
+              render={() => (
+                <FormItem className="col-span-2">
+                  <FormLabel className="text-sm font-medium">
+                    Imagen de la empresa
+                  </FormLabel>
+                  <FormControl>
+                    <div className="flex flex-col items-start gap-4">
+                      <div className="flex-1">
+                        <Input
+                          type="file"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                        />
+                      </div>
+                      {previewImage && (
+                        <div className="relative w-full flex justify-center items-center overflow-hidden rounded-full">
+                          <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="object-cover size-24 flex justify-center items-center rounded-full"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            /> */}
+            </div>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
-              type="button"
+              type="reset"
               onClick={onClose}
-              className="bg-foreground text-secondary font-inter hover:bg-foreground/95 hover:text-secondary text-sm"
+              className="bg-foreground text-white font-inter hover:bg-foreground/95 hover:text-white text-sm"
             >
               Cancelar
             </Button>
@@ -207,6 +314,7 @@ export default function UpdateStation({
               ) : null}
             </Button>
           </div>
+          <div className="flex justify-end gap-2"></div>
         </form>
       </Form>
     </div>

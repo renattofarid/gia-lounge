@@ -72,12 +72,12 @@ export default function CreateEnvironment({
         // route: file ?? undefined,
       };
       await createEnvironment(companyData);
-      successToast("Empresa guardada correctamente");
+      successToast("Salón guardada correctamente");
       setIsLoading(false);
       onClose();
-    } catch (error) {
-      errorToast("Ocurrió un error al guardar la empresa");
-      setIsLoading(false);
+    }catch (error: any) {
+      const errorMessage = error?.response?.data?.message || "Ocurrió un error al guardar el salón";
+      errorToast(errorMessage);
     }
   };
 
@@ -92,7 +92,7 @@ export default function CreateEnvironment({
   }
 
   return (
-    <div className="bg-secondary p-6">
+    <div className="p-6 rounded-lg">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 gap-6">

@@ -1,17 +1,19 @@
-import { create } from "zustand";
-import { Links, Meta } from "@/lib/global.interface";
-import { RolCollection, RolItem } from "./rol.interface";
-import { getRoles } from "./rol.actions";
+import { create } from "zustand"
+import type { Links, Meta } from "@/lib/global.interface"
+import type { RolCollection, RolItem } from "./rol.interface"
+import { getRoles } from "./rol.actions"
 
 interface RolStore {
-  roles: RolItem[];
-  links: Links;
-  meta: Meta;
-  loading: boolean;
-  loadRoles: (page: number) => void;
+  roles: RolItem[]
+  links: Links
+  meta: Meta
+  loading: boolean
+  filter: string
+  setFilter: (filter: string) => void
+  loadRoles: (page: number) => void
 }
 
-export const useRolStore = create<RolStore>((set) => ({
+export const useRolStore = create<RolStore>((set, get) => ({
   roles: [],
   links: {
     first: "",
@@ -30,14 +32,18 @@ export const useRolStore = create<RolStore>((set) => ({
     total: 0,
   },
   loading: false,
+  filter: "",
+  setFilter: (filter: string) => set({ filter }),
   loadRoles: async (page: number) => {
-    set(() => ({ loading: true }));
-    const response: RolCollection = await getRoles({ page });
+    set(() => ({ loading: true }))
+    const filter = get().filter
+    const response: RolCollection = await getRoles({ page, name: filter })
     set(() => ({
       roles: response.data,
       links: response.links,
       meta: response.meta,
       loading: false,
-    }));
+    }))
   },
-}));
+}))
+

@@ -1,65 +1,50 @@
-"use client";
+"use client"
 
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useEffect, useState } from "react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { DialogFooter } from "@/components/ui/dialog";
-import {
-  searchPersonByDNI,
-  searchPersonByRUC,
-  updateUser,
-} from "../lib/user.actions";
-import { errorToast, successToast } from "@/lib/core.function";
-import { useRolStore } from "@/pages/roles/lib/rol.store";
-import { Skeleton } from "@/components/ui/skeleton";
-import { UserItem } from "../lib/user.interface";
+import { z } from "zod"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useEffect, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { DialogFooter } from "@/components/ui/dialog"
+import { updateUser, searchPersonByDNI, searchPersonByRUC } from "../lib/user.actions"
+import { errorToast, successToast } from "@/lib/core.function"
+import { useRolStore } from "@/pages/roles/lib/rol.store"
+import { Skeleton } from "@/components/ui/skeleton"
+import { UserItem } from "../lib/user.interface"
 
 const UserSchema = z.object({
   username: z.string().nonempty(),
-  password: z.string().nonempty(),
-  rol: z.string().optional(),
-  type_document: z.enum(["DNI", "RUC", "CE"]),
-  type_person: z.enum(["NATURAL", "JURIDICA"]),
+  password: z.string().optional(), // Make password optional for editing
+  rol_id: z.string().optional(),
+  type_document: z.enum(["", "DNI", "RUC", "CE"]),
+  type_person: z.enum(["", "NATURAL", "JURIDICA"]),
   number_document: z.string().nonempty(),
   business_name: z.string().optional(),
   names: z.string().nonempty(),
   father_surname: z.string().optional(),
   mother_surname: z.string().optional(),
   address: z.string().nonempty(),
-  phone: z.string().nonempty(),
+  phone: z
+    .string()
+    .nonempty("El teléfono es obligatorio")
+    .regex(/^\d{9}$/, "El teléfono debe tener 9 dígitos"),
   email: z.string().email(),
-});
+})
 
 interface UpdateUserProps {
   onClose: () => void;
   user: UserItem;
 }
-
 export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
   const form = useForm<z.infer<typeof UserSchema>>({
     resolver: zodResolver(UserSchema),
     defaultValues: {
       username: user.username ?? "",
       password: "",
-      rol: "", // change on API
+      rol_id: user.rol_id.toString(), // change on API
       type_document: user.person.type_document ?? "",
       type_person: user.person.type_person ?? "",
       number_document: user.person.number_document ?? "",
@@ -71,55 +56,75 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
       phone: user.person.phone ?? "",
       email: user.person.email ?? "",
     },
-  });
+  })
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
 
-  const { roles, loading, loadRoles } = useRolStore();
+  const { roles, loading, loadRoles } = useRolStore()
 
   useEffect(() => {
-    loadRoles(1);
-  }, []);
+    loadRoles(1)
+  }, [])
+
+  useEffect(() => {
+    const typePerson = form.getValues("type_person")
+    if (typePerson) {
+      if (typePerson === "NATURAL") {
+        form.setValue("type_document", "DNI")
+      } else {
+        form.setValue("type_document", "RUC")
+      }
+      if (typePerson === "NATURAL") {
+        form.setValue("business_name", "")
+      } else {
+        form.setValue("names", "")
+        form.setValue("father_surname", "")
+        form.setValue("mother_surname", "")
+      }
+    }
+  }, [form.watch("type_person")])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault()
     try {
-      setIsLoading(true);
-      const data = form.getValues();
-      await updateUser(user.id, data);
-      successToast("Usuario guardado correctamente");
-      setIsLoading(false);
+      setIsLoading(true)
+      const data = form.getValues()
+      await updateUser(user.id, data)
+      successToast("Usuario actualizado correctamente")
+      setIsLoading(false)
     } catch (error) {
-      errorToast("Ocurrió un error al guardar el usuario");
+      errorToast("Ocurrió un error al actualizar el usuario")
     }
-    onClose();
-  };
+    onClose()
+  }
 
   const handleSearchPerson = async () => {
     try {
-      const typeDocument = form.getValues("type_document");
-      const number_document = form.getValues("number_document");
-      let person = null;
+      const typeDocument = form.getValues("type_document")
+      const number_document = form.getValues("number_document")
+      let person = null
       if (typeDocument === "DNI") {
-        person = await searchPersonByDNI(number_document);
-        form.setValue("names", person.nombres);
-        form.setValue("father_surname", person.apepat);
-        form.setValue("mother_surname", person.apemat);
+        person = await searchPersonByDNI(number_document)
+        form.setValue("names", person.nombres)
+        form.setValue("father_surname", person.apepat)
+        form.setValue("mother_surname", person.apemat)
       } else if (typeDocument === "RUC") {
-        person = await searchPersonByRUC(number_document);
-        form.setValue("business_name", person.RazonSocial);
-        form.setValue("names", person.RazonSocial);
-        form.setValue("address", person.Direccion);
+        person = await searchPersonByRUC(number_document)
+        form.setValue("business_name", person.RazonSocial)
+        form.setValue("names", person.RazonSocial)
+        form.setValue("address", person.Direccion)
       } else {
-        return;
+        return
       }
       if (person.code === 9) {
-        errorToast("No se encontró la persona");
+        errorToast("No se encontró la persona")
       }
     } catch (error) {
-      errorToast("No se encontró la persona");
+      errorToast("No se encontró la persona")
     }
-  };
+  }
+
+  const typeDocumentOptions = form.getValues("type_person") === "NATURAL" ? ["DNI", "CE"] : ["RUC"]
 
   if (loading) {
     return (
@@ -132,7 +137,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
         <Skeleton className="w-full h-4"></Skeleton>
         <Skeleton className="w-full h-4"></Skeleton>
       </div>
-    );
+    )
   }
 
   return (
@@ -148,9 +153,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                   name="username"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal font-poopins">
-                        Usuario
-                      </FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">Usuario</FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -168,14 +171,12 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">
-                        Contraseña
-                      </FormLabel>
+                      <FormLabel className="text-sm font-normal">Contraseña (opcional)</FormLabel>
                       <FormControl>
                         <Input
                           type="password"
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Contraseña"
+                          placeholder="Dejar en blanco para no cambiar"
                           {...field}
                         />
                       </FormControl>
@@ -186,16 +187,11 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
 
                 <FormField
                   control={form.control}
-                  name="rol"
+                  name="rol_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">
-                        Roles
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
+                      <FormLabel className="text-sm font-normal">Roles</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
                             <SelectValue placeholder="Seleccione tipo" />
@@ -223,20 +219,15 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                     name="type_person"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Tipo de persona
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                        <FormLabel className="text-sm font-normal">Tipo de persona</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                           <FormControl>
                             <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
                               <SelectValue placeholder="Seleccione tipo" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="NATURAL">NATURAL</SelectItem>
+                            <SelectItem value="Individual">NATURAL</SelectItem>
                             <SelectItem value="JURIDICA">JURIDICA</SelectItem>
                           </SelectContent>
                         </Select>
@@ -247,68 +238,24 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
 
                   <FormField
                     control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          E-mail
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            type="email"
-                            placeholder="E-mail"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
                     name="type_document"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Tipo de documento
-                        </FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
+                        <FormLabel className="text-sm font-normal">Tipo de documento</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
                               <SelectValue placeholder="Seleccione documento" />
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="DNI">DNI</SelectItem>
-                            <SelectItem value="RUC">RUC</SelectItem>
-                            <SelectItem value="CE">CE</SelectItem>
+                            {typeDocumentOptions.map((option) => (
+                              <SelectItem key={option} value={option}>
+                                {option}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Dirección
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Dirección"
-                            {...field}
-                          />
-                        </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -319,9 +266,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                     name="number_document"
                     render={({ field }) => (
                       <FormItem className="relative">
-                        <FormLabel className="text-sm font-normal">
-                          Número de documento
-                        </FormLabel>
+                        <FormLabel className="text-sm font-normal">Número de documento</FormLabel>
                         <FormControl>
                           <div className="relative">
                             <Input
@@ -331,8 +276,8 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                                 form.getValues("type_document") === "DNI"
                                   ? 8
                                   : form.getValues("type_document") === "RUC"
-                                  ? 11
-                                  : 15
+                                    ? 11
+                                    : 15
                               }
                               {...field}
                             />
@@ -357,16 +302,52 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
 
                   <FormField
                     control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal">Dirección</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Dirección"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal">E-mail</FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            type="email"
+                            placeholder="E-mail"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Teléfono
-                        </FormLabel>
+                        <FormLabel className="text-sm font-normal">Teléfono</FormLabel>
                         <FormControl>
                           <Input
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Teléfono"
+                            maxLength={9}
                             {...field}
                           />
                         </FormControl>
@@ -375,65 +356,80 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                     )}
                   />
 
-                  <FormField
-                    control={form.control}
-                    name="names"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Nombres / Razón Social
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombres"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {form.getValues("type_person") === "NATURAL" ? (
+                    <>
+                      <FormField
+                        control={form.control}
+                        name="names"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-normal">Nombres</FormLabel>
+                            <FormControl>
+                              <Input
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                                placeholder="Nombres"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
 
-                  <FormField
-                    control={form.control}
-                    name="father_surname"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Apellido Paterno
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombres"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="mother_surname"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-sm font-normal">
-                          Apellido Materno
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombres"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      <FormField
+                        control={form.control}
+                        name="father_surname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-normal">Apellido Paterno</FormLabel>
+                            <FormControl>
+                              <Input
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                                placeholder="Apellido Paterno"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="mother_surname"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-sm font-normal">Apellido Materno</FormLabel>
+                            <FormControl>
+                              <Input
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                                placeholder="Apellido Materno"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </>
+                  ) : (
+                    <FormField
+                      control={form.control}
+                      name="business_name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-normal">Razón Social</FormLabel>
+                          <FormControl>
+                            <Input
+                              className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              placeholder="Razón Social"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  )}
                 </div>
               </div>
             </div>
@@ -448,12 +444,8 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                 >
                   Cancelar
                 </Button>
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="bg-[#6366f1] hover:bg-[#818cf8]"
-                >
-                  Guardar
+                <Button type="submit" disabled={isLoading} className="bg-[#6366f1] hover:bg-[#818cf8]">
+                  Actualizar
                 </Button>
               </DialogFooter>
             </div>
@@ -461,5 +453,6 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
         </Form>
       </div>
     </div>
-  );
+  )
 }
+

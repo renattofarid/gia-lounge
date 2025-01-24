@@ -47,8 +47,10 @@ export default function CreateRolPage({ onClose }: AddRolProps) {
       await createRol(data);
       successToast("Rol guardado correctamente");
       onClose();
-    } catch (error) {
-      errorToast("Ocurrió un error al guardar el rol");
+    } catch (error: any) {
+      console.error("Error capturado:", error); 
+      const errorMessage = error?.response?.data?.message || "Ocurrió un error al guardar el rol";
+      errorToast(errorMessage);
     } finally {
       setIsSubmitting(false);
     }

@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
@@ -17,9 +17,19 @@ import {
 import { errorToast, successToast } from "@/lib/core.function";
 import { createStation } from "../lib/station.actions";
 import { StationRequest } from "../lib/station.interface";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
+  environment_id: z.number(),
   description: z.string().optional(),
   type: z.string().nonempty(),
   status: z.string().nonempty(),
@@ -35,31 +45,39 @@ export default function CreateStation({
   environmentId,
   onClose,
 }: AddStationProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  // const [previewImage, setPreviewImage] = useState<string | null>(null);
   // const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
+  // const [file, setFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof StationSchema>>({
     resolver: zodResolver(StationSchema),
     defaultValues: {
       name: "",
+      type: "",
       description: "",
-      status: "1",
+      status: "",
+      environment_id: environmentId,
     },
   });
 
-  const handleFileChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0];
-        const imageUrl = URL.createObjectURL(file);
-        setPreviewImage(imageUrl);
-        setFile(file);
-      }
-    },
-    [form]
-  );
+  // const handleFileChange = useCallback(
+  //   (event: React.ChangeEvent<HTMLInputElement>) => {
+  //     if (event.target.files && event.target.files[0]) {
+  //       const file = event.target.files[0];
+  //       const imageUrl = URL.createObjectURL(file);
+  //       setPreviewImage(imageUrl);
+  //       setFile(file);
+  //     }
+  //   },
+  //   [form]
+  // );
+
+  const { environments, loading, loadEnvironments } = useEnvironmentStore();
+
+  useEffect(() => {
+    loadEnvironments(1);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,9 +88,9 @@ export default function CreateStation({
         name: data.name,
         description: data.description ?? "",
         type: data.type,
-        status: 1,
-        environment_id: environmentId,
-        route: file ?? undefined,
+        status: data.status,
+        environment_id: Number(data.environment_id),
+        // route: file ?? undefined,
       };
       await createStation(stationData);
       successToast("Mesa guardada correctamente");
@@ -84,24 +102,62 @@ export default function CreateStation({
     }
   };
 
-  // if (isLoading) {
-  //   return (
-  //     <div className="flex flex-col gap-6 p-6 bg-secondary">
-  //       {[...Array(7)].map((_, i) => (
-  //         <Skeleton key={i} className="w-full h-4" />
-  //       ))}
-  //     </div>
-  //   );
-  // }
+  if (loading) {
+    return (
+      <div className="flex flex-col gap-6 p-6 bg-secondary">
+        {[...Array(7)].map((_, i) => (
+          <Skeleton key={i} className="w-full h-4" />
+        ))}
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-secondary p-2">
+    <div className="p-2 ">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary rounded-lg">
             {/* Formulario */}
             <div className="flex flex-col gap-4">
-              <div className="w-full rounded-lg bg-secondary p-4 text-sm space-y-4 font-inter">
+              <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
+                <FormField
+                  control={form.control}
+                  name="environment_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-normal">
+                        Salon
+                      </FormLabel>
+                      {/* <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value.toString()}
+                      > */}
+                      <Select
+                        onValueChange={(value) => field.onChange(Number(value))} // Convierte a número
+                        defaultValue={
+                          field.value ? field.value.toString() : undefined
+                        } 
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccione salon" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {environments.map((environment) => (
+                            <SelectItem
+                              key={environment.id}
+                              value={environment.id.toString()}
+                            >
+                              {environment.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
                 <FormField
                   control={form.control}
                   name="name"
@@ -143,32 +199,66 @@ export default function CreateStation({
                     </FormItem>
                   )}
                 />
-
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-medium">
-                        Tipo
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Tipo"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
               </div>
             </div>
 
-            {/* Image Upload Section */}
-            <div className="flex flex-col gap-4 bg-secondary rounded-lg p-4">
+            <div className="flex flex-col gap-4  rounded-lg p-4">
               <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Tipo</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                          <SelectValue placeholder="Seleccione tipo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="MESA">Mesa</SelectItem>
+                        <SelectItem value="BOX">Box</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">
+                      Estado
+                    </FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                          <SelectValue placeholder="Seleccione estado" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Disponible">Disponible</SelectItem>
+                        <SelectItem value="Reservado">Reservado</SelectItem>
+                        <SelectItem value="Inhabilitado">
+                          Inhabilitado
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
                 control={form.control}
                 name="route"
                 render={() => (
@@ -200,7 +290,7 @@ export default function CreateStation({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
           </div>
 

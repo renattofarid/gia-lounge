@@ -9,16 +9,19 @@ import {
 export interface getRolesProps {
   page: number;
   per_page?: number;
+  name?: string;
 }
 
 export const getRoles = async ({
   page,
   per_page,
+  name,
 }: getRolesProps): Promise<RolCollection> => {
   const config: AxiosRequestConfig = {
     params: {
       page,
       per_page,
+      name,
     },
   };
   const response = await api.get(`/rol`, config);
