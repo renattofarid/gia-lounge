@@ -152,7 +152,6 @@ export default function StationPage() {
             </Select>
           </div>
 
-          {/* Lista de Mesas */}
           <Table className="">
             <TableHeader>
               <TableRow>
