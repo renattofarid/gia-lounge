@@ -110,7 +110,7 @@ export default function App() {
           }
         />
          <Route
-          path="/eventos/reservas"
+          path="/eventos/reservas/:eventId"
           element={
             <ProtectedRoute>
               <ReservationsPage />

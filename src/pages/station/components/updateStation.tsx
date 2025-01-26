@@ -37,7 +37,7 @@ const StationSchema = z.object({
   environment_id: z.number(),
 });
 
-interface AddStationProps {
+interface UpdateStationProps {
   station: StationItem;
   environmentId: number;
   onClose: () => void;
@@ -46,7 +46,7 @@ interface AddStationProps {
 export default function UpdateStation({
   station,
   onClose,
-}: AddStationProps) {
+}: UpdateStationProps) {
   // const [previewImage, setPreviewImage] = useState<string | null>(null);
   // const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
