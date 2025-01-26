@@ -63,12 +63,16 @@ export default function CompanyPage() {
 
   const handleConfirm = () => {
     if (selectedCompany) {
+      localStorage.setItem("companyId", String(selectedCompany));
       console.log("Empresa seleccionada:", selectedCompany);
+  
       navigate(`/empresas/salones/${selectedCompany}`);
+      successToast("Empresa seleccionada correctamente.");
     } else {
       errorToast("Por favor, selecciona una empresa.");
     }
   };
+  
 
   const handleClickUpdate = (company: CompanyItem) => {
     setCompanyUpdate(company);

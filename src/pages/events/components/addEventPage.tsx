@@ -114,7 +114,7 @@ export default function CreateEvent({ onClose }: AddEventProps) {
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
             {/* Campos del formulario */}
             <div className="flex flex-col gap-6">
-              <div className="w-full space-y-4 rounded-lg bg-secondary p-4 text-sm">
+              <div className="w-full space-y-4 rounded-lg bg-secondary p-6 text-sm">
                 <FormField
                   control={form.control}
                   name="name"
@@ -141,7 +141,7 @@ export default function CreateEvent({ onClose }: AddEventProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-normal font-poopins">
-                        Comentario
+                      Comentario
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -160,19 +160,19 @@ export default function CreateEvent({ onClose }: AddEventProps) {
                   name="event_datetime"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Seleccionar fecha y hora</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">Seleccionar fecha y hora</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
                               variant={"outline"}
                               className={cn(
-                                "w-full pl-3 text-left font-normal",
+                                "w-full pl-3 text-left font-normal bg-secondary border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins",
                                 !field.value && "text-muted-foreground"
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "MM/dd/yyyy HH:mm")
+                                format(field.value, "dd/MM/yyyy HH:mm")
                               ) : (
                                 <span>MM/DD/YYYY HH:mm</span>
                               )}

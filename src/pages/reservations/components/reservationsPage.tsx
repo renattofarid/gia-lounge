@@ -8,10 +8,11 @@ import { Button } from "@/components/ui/button";
 //   DropdownMenuItem,
 //   DropdownMenuTrigger,
 // } from "@/components/ui/dropdown-menu";
-import { Search, Download } from "lucide-react";
+import { Search, Download, Badge, MoreVertical } from "lucide-react";
 import {
   Table,
   TableBody,
+  TableCell,
   // TableCell,
   TableHead,
   TableHeader,
@@ -32,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEventStore } from "@/pages/events/lib/event.store";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 // Mock data for reservations
 
@@ -100,7 +102,8 @@ export default function ReservationsPage() {
           <div>
             <h1 className="text-2xl font-bold font-inter">Reservas</h1>
             <p className="text-gray-500 text-base font-inter">
-              Gestione las reservas del evento : {eventId}.
+            Gestione las reservas del evento:{" "}
+            {Array.isArray(events) && events.find((event) => event.id === Number(eventId))?.name || "Evento no encontrado"}.
             </p>
           </div>
 
@@ -201,21 +204,21 @@ export default function ReservationsPage() {
           <TableBody>
             {reservations.map((reservation) => (
               <TableRow key={reservation.id}>
-                {/* <TableCell className="font-inter py-2 px-2 text-sm">{reservation.id}</TableCell>
+               <TableCell className="font-inter py-2 px-2 text-sm">{reservation.id}</TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">{reservation.name}</TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.date}</TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.people}</TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.reservation_datetime}</TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.person.names}</TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">
-                  <input type="checkbox" className="rounded border-gray-300" checked={reservation.hasMesa} readOnly />
+                  {/* <input type="checkbox" className="rounded border-gray-300" checked={reservation.} readOnly /> */}
                 </TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">
-                  <input type="checkbox" className="rounded border-gray-300" checked={reservation.hasBox} readOnly />
+                  {/* <input type="checkbox" className="rounded border-gray-300" checked={reservation.hasBox} readOnly /> */}
                 </TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.box}</TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.station.name}</TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">
                   <Badge className="text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE]">{reservation.status}</Badge>
-                </TableCell> */}
-                {/* <TableCell className="font-inter text-right py-2 px-2 text-sm">
+                </TableCell>
+                <TableCell className="font-inter text-right py-2 px-2 text-sm">
                   <div className="flex justify-end gap-2">
                     <Button variant="ghost" size="icon" className="bg-transparent hover:bg-gray-100">
                       <Download className="h-4 w-4" />
@@ -236,7 +239,7 @@ export default function ReservationsPage() {
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
-                </TableCell> */}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

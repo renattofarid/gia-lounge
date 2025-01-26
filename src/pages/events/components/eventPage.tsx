@@ -33,9 +33,12 @@ import CreateEvent from "./addEventPage";
 import DeleteDialog from "@/components/delete-dialog";
 import { errorToast, successToast } from "@/lib/core.function";
 import { deleteEvent } from "../lib/event.actions";
-import UpdateEventPage from "./updateEventPage";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import UpdateEvent from "./updateEventPage";
 
 export default function EventPage() {
+
   const options = [
     { name: "Empresas", link: "/empresas" },
     { name: "Salones", link: "/empresas/salones" },
@@ -45,63 +48,63 @@ export default function EventPage() {
     // { name: "Entradas", link: "/eventos/entradas" },
   ];
 
-  // STORE
-  const { events, loadEvents, filter, setFilter } = useEventStore();
+  const { events, loadEvents, filter, setFilter } = useEventStore()
 
   // NAVIGATOR
-  const navigator = useNavigate();
+  const navigator = useNavigate()
 
   // STATE
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
-  const [eventSelected, setEventSelected] = useState({} as EventItem);
-  const [idSelected, setIdSelected] = useState(0);
+  const [eventSelected, setEventSelected] = useState({} as EventItem)
+  const [idSelected, setIdSelected] = useState(0)
 
   const handleClose = () => {
-    setIsAddDialogOpen(false);
-    loadEvents(1);
-  };
+    setIsAddDialogOpen(false)
+    loadEvents(1)
+  }
 
   const handleUpdateClose = () => {
-    setIsUpdateDialogOpen(false);
-    loadEvents(1);
-  };
+    setIsUpdateDialogOpen(false)
+    loadEvents(1)
+  }
 
   const handleClickDelete = (id: number) => {
-    setIsDeleteDialogOpen(true);
-    setIdSelected(id);
-  };
+    setIsDeleteDialogOpen(true)
+    setIdSelected(id)
+  }
 
   const handleDelete = async () => {
     try {
       await deleteEvent(idSelected).then(() => {
-        setIsDeleteDialogOpen(false);
-        successToast("Evento eliminado correctamente");
-        loadEvents(1);
-      });
+        setIsDeleteDialogOpen(false)
+        successToast("Evento eliminado correctamente")
+        loadEvents(1)
+      })
     } catch (error) {
-      errorToast("Error al eliminar el evento");
+      errorToast("Error al eliminar el evento")
     }
-  };
+  }
 
   const handleClickUpdate = (event: EventItem) => {
-    setEventSelected(event);
-    setIsUpdateDialogOpen(true);
-  };
+    setEventSelected(event)
+    setIsUpdateDialogOpen(true)
+  }
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
-  };
+    const value = e.target.value
+    setFilter(value)
+  }
 
   const handleSearch = () => {
-    loadEvents(1);
-  };
+    loadEvents(1)
+  }
 
   useEffect(() => {
-    loadEvents(1);
-  }, [loadEvents]);
+    loadEvents(1)
+  }, [loadEvents])
 
   return (
     <Layout options={options}>
@@ -134,6 +137,7 @@ export default function EventPage() {
                 <Dialog
                   open={isAddDialogOpen}
                   onOpenChange={setIsAddDialogOpen}
+                  modal={false}
                 >
                   <DialogTrigger asChild>
                     <Button
@@ -143,7 +147,7 @@ export default function EventPage() {
                       Agregar evento
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-3xl p-6">
+                  <DialogContent className="max-w-2xl p-6">
                     <DialogHeader>
                       <DialogTitle className="font-inter">
                         Agregar Evento
@@ -194,7 +198,8 @@ export default function EventPage() {
                 {events.map((event) => (
                   <TableRow key={event.id}>
                     <div className="flex gap-2 justify-start items-center text-sm font-inter py-2 px-2">
-                      <Calendar className="w-5 h-5" /> {event.event_datetime}
+                      <Calendar className="w-5 h-5" /> 
+                       {format(new Date(event.event_datetime), "dd 'de' MMMM 'del' yyyy 'a las' HH:mm", { locale: es })}
                     </div>
                     <TableCell className="font-inter text-center py-2 px-2 text-sm">
                       {event.name}
@@ -259,7 +264,7 @@ export default function EventPage() {
             </Table>
           </div>
         </div>
-        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen} modal={false}>
           <DialogContent className="max-w-5xl p-6">
             <DialogHeader>
               <DialogTitle className="font-inter">
@@ -267,7 +272,7 @@ export default function EventPage() {
               </DialogTitle>
               <DialogDescription />
             </DialogHeader>
-            <UpdateEventPage
+            <UpdateEvent
               onClose={handleUpdateClose}
               event={eventSelected}
             />

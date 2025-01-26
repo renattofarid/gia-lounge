@@ -6,16 +6,19 @@ import { EventCollection } from "./event.interface";
 export interface getEventsProps {
   page: number;
   name?: string;
+  companyId: number;
 }
 
 export const getEvents = async ({
   page,
   name,
+  companyId,  
 }: getEventsProps): Promise<EventCollection> => {
   const config: AxiosRequestConfig = {
     params: {
       page,
       name,
+      company_id : companyId
     },
   };
   const response = await api.get(`/event`, config);
@@ -34,7 +37,7 @@ export const createEvent = async (data: any) => {
 };
 
 export const updateEvent = async (id: number, data: any) => {
-  const response = await api.put(`/event/${id}`, data);
+  const response = await api.post(`/event/${id}`, data);
   return response.data;
 };
 

@@ -4,9 +4,11 @@ import { CompanyCollection, CompanyItem } from "./company.interface";
 import { getCompanys } from "./company.actions";
 
 interface CompanyStore {
- companies:CompanyItem[];
+  companies: CompanyItem[];
   links: Links;
   meta: Meta;
+  companyId: number;
+  setCompanyId: (id: number) => void;
   loading: boolean;
   loadCompanies: (page: number) => void;
 }
@@ -29,16 +31,19 @@ export const useComapanyStore = create<CompanyStore>((set) => ({
     to: 0,
     total: 0,
   },
+  companyId: 0,
+  setCompanyId: (id: number) => {
+    set(() => ({ companyId: id }));
+  },
   loading: false,
   loadCompanies: async (page: number) => {
     set(() => ({ loading: true }));
-    const response:CompanyCollection = await getCompanys({ page });
+    const response: CompanyCollection = await getCompanys({ page });
     set(() => ({
-     companies: response.data,
+      companies: response.data,
       links: response.links,
       meta: response.meta,
       loading: false,
     }));
   },
 }));
-

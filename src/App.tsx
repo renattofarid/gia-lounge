@@ -83,8 +83,10 @@ export default function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="/empresas/salones" element={<EnvironmentPage />} />
-        <Route path="/empresas/mesas" element={<StationPage />} />
+        <Route path="/empresas/salones" element={<Navigate to="/empresas" />} />
+        <Route path="/empresas/mesas" element={<Navigate to="/empresas" />} />
+        <Route path="/empresas/eventos" element={<Navigate to="/empresas" />} />
+
         <Route
           path="/empresas/salones/:companyId"
           element={
@@ -102,7 +104,7 @@ export default function App() {
           }
         />
          <Route
-          path="/empresas/eventos"
+          path="/empresas/eventos/:companyId"
           element={
             <ProtectedRoute>
               <EventPage />
