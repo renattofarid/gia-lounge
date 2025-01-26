@@ -1,16 +1,16 @@
-import { create } from "zustand"
-import type { Links, Meta } from "@/lib/global.interface"
-import type { EventCollection, EventItem } from "./event.interface"
-import { getEvents } from "./event.actions"
+import { create } from "zustand";
+import type { Links, Meta } from "@/lib/global.interface";
+import type { EventCollection, EventItem } from "./event.interface";
+import { getEvents } from "./event.actions";
 
 interface EventStore {
-  events: EventItem[]
-  links: Links
-  meta: Meta
-  loading: boolean
-  filter: string
-  setFilter: (filter: string) => void
-  loadEvents: (page: number) => void
+  events: EventItem[];
+  links: Links;
+  meta: Meta;
+  loading: boolean;
+  filter: string;
+  setFilter: (filter: string) => void;
+  loadEvents: (page: number) => void;
 }
 
 export const useEventStore = create<EventStore>((set, get) => ({
@@ -35,32 +35,31 @@ export const useEventStore = create<EventStore>((set, get) => ({
   filter: "",
   setFilter: (filter: string) => set({ filter }),
   loadEvents: async (page: number) => {
-    set(() => ({ loading: true }))
+    set(() => ({ loading: true }));
     try {
-      const filter = get().filter
+      const filter = get().filter;
 
       // Always use companyId from localStorage
-      const companyId = Number(localStorage.getItem("companyId"))
+      const companyId = Number(localStorage.getItem("companyId"));
       if (isNaN(companyId)) {
-        throw new Error("El companyId no es un número válido")
+        throw new Error("El companyId no es un número válido");
       }
 
       const response: EventCollection = await getEvents({
         page,
         companyId,
         name: filter,
-      })
+      });
 
       set(() => ({
         events: response.data,
         links: response.links,
         meta: response.meta,
         loading: false,
-      }))
+      }));
     } catch (error) {
-      console.error("Error al cargar los eventos:", error)
-      set(() => ({ loading: false }))
+      console.error("Error al cargar los eventos:", error);
+      set(() => ({ loading: false }));
     }
   },
-}))
-
+}));
