@@ -1,6 +1,6 @@
-import Layout from "@/components/layouts/layout"
-import { useEffect, useState } from "react"
-import { Button } from "@/components/ui/button"
+import Layout from "@/components/layouts/layout";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,20 +8,32 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Calendar, MoreVertical, Search } from "lucide-react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { useNavigate } from "react-router-dom"
-import { useEventStore } from "../lib/event.store"
-import type { EventItem } from "../lib/event.interface"
-import CreateEvent from "./addEventPage"
-import DeleteDialog from "@/components/delete-dialog"
-import { errorToast, successToast } from "@/lib/core.function"
-import { deleteEvent } from "../lib/event.actions"
-import UpdateEventPage from "./updateEventPage"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Calendar, MoreVertical, Search } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useEventStore } from "../lib/event.store";
+import type { EventItem } from "../lib/event.interface";
+import CreateEvent from "./addEventPage";
+import DeleteDialog from "@/components/delete-dialog";
+import { errorToast, successToast } from "@/lib/core.function";
+import { deleteEvent } from "../lib/event.actions";
+import UpdateEventPage from "./updateEventPage";
 
 export default function EventPage() {
   const options = [
@@ -31,26 +43,26 @@ export default function EventPage() {
     { name: "Eventos", link: "/empresas/eventos" },
     // { name: "Reservas", link: "/eventos/reservas" },
     // { name: "Entradas", link: "/eventos/entradas" },
-  ]
+  ];
 
   // STORE
-  const { events, loadEvents, filter, setFilter } = useEventStore()
+  const { events, loadEvents, filter, setFilter } = useEventStore();
 
   // NAVIGATOR
-  const navigator = useNavigate()
+  const navigator = useNavigate();
 
   // STATE
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const [eventSelected, setEventSelected] = useState({} as EventItem)
-  const [idSelected, setIdSelected] = useState(0)
+  const [eventSelected, setEventSelected] = useState({} as EventItem);
+  const [idSelected, setIdSelected] = useState(0);
 
   const handleClose = () => {
-    setIsAddDialogOpen(false)
-    loadEvents(1)
-  }
+    setIsAddDialogOpen(false);
+    loadEvents(1);
+  };
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
@@ -58,21 +70,21 @@ export default function EventPage() {
   };
 
   const handleClickDelete = (id: number) => {
-    setIsDeleteDialogOpen(true)
-    setIdSelected(id)
-  }
+    setIsDeleteDialogOpen(true);
+    setIdSelected(id);
+  };
 
   const handleDelete = async () => {
     try {
       await deleteEvent(idSelected).then(() => {
-        setIsDeleteDialogOpen(false)
-        successToast("Evento eliminado correctamente")
-        loadEvents(1)
-      })
+        setIsDeleteDialogOpen(false);
+        successToast("Evento eliminado correctamente");
+        loadEvents(1);
+      });
     } catch (error) {
-      errorToast("Error al eliminar el evento")
+      errorToast("Error al eliminar el evento");
     }
-  }
+  };
 
   const handleClickUpdate = (event: EventItem) => {
     setEventSelected(event);
@@ -80,16 +92,16 @@ export default function EventPage() {
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value)
-  }
+    setFilter(e.target.value);
+  };
 
   const handleSearch = () => {
-    loadEvents(1)
-  }
+    loadEvents(1);
+  };
 
   useEffect(() => {
-    loadEvents(1)
-  }, [loadEvents])
+    loadEvents(1);
+  }, [loadEvents]);
 
   return (
     <Layout options={options}>
@@ -98,7 +110,9 @@ export default function EventPage() {
           <div className="flex flex-col sm:flex-row w-full gap-2">
             <div className="w-full flex flex-col">
               <h1 className="text-2xl font-bold font-inter">Eventos</h1>
-              <p className="text-gray-500 font-inter text-sm">Gestionar todos los eventos del mes</p>
+              <p className="text-gray-500 font-inter text-sm">
+                Gestionar todos los eventos del mes
+              </p>
             </div>
             <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full">
               <div className="flex gap-2 flex-col sm:flex-row w-full justify-end">
@@ -117,7 +131,10 @@ export default function EventPage() {
                     <Search className="min-w-4 min-h-4 text-secondary" />
                   </Button>
                 </div>
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <Dialog
+                  open={isAddDialogOpen}
+                  onOpenChange={setIsAddDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button
                       className="bg-violet-500 hover:bg-violet-600 font-inter"
@@ -128,7 +145,9 @@ export default function EventPage() {
                   </DialogTrigger>
                   <DialogContent className="max-w-3xl p-6">
                     <DialogHeader>
-                      <DialogTitle className="font-inter">Agregar Evento</DialogTitle>
+                      <DialogTitle className="font-inter">
+                        Agregar Evento
+                      </DialogTitle>
                     </DialogHeader>
                     <CreateEvent onClose={handleClose} />
                   </DialogContent>
@@ -157,12 +176,18 @@ export default function EventPage() {
             <Table className="">
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">Fecha</TableHead>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Fecha
+                  </TableHead>
                   <TableHead className="font-inter text-base text-foreground text-center p-2">
                     Nombre del Evento
                   </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">Comentario</TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">Estado</TableHead>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Comentario
+                  </TableHead>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Estado
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -171,14 +196,18 @@ export default function EventPage() {
                     <div className="flex gap-2 justify-start items-center text-sm font-inter py-2 px-2">
                       <Calendar className="w-5 h-5" /> {event.event_datetime}
                     </div>
-                    <TableCell className="font-inter text-center py-2 px-2 text-sm">{event.name}</TableCell>
-                    <TableCell className="font-inter text-center py-2 px-2 text-sm">{event.comment}</TableCell>
+                    <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                      {event.name}
+                    </TableCell>
+                    <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                      {event.comment}
+                    </TableCell>
                     <TableCell className="font-inter text-center py-2 px-2 text-sm">
                       <Badge
                         className={`${
-                          event.status === "Proximó"
-                            ? "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5]"
-                            : "text-[#7A37B8] bg-[#7A37B84F] hover:bg-[#7A37B8] hover:text-white"
+                          event.status === "Próximo"
+                            ? "text-[#7A37B8] bg-[#7A37B84F] hover:bg-[#7A37B8] hover:text-white"
+                            : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5]"
                         }`}
                       >
                         {event.status}
@@ -187,7 +216,11 @@ export default function EventPage() {
                     <TableCell className="font-inter er py-2 px-2 text-sm">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon" className="bg-transparent hover:bg-gray-100">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="bg-transparent hover:bg-gray-100"
+                          >
                             <MoreVertical className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
@@ -211,7 +244,9 @@ export default function EventPage() {
                           {/* Detalles opción */}
                           <DropdownMenuItem
                             className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => navigator(`/eventos/reservas/${event.id}`)}
+                            onClick={() =>
+                              navigator(`/eventos/reservas/${event.id}`)
+                            }
                           >
                             <span>Detalles</span>
                           </DropdownMenuItem>
@@ -227,10 +262,15 @@ export default function EventPage() {
         <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
           <DialogContent className="max-w-5xl p-6">
             <DialogHeader>
-              <DialogTitle className="font-inter">Actualizar Evento</DialogTitle>
+              <DialogTitle className="font-inter">
+                Actualizar Evento
+              </DialogTitle>
               <DialogDescription />
             </DialogHeader>
-            <UpdateEventPage onClose={handleUpdateClose} event={eventSelected} />
+            <UpdateEventPage
+              onClose={handleUpdateClose}
+              event={eventSelected}
+            />
           </DialogContent>
         </Dialog>
 
@@ -241,6 +281,5 @@ export default function EventPage() {
         />
       </div>
     </Layout>
-  )
+  );
 }
-

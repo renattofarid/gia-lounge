@@ -31,6 +31,8 @@ import {
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 const EventSchema = z.object({
   name: z.string().nonempty("El nombre es obligatorio"),
@@ -55,13 +57,34 @@ export default function CreateEvent({ onClose }: AddEventProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { loading } = useEventStore();
 
+  function handleDateSelect(date: Date | undefined) {
+    if (date) {
+      form.setValue("event_datetime", date);
+    }
+  }
+ 
+  function handleTimeChange(type: "hour" | "minute", value: string) {
+    const currentDate = form.getValues("event_datetime") || new Date();
+    let newDate = new Date(currentDate);
+ 
+    if (type === "hour") {
+      const hour = parseInt(value, 10);
+      newDate.setHours(hour);
+    } else if (type === "minute") {
+      newDate.setMinutes(parseInt(value, 10));
+    }
+ 
+    form.setValue("event_datetime", newDate);
+  }
+ 
+
   const handleFormSubmit = async (data: z.infer<typeof EventSchema>) => {
     try {
-      const formattedDate = format(data.event_datetime, "yyyy-MM-dd");
+      const formattedDate = format(data.event_datetime, "yyyy-MM-dd HH:mm");
       const payload = { ...data, event_datetime: formattedDate };
 
       setIsSubmitting(true);
-      await createEvent(payload); // Enviar el payload formateado
+      await createEvent(payload); 
       successToast("Evento guardado correctamente");
       onClose();
     } catch (error: any) {
@@ -136,32 +159,106 @@ export default function CreateEvent({ onClose }: AddEventProps) {
                   control={form.control}
                   name="event_datetime"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col w-full">
-                      <FormLabel className="text-sm font-normal font-poopins">
-                        Fecha
-                      </FormLabel>
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Enter your date & time (24h)</FormLabel>
                       <Popover>
-                        <PopoverTrigger className="h-9" asChild>
+                        <PopoverTrigger asChild>
                           <FormControl>
-                            <Button className="w-full bg-secondary border-[#9A7FFF]" variant="outline" >
-                              {field.value ? (
-                                format(field.value, "dd/MM/yyyy") // Mostrar la fecha en formato legible
-                              ) : (
-                                <span>Seleccionar fecha</span>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
                               )}
-                              <CalendarIcon className="ml-auto h-4 w-4" />
+                            >
+                              {field.value ? (
+                                format(field.value, "MM/dd/yyyy HH:mm")
+                              ) : (
+                                <span>MM/DD/YYYY HH:mm</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            initialFocus
-                          />
+                        <PopoverContent className="w-auto p-0">
+                          <div className="sm:flex">
+                            <Calendar
+                              mode="single"
+                              selected={field.value}
+                              onSelect={handleDateSelect}
+                              initialFocus
+                            />
+                            <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
+                              <ScrollArea className="w-64 sm:w-auto">
+                                <div className="flex sm:flex-col p-2">
+                                  {Array.from({ length: 24 }, (_, i) => i)
+                                    .reverse()
+                                    .map((hour) => (
+                                      <Button
+                                        key={hour}
+                                        size="icon"
+                                        variant={
+                                          field.value &&
+                                          field.value.getHours() === hour
+                                            ? "default"
+                                            : "ghost"
+                                        }
+                                        className="sm:w-full shrink-0 aspect-square"
+                                        onClick={() =>
+                                          handleTimeChange(
+                                            "hour",
+                                            hour.toString()
+                                          )
+                                        }
+                                      >
+                                        {hour}
+                                      </Button>
+                                    ))}
+                                </div>
+                                <ScrollBar
+                                  orientation="horizontal"
+                                  className="sm:hidden"
+                                />
+                              </ScrollArea>
+                              <ScrollArea className="w-64 sm:w-auto">
+                                <div className="flex sm:flex-col p-2">
+                                  {Array.from(
+                                    { length: 12 },
+                                    (_, i) => i * 5
+                                  ).map((minute) => (
+                                    <Button
+                                      key={minute}
+                                      size="icon"
+                                      variant={
+                                        field.value &&
+                                        field.value.getMinutes() === minute
+                                          ? "default"
+                                          : "ghost"
+                                      }
+                                      className="sm:w-full shrink-0 aspect-square"
+                                      onClick={() =>
+                                        handleTimeChange(
+                                          "minute",
+                                          minute.toString()
+                                        )
+                                      }
+                                    >
+                                      {minute.toString().padStart(2, "0")}
+                                    </Button>
+                                  ))}
+                                </div>
+                                <ScrollBar
+                                  orientation="horizontal"
+                                  className="sm:hidden"
+                                />
+                              </ScrollArea>
+                            </div>
+                          </div>
                         </PopoverContent>
                       </Popover>
+                      {/* <FormDescription>
+                Please select your preferred date and time.
+              </FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
