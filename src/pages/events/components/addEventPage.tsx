@@ -160,7 +160,7 @@ export default function CreateEvent({ onClose }: AddEventProps) {
                   name="event_datetime"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Enter your date & time (24h)</FormLabel>
+                      <FormLabel>Seleccionar fecha y hora</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
