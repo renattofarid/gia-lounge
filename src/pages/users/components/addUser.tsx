@@ -19,7 +19,7 @@ const UserSchema = z.object({
   password: z.string().nonempty(),
   rol_id: z.string().nonempty(),
   type_document: z.enum(["", "DNI", "RUC", "CE"]),
-  type_person: z.enum(["", "Individual", "JURIDICA"]),
+  type_person: z.enum(["", "NATURAL", "JURIDICA"]),
   number_document: z.string().nonempty(),
   business_name: z.string().optional(),
   names: z.string().nonempty(),
@@ -68,12 +68,12 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
   useEffect(() => {
     const typePerson = form.getValues("type_person")
     if (typePerson) {
-      if (typePerson === "Individual") {
+      if (typePerson === "NATURAL") {
         form.setValue("type_document", "DNI")
       } else {
         form.setValue("type_document", "RUC")
       }
-      if (typePerson === "Individual") {
+      if (typePerson === "NATURAL") {
         form.setValue("business_name", "")
       } else {
         form.setValue("names", "")
@@ -125,7 +125,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
     }
   }
 
-  const typeDocumentOptions = form.getValues("type_person") === "Individual" ? ["DNI", "CE"] : ["RUC"]
+  const typeDocumentOptions = form.getValues("type_person") === "NATURAL" ? ["DNI", "CE"] : ["RUC"]
 
   if (loading) {
     return (
@@ -228,8 +228,8 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Individual">NATURAL</SelectItem>
-                            <SelectItem value="Juridica">JURIDICA</SelectItem>
+                            <SelectItem value="NATURAL">NATURAL</SelectItem>
+                            <SelectItem value="JURIDICA">JURIDICA</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />
@@ -357,7 +357,7 @@ export default function CreateUserPage({ onClose }: AddUserProps) {
                     )}
                   />
 
-                  {form.getValues("type_person") === "Individual" ? (
+                  {form.getValues("type_person") === "NATURAL" ? (
                     <>
                       <FormField
                         control={form.control}

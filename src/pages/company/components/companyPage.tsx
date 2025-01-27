@@ -31,6 +31,7 @@ export default function CompanyPage() {
     { name: "Empresas", link: "/empresas" },
     { name: "Salones", link: "/empresas/salones" },
     { name: "Mesas/Box", link: "/empresas/mesas" },
+    { name: "Eventos", link: "/empresas/eventos" },
   ];
 
   //STORE
@@ -62,8 +63,11 @@ export default function CompanyPage() {
 
   const handleConfirm = () => {
     if (selectedCompany) {
+      localStorage.setItem("companyId", String(selectedCompany));
       console.log("Empresa seleccionada:", selectedCompany);
+
       navigate(`/empresas/salones/${selectedCompany}`);
+      successToast("Empresa seleccionada correctamente.");
     } else {
       errorToast("Por favor, selecciona una empresa.");
     }

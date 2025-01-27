@@ -52,6 +52,7 @@ export default function EnvironmentPage() {
     { name: "Empresas", link: "/empresas" },
     { name: "Salones", link: "/empresas/salones" },
     { name: "Mesas/Box", link: "/empresas/mesas" },
+    {name: "Eventos", link: "/empresas/eventos"},
   ];
 
   // const handleSelectEnvironment = (id: number) => {

@@ -1,259 +1,313 @@
-// import Layout from "@/components/layouts/layout";
-// import { useUserStore } from "../lib/user.store";
-// import { useEffect, useState } from "react";
-// import { Button } from "@/components/ui/button";
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogHeader,
-//   DialogTitle,
-//   DialogTrigger,
-// } from "@/components/ui/dialog";
-// import { Input } from "@/components/ui/input";
-// import {
-//   Table,
-//   TableBody,
-//   TableCell,
-//   TableHead,
-//   TableHeader,
-//   TableRow,
-// } from "@/components/ui/table";
-// import { IdCard, MoreVertical, Phone, Search } from "lucide-react";
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-// import CreateUserPage from "./addUser";
-// import { Badge } from "@/components/ui/badge";
-// import UpdateUserPage from "./updateUser";
-// import { UserItem } from "../lib/user.interface";
-// import { DialogDescription } from "@radix-ui/react-dialog";
-// import DeleteDialog from "@/components/delete-dialog";
-// import { deleteUser } from "../lib/user.actions";
-// import { errorToast, successToast } from "@/lib/core.function";
+import Layout from "@/components/layouts/layout";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Calendar, MoreVertical, Search } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useEventStore } from "../lib/event.store";
+import type { EventItem } from "../lib/event.interface";
+import CreateEvent from "./addEventPage";
+import DeleteDialog from "@/components/delete-dialog";
+import { errorToast, successToast } from "@/lib/core.function";
+import { deleteEvent } from "../lib/event.actions";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import UpdateEvent from "./updateEventPage";
 
-// export default function UserPage() {
-//   const options = [
-//     { name: "Usuarios", link: "/usuarios" },
-//     { name: "Roles", link: "/usuarios/roles" },
-//   ];
+export default function EventPage() {
+  const options = [
+    { name: "Empresas", link: "/empresas" },
+    { name: "Salones", link: "/empresas/salones" },
+    { name: "Mesas/Box", link: "/empresas/mesas" },
+    { name: "Eventos", link: "/empresas/eventos" },
+    // { name: "Reservas", link: "/eventos/reservas" },
+    // { name: "Entradas", link: "/eventos/entradas" },
+  ];
 
-//   // STORE
-//   const { users, loadUsers, filter, setFilter } = useUserStore();
+  const { events, loadEvents, filter, setFilter } = useEventStore();
 
-//   // STATE
-//   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-//   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
-//   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  // NAVIGATOR
+  const navigator = useNavigate();
 
-//   const [userSelected, setUserSelected] = useState({} as UserItem);
-//   const [idSelected, setIdSelected] = useState(0);
+  // STATE
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-//   const handleClose = () => {
-//     setIsAddDialogOpen(false);
-//     loadUsers(1);
-//   };
+  const [eventSelected, setEventSelected] = useState({} as EventItem);
+  const [idSelected, setIdSelected] = useState(0);
 
-//   const handleUpdateClose = () => {
-//     setIsUpdateDialogOpen(false);
-//     loadUsers(1);
-//   };
+  const handleClose = () => {
+    setIsAddDialogOpen(false);
+    loadEvents(1);
+  };
 
-//   const handleClickDelete = (id: number) => {
-//     setIsDeleteDialogOpen(true);
-//     setIdSelected(id);
-//   };
+  const handleUpdateClose = () => {
+    setIsUpdateDialogOpen(false);
+    loadEvents(1);
+  };
 
-//   const handleDelete = async () => {
-//     try {
-//       await deleteUser(idSelected).then(() => {
-//         setIsDeleteDialogOpen(false);
-//         successToast("Usuario eliminado correctamente");
-//         loadUsers(1);
-//       });
-//     } catch (error) {
-//       errorToast("Error al eliminar el usuario");
-//     }
-//   };
+  const handleClickDelete = (id: number) => {
+    setIsDeleteDialogOpen(true);
+    setIdSelected(id);
+  };
 
-//   const handleClickUpdate = (user: UserItem) => {
-//     setUserSelected(user);
-//     setIsUpdateDialogOpen(true);
-//   };
+  const handleDelete = async () => {
+    try {
+      await deleteEvent(idSelected).then(() => {
+        setIsDeleteDialogOpen(false);
+        successToast("Evento eliminado correctamente");
+        loadEvents(1);
+      });
+    } catch (error) {
+      errorToast("Error al eliminar el evento");
+    }
+  };
 
-//   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     setFilter(e.target.value);
-//   };
+  const handleClickUpdate = (event: EventItem) => {
+    setEventSelected(event);
+    setIsUpdateDialogOpen(true);
+  };
 
-//   const handleSearch = () => {
-//     loadUsers(1);
-//   };
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFilter(value);
+  };
 
-//   useEffect(() => {
-//     loadUsers(1);
-//   }, [loadUsers]);
+  const handleSearch = () => {
+    loadEvents(1);
+  };
 
-//   return (
-//     <Layout options={options}>
-//       <div className="flex w-full justify-center items-start">
-//         <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
-//           <div className="flex flex-col sm:flex-row w-full gap-2">
-//             <div className="w-full flex flex-col">
-//               <h1 className="text-2xl font-bold font-inter">Usuarios</h1>
-//               <p className="text-gray-500 font-inter text-sm">
-//                 Gestionar todos los usuarios.
-//               </p>
-//             </div>
-//             <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full">
-//               <div className="flex gap-2 flex-col sm:flex-row w-full justify-end">
-//                 <div className="flex gap-2">
-//                   <Input
-//                     placeholder="Busqueda ..."
-//                     className="sm:w-[300px] font-poopins text-sm"
-//                     value={filter}
-//                     onChange={handleFilterChange}
-//                   />
-//                   <Button
-//                     size="icon"
-//                     className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
-//                     onClick={handleSearch}
-//                   >
-//                     <Search className="min-w-4 min-h-4 text-secondary" />
-//                   </Button>
-//                 </div>
-//                 <Dialog
-//                   open={isAddDialogOpen}
-//                   onOpenChange={setIsAddDialogOpen}
-//                 >
-//                   <DialogTrigger asChild>
-//                     <Button
-//                       className="bg-violet-500 hover:bg-violet-600 font-inter"
-//                       onClick={() => setIsAddDialogOpen(true)}
-//                     >
-//                       Agregar usuario
-//                     </Button>
-//                   </DialogTrigger>
-//                   <DialogContent className="max-w-5xl p-6">
-//                     <DialogHeader>
-//                       <DialogTitle className="font-inter">
-//                         Agregar Usuario
-//                       </DialogTitle>
-//                     </DialogHeader>
-//                     <CreateUserPage onClose={handleClose} />
-//                   </DialogContent>
-//                 </Dialog>
-//               </div>
-//             </div>
-//           </div>
-//           <div className="rounded-lg w-full">
-//             <Table className="">
-//               <TableHeader>
-//                 <TableRow>
-//                   <TableHead className="font-inter text-base text-foreground text-center p-2">
-//                     Usuario
-//                   </TableHead>
-//                   <TableHead className="font-inter text-base text-foreground text-center p-2">
-//                     Nombres
-//                   </TableHead>
-//                   <TableHead className="font-inter text-base text-foreground text-center p-2">
-//                     Datos
-//                   </TableHead>
-//                   <TableHead className="font-inter text-base text-foreground text-center p-2">
-//                     Rol
-//                   </TableHead>
-//                 </TableRow>
-//               </TableHeader>
-//               <TableBody>
-//                 {users.map((user) => (
-//                   <TableRow key={user.id}>
-//                     <TableCell className="font-inter py-2 px-2 text-sm">
-//                       <strong>{user.name}</strong>
-//                       <p>{user.username}</p>
-//                     </TableCell>
+  useEffect(() => {
+    loadEvents(1);
+  }, [loadEvents]);
 
-//                     <TableCell className="font-inter  py-2 px-2 text-sm">
-//                       {user.person.names} {user.person.father_surname ?? ""}{" "}
-//                       {user.person.mother_surname ?? ""}
-//                     </TableCell>
-//                     <TableCell className="font-inter py-2 px-4 text-sm">
-//                       <div className="flex gap-2 justify-start items-center font-bold">
-//                         <IdCard className="w-5 h-5" />{" "}
-//                         {user.person.type_document}
-//                       </div>
-//                       <div className="ps-7 pb-2">
-//                         {user.person.number_document}
-//                       </div>
-//                       <div className="flex gap-2 justify-start items-center font-bold">
-//                         <Phone className="w-5 h-5" /> {user.person.phone}
-//                       </div>
-//                       {/* <div className="ps-7">{user.person.number_document}</div> */}
-//                     </TableCell>
-//                     <TableCell className="font-inter text-center py-2 px-2 text-sm">
-//                       {typeof user.rol !== "string" && user.rol.name && (
-//                         <Badge className="rounded-full">{user.rol.name}</Badge>
-//                       )}
-//                     </TableCell>
-//                     <TableCell className="font-inter er py-2 px-2 text-sm">
-//                       <DropdownMenu>
-//                         <DropdownMenuTrigger asChild>
-//                           <Button
-//                             variant="ghost"
-//                             size="icon"
-//                             className="bg-transparent hover:bg-gray-100"
-//                           >
-//                             <MoreVertical className="h-4 w-4" />
-//                           </Button>
-//                         </DropdownMenuTrigger>
-//                         <DropdownMenuContent className="w-48">
-//                           {/* Editar opción */}
-//                           <DropdownMenuItem
-//                             className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-//                             onClick={() => handleClickUpdate(user)}
-//                           >
-//                             <span className="font-inter">Editar</span>
-//                           </DropdownMenuItem>
+  return (
+    <Layout options={options}>
+      <div className="flex w-full justify-center items-start">
+        <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
+          <div className="flex flex-col sm:flex-row w-full gap-2">
+            <div className="w-full flex flex-col">
+              <h1 className="text-2xl font-bold font-inter">Eventos</h1>
+              <p className="text-gray-500 font-inter text-sm">
+                Gestionar todos los eventos del mes
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full">
+              <div className="flex gap-2 flex-col sm:flex-row w-full justify-end">
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="Busqueda ..."
+                    className="sm:w-[300px] font-poopins text-sm"
+                    value={filter}
+                    onChange={handleFilterChange}
+                  />
+                  <Button
+                    size="icon"
+                    className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+                    onClick={handleSearch}
+                  >
+                    <Search className="min-w-4 min-h-4 text-secondary" />
+                  </Button>
+                </div>
+                <Dialog
+                  open={isAddDialogOpen}
+                  onOpenChange={setIsAddDialogOpen}
+                  modal={false}
+                >
+                  <DialogTrigger asChild>
+                    <Button
+                      className="bg-violet-500 hover:bg-violet-600 font-inter"
+                      onClick={() => setIsAddDialogOpen(true)}
+                    >
+                      Agregar evento
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-2xl p-6">
+                    <DialogHeader>
+                      <DialogTitle className="font-inter">
+                        Agregar Evento
+                      </DialogTitle>
+                    </DialogHeader>
+                    <CreateEvent onClose={handleClose} />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </div>
 
-//                           {/* Permisos */}
-//                           <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
-//                             <span>Permisos</span>
-//                           </DropdownMenuItem>
+          {/* <div className="w-full mb-4 flex justify-end">
+            <Select onValueChange={handleEnvironmentChange} value={selectedEnvironmentId || "all"}>
+              <SelectTrigger className="w-[200px] items-center">
+                <SelectValue placeholder="Seleccionar Salón" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos los Salones</SelectItem>
+                {environments.map((env) => (
+                  <SelectItem key={env.id} value={env.id.toString()}>
+                    {env.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div> */}
 
-//                           {/* Eliminar opción */}
-//                           <DropdownMenuItem
-//                             className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-//                             onClick={() => handleClickDelete(user.id)}
-//                           >
-//                             <span>Eliminar</span>
-//                           </DropdownMenuItem>
-//                         </DropdownMenuContent>
-//                       </DropdownMenu>
-//                     </TableCell>
-//                   </TableRow>
-//                 ))}
-//               </TableBody>
-//             </Table>
-//           </div>
-//         </div>
-//         <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-//           <DialogContent className="max-w-5xl p-6">
-//             <DialogHeader>
-//               <DialogTitle className="font-inter">
-//                 Actualizar Usuario
-//               </DialogTitle>
-//               <DialogDescription />
-//             </DialogHeader>
-//             <UpdateUserPage onClose={handleUpdateClose} user={userSelected} />
-//           </DialogContent>
-//         </Dialog>
+          <div className="rounded-lg w-full py-8">
+            <Table className="">
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Fecha
+                  </TableHead>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Nombre del Evento
+                  </TableHead>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Comentario
+                  </TableHead>
+                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                    Estado
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {events.map((event) => (
+                  <TableRow key={event.id}>
+                    <div className="flex gap-2 justify-start items-center text-sm font-inter py-2 px-2 ">
+                      <Calendar className="w-5 h-5" />
+                      {format(
+                        new Date(event.event_datetime),
+                        "dd 'de' MMMM 'del' yyyy 'a las' HH:mm",
+                        { locale: es }
+                      )}
+                    </div>
+                    <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                      {event.name}
+                    </TableCell>
+                    <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                      {event.comment}
+                    </TableCell>
+                    <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                      <Badge
+                        className={`${
+                          event.status === "Próximo"
+                            ? "text-[#7A37B8] bg-[#7A37B84F] hover:bg-[#7A37B8] hover:text-white"
+                            : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5]"
+                        }`}
+                      >
+                        {event.status}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-inter er py-2 px-2 text-sm">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="bg-transparent hover:bg-gray-100"
+                          >
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48">
+                          {/* Editar opción */}
+                          <DropdownMenuItem
+                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleClickUpdate(event)}
+                          >
+                            <span className="font-inter">Editar</span>
+                          </DropdownMenuItem>
 
-//         <DeleteDialog
-//           isOpen={isDeleteDialogOpen}
-//           onConfirm={handleDelete}
-//           onCancel={() => setIsDeleteDialogOpen(false)}
-//         />
-//       </div>
-//     </Layout>
-//   );
-// }
+                          {/* Eliminar opción */}
+                          <DropdownMenuItem
+                            onClick={() => handleClickDelete(event.id)}
+                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            <span>Eliminar</span>
+                          </DropdownMenuItem>
+
+                          {/* Detalles opción con submenú */}
+                          <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                              <span>Detalles</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent className="w-48">
+                              {/* Subopciones dentro de Detalles */}
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() =>
+                                  navigator(`/eventos/reservas/${event.id}`)
+                                }
+                              >
+                                <span>Reservas</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() =>
+                                  navigator(`/eventos/entradas/${event.id}`)
+                                }
+                              >
+                                <span>Entradas</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                          </DropdownMenuSub>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+        <Dialog
+          open={isUpdateDialogOpen}
+          onOpenChange={setIsUpdateDialogOpen}
+          modal={false}
+        >
+          <DialogContent className="max-w-5xl p-6">
+            <DialogHeader>
+              <DialogTitle className="font-inter">
+                Actualizar Evento
+              </DialogTitle>
+              <DialogDescription />
+            </DialogHeader>
+            <UpdateEvent onClose={handleUpdateClose} event={eventSelected} />
+          </DialogContent>
+        </Dialog>
+
+        <DeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onConfirm={handleDelete}
+          onCancel={() => setIsDeleteDialogOpen(false)}
+        />
+      </div>
+    </Layout>
+  );
+}

@@ -227,7 +227,7 @@ export default function UpdateUserPage({ onClose, user }: UpdateUserProps) {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="Individual">NATURAL</SelectItem>
+                            <SelectItem value="NATURAL">NATURAL</SelectItem>
                             <SelectItem value="JURIDICA">JURIDICA</SelectItem>
                           </SelectContent>
                         </Select>
