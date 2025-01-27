@@ -1,14 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from "@/components/ui/dropdown-menu";
-import { Search, Download, Badge, MoreVertical } from "lucide-react";
+import { Search, Download } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -18,9 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-// import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-// import { Card } from "@/components/ui/card";
 import Layout from "@/components/layouts/layout";
 import { useReservationStore } from "../lib/reservation.store";
 import { useEffect, useState } from "react";
@@ -33,11 +24,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEventStore } from "@/pages/events/lib/event.store";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
-// Mock data for reservations
-
-// Mock stats data
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
+import { Card } from "@/components/ui/card";
+import { format } from "date-fns";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Badge } from "@/components/ui/badge";
 
 export default function ReservationsPage() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -48,7 +44,7 @@ export default function ReservationsPage() {
   );
 
   //STORE
-  const { reservations, loadReservations, filter, setFilter } =
+  const { reservations, loadReservations, filter, setFilter, stats } =
     useReservationStore();
 
   const options = [
@@ -78,23 +74,34 @@ export default function ReservationsPage() {
     loadReservations(1, selectedEventId ? Number(selectedEventId) : undefined);
   }, [loadEvents, loadReservations, selectedEventId]);
 
+  const statsData = [
+    { label: "Total Reservas", value: stats.totalReservas },
+    { label: "Reservas Mesa", value: stats.reservasMesa },
+    { label: "Reservas Box", value: stats.reservasBox },
+    { label: "Mesas Libres", value: stats.mesasLibres },
+  ];
+
   return (
     <Layout options={options}>
       <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
         <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 max-w-screen-xl">
-          {/* {statsData.map((stat, index) => (
+          {statsData.map((stat, index) => (
             <Card key={index} className="p-4 bg-white rounded-3xl ">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
                   <img src="/icono.png" className="w-6 h-6 object-contain" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-base font-inter text-gray-900">{stat.label}</span>
-                  <span className="text-xl font-inter font-bold">{stat.value}</span>
+                  <span className="text-base font-inter text-gray-900">
+                    {stat.label}
+                  </span>
+                  <span className="text-xl font-inter font-bold">
+                    {stat.value}
+                  </span>
                 </div>
               </div>
             </Card>
-          ))} */}
+          ))}
         </div>
 
         {/* Header Section */}
@@ -102,8 +109,11 @@ export default function ReservationsPage() {
           <div>
             <h1 className="text-2xl font-bold font-inter">Reservas</h1>
             <p className="text-gray-500 text-base font-inter">
-            Gestione las reservas del evento:{" "}
-            {Array.isArray(events) && events.find((event) => event.id === Number(eventId))?.name || "Evento no encontrado"}.
+              Gestione las reservas del evento:{" "}
+              {(Array.isArray(events) &&
+                events.find((event) => event.id === Number(eventId))?.name) ||
+                "Evento no encontrado"}
+              .
             </p>
           </div>
 
@@ -172,60 +182,92 @@ export default function ReservationsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-inter text-base text-foreground p-2">
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Cod.
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Nombre
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
-                Fecha y hora de reserva
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
+                Fecha y hora <br />
+                de reserva
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
-                N° personas
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
+                N° <br/>
+                personas
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Mesa
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Box
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
-                N° mesa & box
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
+                N° mesa <br/>
+                o box
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground p-2">
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Estado
               </TableHead>
-              <TableHead className="font-inter text-base text-foreground text-right p-2">
+              <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Acciones
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="text-center">
             {reservations.map((reservation) => (
               <TableRow key={reservation.id}>
-               <TableCell className="font-inter py-2 px-2 text-sm">{reservation.id}</TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.name}</TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.reservation_datetime}</TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.person.names}</TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">
-                  {/* <input type="checkbox" className="rounded border-gray-300" checked={reservation.} readOnly /> */}
+                  {reservation.correlative}
                 </TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">
-                  {/* <input type="checkbox" className="rounded border-gray-300" checked={reservation.hasBox} readOnly /> */}
+                  {reservation.name}
                 </TableCell>
-                <TableCell className="font-inter py-2 px-2 text-sm">{reservation.station.name}</TableCell>
                 <TableCell className="font-inter py-2 px-2 text-sm">
-                  <Badge className="text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE]">{reservation.status}</Badge>
+                  {format(
+                    new Date(reservation.reservation_datetime),
+                    "dd-MM-yyy 'a las' HH:mm"
+                  )}
+                </TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">
+                  {reservation.nroPeople}
+                </TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">
+                  <Checkbox
+                    className="w-6 h-6 border-secondary"
+                    checked={reservation.station.type === "MESA"}
+                  />{" "}
+                </TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">
+                  <Checkbox
+                    className="w-6 h-6 border-secondary"
+                    checked={reservation.station.type === "BOX"}
+                  />
+                </TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">
+                  {reservation.station.name}
+                </TableCell>
+                <TableCell className="font-inter py-2 px-2 text-sm">
+                  <Badge className="text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE] rounded-full">
+                    {reservation.status}
+                  </Badge>
                 </TableCell>
                 <TableCell className="font-inter text-right py-2 px-2 text-sm">
                   <div className="flex justify-end gap-2">
-                    <Button variant="ghost" size="icon" className="bg-transparent hover:bg-gray-100">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="bg-transparent hover:bg-gray-100"
+                    >
                       <Download className="h-4 w-4" />
                     </Button>
-                    <DropdownMenu>
+                    {/* <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon" className="bg-transparent hover:bg-gray-100">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="bg-transparent hover:bg-gray-100"
+                        >
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -237,7 +279,7 @@ export default function ReservationsPage() {
                           <span className="font-inter">Eliminar</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
-                    </DropdownMenu>
+                    </DropdownMenu> */}
                   </div>
                 </TableCell>
               </TableRow>

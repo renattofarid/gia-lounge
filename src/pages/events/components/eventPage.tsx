@@ -23,6 +23,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
@@ -38,7 +41,6 @@ import { es } from "date-fns/locale";
 import UpdateEvent from "./updateEventPage";
 
 export default function EventPage() {
-
   const options = [
     { name: "Empresas", link: "/empresas" },
     { name: "Salones", link: "/empresas/salones" },
@@ -48,63 +50,63 @@ export default function EventPage() {
     // { name: "Entradas", link: "/eventos/entradas" },
   ];
 
-  const { events, loadEvents, filter, setFilter } = useEventStore()
+  const { events, loadEvents, filter, setFilter } = useEventStore();
 
   // NAVIGATOR
-  const navigator = useNavigate()
+  const navigator = useNavigate();
 
   // STATE
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  const [eventSelected, setEventSelected] = useState({} as EventItem)
-  const [idSelected, setIdSelected] = useState(0)
+  const [eventSelected, setEventSelected] = useState({} as EventItem);
+  const [idSelected, setIdSelected] = useState(0);
 
   const handleClose = () => {
-    setIsAddDialogOpen(false)
-    loadEvents(1)
-  }
+    setIsAddDialogOpen(false);
+    loadEvents(1);
+  };
 
   const handleUpdateClose = () => {
-    setIsUpdateDialogOpen(false)
-    loadEvents(1)
-  }
+    setIsUpdateDialogOpen(false);
+    loadEvents(1);
+  };
 
   const handleClickDelete = (id: number) => {
-    setIsDeleteDialogOpen(true)
-    setIdSelected(id)
-  }
+    setIsDeleteDialogOpen(true);
+    setIdSelected(id);
+  };
 
   const handleDelete = async () => {
     try {
       await deleteEvent(idSelected).then(() => {
-        setIsDeleteDialogOpen(false)
-        successToast("Evento eliminado correctamente")
-        loadEvents(1)
-      })
+        setIsDeleteDialogOpen(false);
+        successToast("Evento eliminado correctamente");
+        loadEvents(1);
+      });
     } catch (error) {
-      errorToast("Error al eliminar el evento")
+      errorToast("Error al eliminar el evento");
     }
-  }
+  };
 
   const handleClickUpdate = (event: EventItem) => {
-    setEventSelected(event)
-    setIsUpdateDialogOpen(true)
-  }
+    setEventSelected(event);
+    setIsUpdateDialogOpen(true);
+  };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setFilter(value)
-  }
+    const value = e.target.value;
+    setFilter(value);
+  };
 
   const handleSearch = () => {
-    loadEvents(1)
-  }
+    loadEvents(1);
+  };
 
   useEffect(() => {
-    loadEvents(1)
-  }, [loadEvents])
+    loadEvents(1);
+  }, [loadEvents]);
 
   return (
     <Layout options={options}>
@@ -176,7 +178,7 @@ export default function EventPage() {
             </Select>
           </div> */}
 
-          <div className="rounded-lg w-full">
+          <div className="rounded-lg w-full py-8">
             <Table className="">
               <TableHeader>
                 <TableRow>
@@ -197,9 +199,13 @@ export default function EventPage() {
               <TableBody>
                 {events.map((event) => (
                   <TableRow key={event.id}>
-                    <div className="flex gap-2 justify-start items-center text-sm font-inter py-2 px-2">
-                      <Calendar className="w-5 h-5" /> 
-                       {format(new Date(event.event_datetime), "dd 'de' MMMM 'del' yyyy 'a las' HH:mm", { locale: es })}
+                    <div className="flex gap-2 justify-start items-center text-sm font-inter py-2 px-2 ">
+                      <Calendar className="w-5 h-5" />
+                      {format(
+                        new Date(event.event_datetime),
+                        "dd 'de' MMMM 'del' yyyy 'a las' HH:mm",
+                        { locale: es }
+                      )}
                     </div>
                     <TableCell className="font-inter text-center py-2 px-2 text-sm">
                       {event.name}
@@ -238,7 +244,7 @@ export default function EventPage() {
                             <span className="font-inter">Editar</span>
                           </DropdownMenuItem>
 
-                          {/* Elimar */}
+                          {/* Eliminar opción */}
                           <DropdownMenuItem
                             onClick={() => handleClickDelete(event.id)}
                             className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
@@ -246,15 +252,31 @@ export default function EventPage() {
                             <span>Eliminar</span>
                           </DropdownMenuItem>
 
-                          {/* Detalles opción */}
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() =>
-                              navigator(`/eventos/reservas/${event.id}`)
-                            }
-                          >
-                            <span>Detalles</span>
-                          </DropdownMenuItem>
+                          {/* Detalles opción con submenú */}
+                          <DropdownMenuSub>
+                            <DropdownMenuSubTrigger className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                              <span>Detalles</span>
+                            </DropdownMenuSubTrigger>
+                            <DropdownMenuSubContent className="w-48">
+                              {/* Subopciones dentro de Detalles */}
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() =>
+                                  navigator(`/eventos/reservas/${event.id}`)
+                                }
+                              >
+                                <span>Reservas</span>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() =>
+                                  navigator(`/eventos/entradas/${event.id}`)
+                                }
+                              >
+                                <span>Entradas</span>
+                              </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                          </DropdownMenuSub>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
@@ -264,7 +286,11 @@ export default function EventPage() {
             </Table>
           </div>
         </div>
-        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen} modal={false}>
+        <Dialog
+          open={isUpdateDialogOpen}
+          onOpenChange={setIsUpdateDialogOpen}
+          modal={false}
+        >
           <DialogContent className="max-w-5xl p-6">
             <DialogHeader>
               <DialogTitle className="font-inter">
@@ -272,10 +298,7 @@ export default function EventPage() {
               </DialogTitle>
               <DialogDescription />
             </DialogHeader>
-            <UpdateEvent
-              onClose={handleUpdateClose}
-              event={eventSelected}
-            />
+            <UpdateEvent onClose={handleUpdateClose} event={eventSelected} />
           </DialogContent>
         </Dialog>
 

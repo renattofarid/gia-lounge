@@ -205,6 +205,11 @@ export default function StationPage() {
                         >
                           <span>Eliminar</span>
                         </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                        >
+                          <span>Detalles</span>
+                        </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
