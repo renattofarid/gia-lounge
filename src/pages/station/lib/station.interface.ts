@@ -1,4 +1,5 @@
 import { Links, Meta } from "@/lib/global.interface";
+import { ReservationItem } from "@/pages/reservations/lib/reservation.interface";
 
 export interface StationCollection {
   data: StationItem[];
@@ -16,6 +17,9 @@ export interface StationItem {
   route: null;
   environment_id: number;
   environment: Environment;
+  date_reservation: string;
+  reservation:      ReservationItem;
+  
 }
 
 interface Environment {

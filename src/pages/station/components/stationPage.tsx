@@ -43,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ReservationDetails } from "./detailReserva";
 
 export default function StationPage() {
   const { environmentId } = useParams<{ environmentId: string }>();
@@ -56,10 +57,17 @@ export default function StationPage() {
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
   );
+
   const [idDeleteSelected, setIdDeleteSelected] = useState<number>(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isShowReservationDialogOpen, setIsShowReservationDialogOpen] =
+    useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  const [selectedStation, setSelectedStation] = useState<StationItem | null>(
+    null
+  );
 
   useEffect(() => {
     loadEnvironments(1);
@@ -115,6 +123,16 @@ export default function StationPage() {
       1,
       selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
     );
+  };
+
+  const handleShowDetails = (station: StationItem) => {
+    setSelectedStation(station);
+    setIsShowReservationDialogOpen(true);
+  };
+
+  const handleCloseReservationDetails = () => {
+    setIsShowReservationDialogOpen(false);
+    setSelectedStation(null);
   };
 
   const handleEnvironmentChange = (value: string) => {
@@ -268,7 +286,10 @@ export default function StationPage() {
                         >
                           <span>Eliminar</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem
+                          onClick={() => handleShowDetails(station)}
+                          className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                        >
                           <span>Detalles</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -303,6 +324,28 @@ export default function StationPage() {
             onConfirm={handleDelete}
             onCancel={() => setIsDeleteDialogOpen(false)}
           />
+
+          <Dialog
+            open={isShowReservationDialogOpen}
+            onOpenChange={setIsShowReservationDialogOpen}
+          >
+            <DialogContent className="p-6 max-w-3xl">
+              <DialogHeader>
+                <DialogTitle className="font-inter">
+                  Detalle de la Reserva
+                </DialogTitle>
+                <DialogDescription>
+                  {selectedStation && `Mesa: ${selectedStation.name}`}
+                </DialogDescription>
+              </DialogHeader>
+              {selectedStation && (
+                <ReservationDetails
+                  station={selectedStation}
+                  onClose={handleCloseReservationDetails}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     </Layout>
