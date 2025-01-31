@@ -13,23 +13,23 @@ export function ReservationDetails({ station, onClose }: ReservationDetailsProps
   if (!station.reservation) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No hay reserva activa para esta mesa</p>
+        <p className="text-gray-500 font-poopins">No hay reserva activa para esta mesa</p>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="">
       <div className="flex justify-between items-center">
         <div>
-          <p className="text-sm text-muted-foreground">
+          {/* <Badge variant="secondary" className="mt-2 text-sm"> 
             Fecha de reserva: {format(new Date(station.date_reservation), "dd/MM/yyyy HH:mm")}
-          </p>
-          <Badge variant="outline" className="mt-2">
+          </Badge> */}
+          {/* <Badge variant="outline" className="mt-2">
             {station.reservation.nroPeople} personas
-          </Badge>
+          </Badge> */}
         </div>
-        <Badge
+        {/* <Badge
           className={
             station.status === "Reservado"
               ? "bg-[#FFC8AE8F] text-[#FC6C28]"
@@ -39,18 +39,18 @@ export function ReservationDetails({ station, onClose }: ReservationDetailsProps
           }
         >
           {station.status}
-        </Badge>
+        </Badge> */}
       </div>
-
+      <div className="bg-secondary rounded-lg p-4 mt-4">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Nombres</TableHead>
-            <TableHead>Apellidos</TableHead>
-            <TableHead>DNI</TableHead>
-            <TableHead>Teléfono</TableHead>
-            <TableHead>E-mail</TableHead>
-            <TableHead>N° de personas</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">Nombres</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">Apellidos</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">DNI</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">Teléfono</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">E-mail</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">N° de personas</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -67,8 +67,11 @@ export function ReservationDetails({ station, onClose }: ReservationDetailsProps
         </TableBody>
       </Table>
 
-      <div className="flex justify-end">
-        <Button variant="outline" onClick={onClose} className="w-24">
+      </div>
+      
+
+      <div className="flex justify-end pt-4">
+        <Button variant="default" onClick={onClose} className="w-24">
           Cerrar
         </Button>
       </div>
