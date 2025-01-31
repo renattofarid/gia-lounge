@@ -10,7 +10,7 @@ interface EventStore {
   loading: boolean;
   filter: string;
   setFilter: (filter: string) => void;
-  loadEvents: (page: number) => void;
+  loadEvents: (page: number, companyId: number) => void;
 }
 
 export const useEventStore = create<EventStore>((set, get) => ({
@@ -31,20 +31,13 @@ export const useEventStore = create<EventStore>((set, get) => ({
     to: 0,
     total: 0,
   },
-  loading: false,
+  loading: true,
   filter: "",
   setFilter: (filter: string) => set({ filter }),
-  loadEvents: async (page: number) => {
+  loadEvents: async (page: number, companyId: number) => {
     set(() => ({ loading: true }));
     try {
       const filter = get().filter;
-
-      // Always use companyId from localStorage
-      const companyId = Number(localStorage.getItem("companyId"));
-      if (isNaN(companyId)) {
-        throw new Error("El companyId no es un número válido");
-      }
-
       const response: EventCollection = await getEvents({
         page,
         companyId,

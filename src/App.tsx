@@ -7,9 +7,9 @@ import EnvironmentPage from "./pages/environment/components/environmentPage";
 import StationPage from "./pages/station/components/stationPage";
 import { ThemeProvider } from "next-themes";
 import { useAuthStore } from "./pages/auth/lib/auth.store";
-import HomePage from "./pages/home/components/Homepage";
 import ReservationsPage from "./pages/reservations/components/reservationsPage";
 import EventPage from "./pages/events/components/eventPage";
+import HomePage from "./pages/home/components/HomePage";
 
 // const isAuthenticated = () => {
 //   return localStorage.getItem("token") !== null;
@@ -80,20 +80,6 @@ export default function App() {
           />
           <Route
             path="/empresas/salones"
-            element={<Navigate to="/empresas" />}
-          />
-          <Route path="/empresas/mesas" element={<Navigate to="/empresas" />} />
-          <Route
-            path="/empresas/eventos"
-            element={
-              <ProtectedRoute>
-                <EventPage />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/empresas/salones/:companyId"
             element={
               <ProtectedRoute>
                 <EnvironmentPage />
@@ -101,10 +87,18 @@ export default function App() {
             }
           />
           <Route
-            path="/empresas/mesas/:environmentId"
+            path="/empresas/mesas"
             element={
               <ProtectedRoute>
                 <StationPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/empresas/eventos"
+            element={
+              <ProtectedRoute>
+                <EventPage />
               </ProtectedRoute>
             }
           />

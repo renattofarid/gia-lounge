@@ -40,7 +40,7 @@ export const useStationStore = create<Stationtore>((set) => ({
     to: 0,
     total: 0,
   },
-  loading: false,
+  loading: true,
   loadStations: async (page: number, environmentId?: number) => {
     set(() => ({ loading: true }));
     const response: StationCollection = await getStation({

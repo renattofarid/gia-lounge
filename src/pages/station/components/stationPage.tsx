@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Hash, MoreVertical, Search } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useStationStore } from "../lib/station.store";
 import type { StationItem } from "../lib/station.interface";
 import DeleteDialog from "@/components/delete-dialog";
@@ -46,13 +46,11 @@ import {
 import { ReservationDetails } from "./detailReserva";
 
 export default function StationPage() {
-  const { environmentId } = useParams<{ environmentId: string }>();
+  const { environmentId, setEnvironmentId } = useEnvironmentStore();
   const { stations, loadStations, loading } = useStationStore();
-  const { environments, loadEnvironments } = useEnvironmentStore();
-  const [selectedEnvironmentId, setSelectedEnvironmentId] = useState<
-    string | undefined
-  >(environmentId);
+  const { environments } = useEnvironmentStore();
   const [filter, setFilter] = useState("");
+  const navigator = useNavigate();
 
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
@@ -70,12 +68,9 @@ export default function StationPage() {
   );
 
   useEffect(() => {
-    loadEnvironments(1);
-    loadStations(
-      1,
-      selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-    );
-  }, [loadStations, loadEnvironments, selectedEnvironmentId]);
+    if (environmentId) loadStations(1, environmentId);
+    else navigator("/empresas/salones");
+  }, []);
 
   const options = [
     { name: "Empresas", link: "/empresas" },
@@ -96,19 +91,13 @@ export default function StationPage() {
 
   const handleClose = () => {
     setIsDialogOpen(false);
-    loadStations(
-      1,
-      selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-    );
+    loadStations(1, environmentId);
   };
 
   const handleDelete = () => {
     deleteStation(idDeleteSelected)
       .then(() => {
-        loadStations(
-          1,
-          selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-        );
+        loadStations(1, environmentId);
         setIsDeleteDialogOpen(false);
         successToast("Mesa eliminada correctamente");
       })
@@ -119,10 +108,7 @@ export default function StationPage() {
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
-    loadStations(
-      1,
-      selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-    );
+    loadStations(1, environmentId);
   };
 
   const handleShowDetails = (station: StationItem) => {
@@ -136,8 +122,8 @@ export default function StationPage() {
   };
 
   const handleEnvironmentChange = (value: string) => {
-    setSelectedEnvironmentId(value === "all" ? undefined : value);
-    loadStations(1, value === "all" ? undefined : Number(value));
+    setEnvironmentId(Number(value));
+    loadStations(1, Number(value));
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -193,7 +179,7 @@ export default function StationPage() {
                       </DialogDescription>
                     </DialogHeader>
                     <CreateStation
-                      environmentId={Number(selectedEnvironmentId)}
+                      environmentId={Number(environmentId)}
                       onClose={handleClose}
                     />
                   </DialogContent>
@@ -206,13 +192,12 @@ export default function StationPage() {
           <div className="w-full mb-4 flex justify-end">
             <Select
               onValueChange={handleEnvironmentChange}
-              value={selectedEnvironmentId || "all"}
+              value={environmentId.toString()}
             >
               <SelectTrigger className="w-[200px] items-center">
                 <SelectValue placeholder="Seleccionar Salón" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los Salones</SelectItem>
                 {environments.map((env) => (
                   <SelectItem key={env.id} value={env.id.toString()}>
                     {`${env.name} - ${env.company.business_name}`}
@@ -312,7 +297,7 @@ export default function StationPage() {
                 <DialogDescription />
               </DialogHeader>
               <UpdateStation
-                environmentId={Number(selectedEnvironmentId)}
+                environmentId={Number(environmentId)}
                 onClose={handleUpdateClose}
                 station={stationUpdate}
               />
