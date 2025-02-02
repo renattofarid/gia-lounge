@@ -9,7 +9,8 @@ import { ThemeProvider } from "next-themes";
 import { useAuthStore } from "./pages/auth/lib/auth.store";
 import ReservationsPage from "./pages/reservations/components/reservationsPage";
 import EventPage from "./pages/events/components/eventPage";
-import HomePage from "./pages/home/components/HomePage";
+import HomePage from "./pages/home/components/Homepage";
+import { EntryPage } from "./pages/entry/components/entryPage";
 
 // const isAuthenticated = () => {
 //   return localStorage.getItem("token") !== null;
@@ -103,6 +104,14 @@ export default function App() {
             }
           />
           <Route
+            path="/empresas/entradas"
+            element={
+              <ProtectedRoute>
+                <EntryPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/empresas/eventos/:companyId"
             element={
               <ProtectedRoute>
@@ -115,6 +124,22 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ReservationsPage />
+              </ProtectedRoute>
+            }
+          />
+           {/* <Route
+            path="/eventos/reservas/:eventId"
+            element={
+              <ProtectedRoute>
+                <ReservationsPage />
+              </ProtectedRoute>
+            }
+          /> */}
+           <Route
+            path="/eventos/entradas/:eventId"
+            element={
+              <ProtectedRoute>
+                <EntryPage />
               </ProtectedRoute>
             }
           />

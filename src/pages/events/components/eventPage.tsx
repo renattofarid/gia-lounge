@@ -163,7 +163,7 @@ export default function EventPage() {
                           Agregar Evento
                         </DialogTitle>
                       </DialogHeader>
-                      <CreateEvent onClose={handleClose} />
+                      <CreateEvent onClose={handleClose} companyId={companyId} />
                     </DialogContent>
                   </Dialog>
                 </div>

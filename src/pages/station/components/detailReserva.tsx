@@ -1,6 +1,6 @@
-import { format } from "date-fns"
+// import { format } from "date-fns"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
+// import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import type { StationItem } from "../lib/station.interface"
 
@@ -50,7 +50,9 @@ export function ReservationDetails({ station, onClose }: ReservationDetailsProps
             <TableHead className="font-sm font-poopins font-semibold text-black">DNI</TableHead>
             <TableHead className="font-sm font-poopins font-semibold text-black">Teléfono</TableHead>
             <TableHead className="font-sm font-poopins font-semibold text-black">E-mail</TableHead>
-            <TableHead className="font-sm font-poopins font-semibold text-black">N° de personas</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold text-black">N° de 
+              <br/>
+              personas</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -62,7 +64,7 @@ export function ReservationDetails({ station, onClose }: ReservationDetailsProps
             <TableCell>{station.reservation.person.number_document}</TableCell>
             <TableCell>{station.reservation.person.phone}</TableCell>
             <TableCell>{station.reservation.person.email}</TableCell>
-            <TableCell>{station.reservation.nroPeople}</TableCell>
+            <TableCell>{station.reservation.nro_people}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

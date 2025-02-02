@@ -1,20 +1,20 @@
 import { create } from "zustand";
 import type { Links, Meta } from "@/lib/global.interface";
-import type { EventCollection, EventItem } from "./event.interface";
-import { getEvents } from "./event.actions";
+import { EntryCollection, EntryItem } from "./entry.interface";
+import { getEntries } from "./entry.actions";
 
-interface EventStore {
-  events: EventItem[];
+interface EntryStore {
+  entries: EntryItem[];
   links: Links;
   meta: Meta;
   loading: boolean;
   filter: string;
   setFilter: (filter: string) => void;
-  loadEvents: (page: number, companyId?: number) => void;
+  loadEntries: (page: number, eventId: number) => void;
 }
 
-export const useEventStore = create<EventStore>((set, get) => ({
-  events: [],
+export const useEntryStore = create<EntryStore>((set, get) => ({
+  entries: [],
   links: {
     first: "",
     last: "",
@@ -34,24 +34,24 @@ export const useEventStore = create<EventStore>((set, get) => ({
   loading: true,
   filter: "",
   setFilter: (filter: string) => set({ filter }),
-  loadEvents: async (page: number, companyId?: number) => {
+  loadEntries: async (page: number,  eventId: number) => {
     set(() => ({ loading: true }));
     try {
       const filter = get().filter;
-      const response: EventCollection = await getEvents({
+      const response: EntryCollection = await getEntries({
         page,
-        companyId,
+        eventId,
         name: filter,
       });
 
       set(() => ({
-        events: response.data,
+        entries: response.data,
         links: response.links,
         meta: response.meta,
         loading: false,
       }));
     } catch (error) {
-      console.error("Error al cargar los eventos:", error);
+      console.error("Error al cargar las entradas:", error);
       set(() => ({ loading: false }));
     }
   },

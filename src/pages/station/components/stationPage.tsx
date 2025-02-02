@@ -217,6 +217,9 @@ export default function StationPage() {
                   Tipo
                 </TableHead>
                 <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  Fecha de reserva
+                </TableHead>
+                <TableHead className="font-inter text-base text-foreground text-center p-2">
                   Estado
                 </TableHead>
                 <TableHead className="font-inter text-base text-foreground text-center p-2">
@@ -234,6 +237,10 @@ export default function StationPage() {
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
                     <Badge>{station.type}</Badge>
                   </TableCell>
+                  <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                    {station.date_reservation}
+                  </TableCell>
+
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
                     <Badge
                       className={`${
@@ -314,7 +321,7 @@ export default function StationPage() {
             open={isShowReservationDialogOpen}
             onOpenChange={setIsShowReservationDialogOpen}
           >
-            <DialogContent className="p-6 max-w-3xl">
+            <DialogContent className="p-6 max-w-5xl">
               <DialogHeader>
                 <DialogTitle className="font-inter">
                   Detalle de la Reserva
