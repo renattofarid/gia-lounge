@@ -13,13 +13,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -29,10 +29,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Pagination } from "@/components/pagination";
 
 export function EntryPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const { entries, loadEntries, setFilter } = useEntryStore();
+  const { entries, loadEntries, setFilter, links, meta } = useEntryStore();
 
   const options = [
     { name: "Reservas", link: `/eventos/reservas/${eventId}` },
@@ -41,7 +42,7 @@ export function EntryPage() {
 
   useEffect(() => {
     if (eventId) {
-      loadEntries(1, Number.parseInt(eventId)); 
+      loadEntries(1, Number.parseInt(eventId));
     }
   }, [eventId, loadEntries]);
 
@@ -76,7 +77,7 @@ export function EntryPage() {
                 <Search className="min-w-4 min-h-4 text-secondary" />
               </Button>
             </div>
-            <Select>
+            {/* <Select>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Estado" />
               </SelectTrigger>
@@ -85,7 +86,7 @@ export function EntryPage() {
                 <SelectItem value="Pendientes">Pendiente</SelectItem>
                 <SelectItem value="completed">Completado</SelectItem>
               </SelectContent>
-            </Select>
+            </Select> */}
             {/* <Select>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="Seleccione evento" />
@@ -261,6 +262,13 @@ export function EntryPage() {
                         ))}
                     </TableBody>
                   </Table>
+                  <Pagination
+                    links={links}
+                    meta={meta}
+                    onPageChange={(page) =>
+                      loadEntries(page, Number.parseInt(eventId || "0"))
+                    }
+                  />
                 </div>
               </TabsContent>
 
@@ -275,6 +283,7 @@ export function EntryPage() {
             </Tabs>
           </div>
         </div>
+        <div></div>
       </div>
     </Layout>
   );

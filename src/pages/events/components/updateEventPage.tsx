@@ -19,7 +19,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { errorToast, successToast } from "@/lib/core.function";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEventStore } from "../lib/event.store";
 import {  updateEvent } from "../lib/event.actions";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,11 +34,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { EventItem } from "../lib/event.interface";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 const EventSchema = z.object({
   name: z.string().nonempty("El nombre es obligatorio"),
   comment: z.string().optional(),
   event_datetime: z.date(),
+  company_id: z.number(),
 });
 
 interface UpdateEventProps {
@@ -46,18 +49,25 @@ interface UpdateEventProps {
   event: EventItem;
 }
 
-export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
+export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
   const form = useForm<z.infer<typeof EventSchema>>({
     resolver: zodResolver(EventSchema),
     defaultValues: {
       name: event.name,
       comment: event.comment,
       event_datetime: new Date(event.event_datetime),
+      company_id: event.company_id,
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { loading } = useEventStore();
+
+    const { companies, loadCompanies } = useComapanyStore();
+  
+    useEffect(() => {
+      loadCompanies(1);
+    }, []);
 
   function handleDateSelect(date: Date | undefined) {
     if (date) {
@@ -114,8 +124,44 @@ export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
             {/* Campos del formulario */}
+            
             <div className="flex flex-col gap-6">
               <div className="w-full space-y-4 rounded-lg bg-secondary p-6 text-sm">
+                
+              <FormField
+                  control={form.control}
+                  name="company_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-normal">
+                        Compañía
+                      </FormLabel>
+                      <Select
+                        value={field.value?.toString()}
+                        onValueChange={(value) => field.onChange(Number(value))}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccione compañía" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {companies.map((company) => (
+                            <SelectItem
+                              key={company.id}
+                              value={company.id.toString()}
+                            >
+                              {company.business_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                
                 <FormField
                   control={form.control}
                   name="name"
