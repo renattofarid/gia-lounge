@@ -1,6 +1,7 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
 import { StationCollection } from "./station.interface";
+import { PER_PAGE } from "@/lib/core.function";
 
 export interface getStationProps {
   page: number;
@@ -15,6 +16,7 @@ export const getStation = async ({
     params: {
       page,
       environment_id: environmentId,
+      per_page: PER_PAGE,
     },
   };
   const response = await api.get(`/station`, config);

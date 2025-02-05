@@ -44,10 +44,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ReservationDetails } from "./detailReserva";
+import { Pagination } from "@/components/pagination";
 
 export default function StationPage() {
   const { environmentId, setEnvironmentId } = useEnvironmentStore();
-  const { stations, loadStations, loading } = useStationStore();
+  const { stations, loadStations, loading, links, meta } = useStationStore();
   const { environments } = useEnvironmentStore();
   const [filter, setFilter] = useState("");
   const navigator = useNavigate();
@@ -133,6 +134,10 @@ export default function StationPage() {
   const filteredStations = stations.filter((station) =>
     station.name.toLowerCase().includes(filter.toLowerCase())
   );
+
+  const handlePageChange = (page: number) => {
+    loadStations(page, environmentId);
+  };
 
   return (
     <Layout options={options}>
@@ -291,6 +296,12 @@ export default function StationPage() {
               ))}
             </TableBody>
           </Table>
+
+          <Pagination
+            links={links}
+            meta={meta}
+            onPageChange={handlePageChange}
+          />
 
           <Dialog
             open={isUpdateDialogOpen}

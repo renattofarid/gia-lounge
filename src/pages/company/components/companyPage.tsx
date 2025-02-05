@@ -26,6 +26,7 @@ import UpdateCompanyPage from "./updateCompany";
 import { deleteCompany } from "../lib/company.actions";
 import DeleteDialog from "@/components/delete-dialog";
 import SkeletonTable from "@/components/skeleton-table";
+import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 
 export default function CompanyPage() {
   const options = [
@@ -40,6 +41,7 @@ export default function CompanyPage() {
 
   const { companies, loadCompanies, loading, setCompanyId, setSelectCompany } =
     useComapanyStore();
+  const { setSelectEnvironment, setEnvironmentId } = useEnvironmentStore();
   const [selectedCompany, setSelectedCompany] = useState<CompanyItem | null>(
     null
   );
@@ -69,6 +71,8 @@ export default function CompanyPage() {
     if (selectedCompany) {
       setCompanyId(selectedCompany.id);
       setSelectCompany(selectedCompany);
+      setEnvironmentId(0);
+      setSelectEnvironment(null);
       navigate(`/empresas/salones`);
       successToast("Empresa seleccionada correctamente.");
     } else {
