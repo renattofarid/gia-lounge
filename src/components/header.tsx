@@ -9,8 +9,8 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
-import { useEffect, useState } from "react";
-import { getCompany } from "@/pages/company/lib/company.actions";
+// import { useEffect, useState } from "react";
+// import { getCompany } from "@/pages/company/lib/company.actions";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function Header() {

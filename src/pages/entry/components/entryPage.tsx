@@ -30,11 +30,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination } from "@/components/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function EntryPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const { entries, loadEntries, setFilter, setStatusPay, links, meta } =
-    useEntryStore();
+  const {
+    entries,
+    loadEntries,
+    setFilter,
+    setStatusPay,
+    links,
+    meta,
+    loading,
+  } = useEntryStore();
 
   const options = [
     { name: "Reservas", link: `/eventos/reservas/${eventId}` },
@@ -156,65 +164,85 @@ export function EntryPage() {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {entries.map((entry) => (
-                          <TableRow key={entry.id}>
-                            <TableCell className="p-2 font-inter text-sm text-center">
-                              {entry.person.names}
-                            </TableCell>
-                            <TableCell className="p-2 font-inter text-sm text-center">
-                              {new Date(
-                                entry.entry_datetime
-                              ).toLocaleDateString()}
-                            </TableCell>
+                        {loading
+                          ? Array.from({ length: 5 }).map((_, index) => (
+                              <TableRow key={index}>
+                                <TableCell className="p-2">
+                                  <Skeleton className="h-6 w-24 mx-auto" />
+                                </TableCell>
+                                <TableCell className="p-2">
+                                  <Skeleton className="h-6 w-24 mx-auto" />
+                                </TableCell>
+                                <TableCell className="p-2">
+                                  <Skeleton className="h-6 w-32 mx-auto" />
+                                </TableCell>
+                                <TableCell className="p-2">
+                                  <Skeleton className="h-6 w-32 mx-auto" />
+                                </TableCell>
+                                <TableCell className="p-2">
+                                  <Skeleton className="h-6 w-10 mx-auto" />
+                                </TableCell>
+                              </TableRow>
+                            ))
+                          : entries.map((entry) => (
+                              <TableRow key={entry.id}>
+                                <TableCell className="p-2 font-inter text-sm text-center">
+                                  {entry.person.names}
+                                </TableCell>
+                                <TableCell className="p-2 font-inter text-sm text-center">
+                                  {new Date(
+                                    entry.entry_datetime
+                                  ).toLocaleDateString()}
+                                </TableCell>
 
-                            <TableCell className="p-2 font-inter text-sm text-center">
-                              <span
-                                className={`inline-flex items-center px-2 py-1 rounded-full text-sm
+                                <TableCell className="p-2 font-inter text-sm text-center">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded-full text-sm
                               ${
                                 entry.status_pay === "Pendiente"
                                   ? "bg-rose-100 text-rose-700"
                                   : "bg-yellow-100 text-yellow-700"
                               }`}
-                              >
-                                {entry.status_pay}
-                              </span>
-                            </TableCell>
-                            <TableCell className="p-4 font-inter text-sm text-center">
-                              <span
-                                className={`inline-flex items-center px-2 py-1 rounded-full text-sm
+                                  >
+                                    {entry.status_pay}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="p-4 font-inter text-sm text-center">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded-full text-sm
                               ${
                                 entry.status_entry === "Ingresado"
                                   ? "bg-green-100 text-green-700"
                                   : "bg-blue-100 text-blue-700"
                               }`}
-                              >
-                                {entry.status_entry}
-                              </span>
-                            </TableCell>
-                            <TableCell className="p-4">
-                              <div className="flex items-center justify-end gap-2">
-                                <Button variant="ghost" size="icon">
-                                  <Download className="h-4 w-4" />
-                                </Button>
-                                <DropdownMenu>
-                                  <DropdownMenuTrigger asChild>
+                                  >
+                                    {entry.status_entry}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="p-4">
+                                  <div className="flex items-center justify-end gap-2">
                                     <Button variant="ghost" size="icon">
-                                      <MoreVertical className="h-4 w-4" />
+                                      <Download className="h-4 w-4" />
                                     </Button>
-                                  </DropdownMenuTrigger>
-                                  <DropdownMenuContent align="end">
-                                    <DropdownMenuItem>
-                                      Ver detalles
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem>
-                                      Descargar
-                                    </DropdownMenuItem>
-                                  </DropdownMenuContent>
-                                </DropdownMenu>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                                    <DropdownMenu>
+                                      <DropdownMenuTrigger asChild>
+                                        <Button variant="ghost" size="icon">
+                                          <MoreVertical className="h-4 w-4" />
+                                        </Button>
+                                      </DropdownMenuTrigger>
+                                      <DropdownMenuContent align="end">
+                                        <DropdownMenuItem>
+                                          Ver detalles
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>
+                                          Descargar
+                                        </DropdownMenuItem>
+                                      </DropdownMenuContent>
+                                    </DropdownMenu>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            ))}
                       </TableBody>
                     </Table>
                   </div>
@@ -241,42 +269,62 @@ export function EntryPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {entries
-                        .filter((entry) => entry.status_pay === "Pendiente") // Filtrado
-                        .map((entry) => (
-                          <TableRow key={entry.id}>
-                            <TableCell className="p-4 font-inter text-sm text-center">
-                              {entry.person.names}
-                            </TableCell>
-                            <TableCell className="p-4 font-inter text-sm text-center">
-                              {new Date(
-                                entry.entry_datetime
-                              ).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell className="p-4 font-inter text-sm text-center">
-                              <span
-                                className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
-                                  entry.status_pay === "Pendiente"
-                                    ? "bg-rose-100 text-rose-700"
-                                    : "bg-yellow-100 text-yellow-700"
-                                }`}
-                              >
-                                {entry.status_pay}
-                              </span>
-                            </TableCell>
-                            <TableCell className="p-4 font-inter text-sm text-center">
-                              <span
-                                className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
-                                  entry.status_entry === "Ingresado"
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-blue-100 text-blue-700"
-                                }`}
-                              >
-                                {entry.status_entry}
-                              </span>
-                            </TableCell>
-                          </TableRow>
-                        ))}
+                      {loading
+                        ? Array.from({ length: 5 }).map((_, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="p-2">
+                                <Skeleton className="h-6 w-24 mx-auto" />
+                              </TableCell>
+                              <TableCell className="p-2">
+                                <Skeleton className="h-6 w-24 mx-auto" />
+                              </TableCell>
+                              <TableCell className="p-2">
+                                <Skeleton className="h-6 w-32 mx-auto" />
+                              </TableCell>
+                              <TableCell className="p-2">
+                                <Skeleton className="h-6 w-32 mx-auto" />
+                              </TableCell>
+                              <TableCell className="p-2">
+                                <Skeleton className="h-6 w-10 mx-auto" />
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        : entries
+                            .filter((entry) => entry.status_pay === "Pendiente") // Filtrado
+                            .map((entry) => (
+                              <TableRow key={entry.id}>
+                                <TableCell className="p-4 font-inter text-sm text-center">
+                                  {entry.person.names}
+                                </TableCell>
+                                <TableCell className="p-4 font-inter text-sm text-center">
+                                  {new Date(
+                                    entry.entry_datetime
+                                  ).toLocaleDateString()}
+                                </TableCell>
+                                <TableCell className="p-4 font-inter text-sm text-center">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
+                                      entry.status_pay === "Pendiente"
+                                        ? "bg-rose-100 text-rose-700"
+                                        : "bg-yellow-100 text-yellow-700"
+                                    }`}
+                                  >
+                                    {entry.status_pay}
+                                  </span>
+                                </TableCell>
+                                <TableCell className="p-4 font-inter text-sm text-center">
+                                  <span
+                                    className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
+                                      entry.status_entry === "Ingresado"
+                                        ? "bg-green-100 text-green-700"
+                                        : "bg-blue-100 text-blue-700"
+                                    }`}
+                                  >
+                                    {entry.status_entry}
+                                  </span>
+                                </TableCell>
+                              </TableRow>
+                            ))}
                     </TableBody>
                   </Table>
                 </div>
