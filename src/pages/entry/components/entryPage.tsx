@@ -51,6 +51,10 @@ export function EntryPage() {
     loadEntries(1, Number.parseInt(eventId || "0"));
   };
 
+  const handlePageChange = (page: number) => {
+    loadEntries(page, Number.parseInt(eventId || "0"));
+  };
+
   return (
     <Layout options={options}>
       <div className="flex flex-col items-center w-full py-6 px-4">
@@ -98,9 +102,9 @@ export function EntryPage() {
                   </Select> */}
           </div>
 
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-2 w-full">
+          <div className="flex sm:flex-col flex-row justify-between items-center gap-2 w-full">
             <Tabs defaultValue="todas" className="w-full">
-              <TabsList className="flex w-full p-1 bg-transparent border-b gap-1">
+              <TabsList className="flex w-full bg-transparent border-b gap-1">
                 <TabsTrigger
                   value="todas"
                   className="flex-1 font-poopins text-base rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
@@ -123,102 +127,107 @@ export function EntryPage() {
 
               <TabsContent value="todas">
                 {/* Table */}
-                <div className="rounded-lg pt-2">
-                  <Table className="w-full">
-                    <TableHeader>
-                      <TableRow className="border-b bg-muted/50">
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
-                          Nombre
-                        </TableHead>
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
-                          Fecha
-                        </TableHead>
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
-                          Estado de pago
-                        </TableHead>
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
-                          Estado de ingreso
-                        </TableHead>
-                        <TableHead className="p-4 w-[100px]"></TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {entries.map((entry) => (
-                        <TableRow key={entry.id}>
-                          <TableCell className="p-4 font-inter text-sm text-center">
-                            {entry.person.names}
-                          </TableCell>
-                          <TableCell className="p-4 font-inter text-sm text-center">
-                            {new Date(
-                              entry.entry_datetime
-                            ).toLocaleDateString()}
-                          </TableCell>
-                          <TableCell className="p-4 font-inter text-sm text-center">
-                            <span
-                              className={`inline-flex items-center px-2 py-1 rounded-full text-sm
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <div className="flex flex-col gap-4 w-full">
+                    <Table className="w-full">
+                      <TableHeader>
+                        <TableRow className="">
+                          <TableHead className="font-inter text-base text-foreground text-center p-2">
+                            Nombre
+                          </TableHead>
+                          <TableHead className="font-inter text-base text-foreground text-center p-2">
+                            Fecha
+                          </TableHead>
+                          <TableHead className="font-inter text-base text-foreground text-center p-2">
+                            Estado de pago
+                          </TableHead>
+                          <TableHead className="font-inter text-base text-foreground text-center p-2">
+                            Estado de ingreso
+                          </TableHead>
+                          <TableHead className="p-2 w-[100px]"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {entries.map((entry) => (
+                          <TableRow key={entry.id}>
+                            <TableCell className="p-2 font-inter text-sm text-center">
+                              {entry.person.names}
+                            </TableCell>
+                            <TableCell className="p-2 font-inter text-sm text-center">
+                              {new Date(
+                                entry.entry_datetime
+                              ).toLocaleDateString()}
+                            </TableCell>
+
+                            <TableCell className="p-2 font-inter text-sm text-center">
+                              <span
+                                className={`inline-flex items-center px-2 py-1 rounded-full text-sm
                               ${
                                 entry.status_pay === "Pendiente"
                                   ? "bg-rose-100 text-rose-700"
                                   : "bg-yellow-100 text-yellow-700"
                               }`}
-                            >
-                              {entry.status_pay}
-                            </span>
-                          </TableCell>
-                          <TableCell className="p-4 font-inter text-sm text-center">
-                            <span
-                              className={`inline-flex items-center px-2 py-1 rounded-full text-sm
+                              >
+                                {entry.status_pay}
+                              </span>
+                            </TableCell>
+                            <TableCell className="p-4 font-inter text-sm text-center">
+                              <span
+                                className={`inline-flex items-center px-2 py-1 rounded-full text-sm
                               ${
                                 entry.status_entry === "Ingresado"
                                   ? "bg-green-100 text-green-700"
                                   : "bg-blue-100 text-blue-700"
                               }`}
-                            >
-                              {entry.status_entry}
-                            </span>
-                          </TableCell>
-                          <TableCell className="p-4">
-                            <div className="flex items-center justify-end gap-2">
-                              <Button variant="ghost" size="icon">
-                                <Download className="h-4 w-4" />
-                              </Button>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    Ver detalles
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem>Descargar</DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                              >
+                                {entry.status_entry}
+                              </span>
+                            </TableCell>
+                            <TableCell className="p-4">
+                              <div className="flex items-center justify-end gap-2">
+                                <Button variant="ghost" size="icon">
+                                  <Download className="h-4 w-4" />
+                                </Button>
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="icon">
+                                      <MoreVertical className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end">
+                                    <DropdownMenuItem>
+                                      Ver detalles
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem>
+                                      Descargar
+                                    </DropdownMenuItem>
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </TabsContent>
 
               <TabsContent value="validas">
-                <div className="rounded-lg pt-2">
-                  <Table className="w-full">
+              <div className="bg-white rounded-2xl shadow-sm p-6">
+              <Table className="w-full">
                     <TableHeader>
-                      <TableRow className="border-b bg-muted/50">
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
+                      <TableRow className=" ">
+                        <TableHead className="font-inter text-base text-foreground text-center p-2">
                           Nombre
                         </TableHead>
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
+                        <TableHead className="font-inter text-base text-foreground text-center p-2">
                           Fecha
                         </TableHead>
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
+                        <TableHead className="font-inter text-base text-foreground text-center p-2">
                           Estado de pago
                         </TableHead>
-                        <TableHead className="font-inter text-sm text-foreground text-center p-2">
+                        <TableHead className="font-inter text-base text-foreground text-center p-2">
                           Estado de ingreso
                         </TableHead>
                       </TableRow>
@@ -262,13 +271,6 @@ export function EntryPage() {
                         ))}
                     </TableBody>
                   </Table>
-                  <Pagination
-                    links={links}
-                    meta={meta}
-                    onPageChange={(page) =>
-                      loadEntries(page, Number.parseInt(eventId || "0"))
-                    }
-                  />
                 </div>
               </TabsContent>
 
@@ -281,9 +283,14 @@ export function EntryPage() {
                 </div>
               </TabsContent>
             </Tabs>
+
+            <Pagination
+              links={links}
+              meta={meta}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
-        <div></div>
       </div>
     </Layout>
   );

@@ -1,6 +1,7 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
 import { EntryCollection } from "./entry.interface";
+import { PER_PAGE } from "@/lib/core.function";
 
 export interface getEntryProps {
   page: number;
@@ -21,6 +22,7 @@ export const getEntries = async ({
       eventId,
       // company_id: companyId,
       name,
+      per_page: PER_PAGE,
     },
   };
   const response = await api.get(`/entry`, config);
