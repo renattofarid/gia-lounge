@@ -33,7 +33,8 @@ import { Pagination } from "@/components/pagination";
 
 export function EntryPage() {
   const { eventId } = useParams<{ eventId: string }>();
-  const { entries, loadEntries, setFilter, links, meta } = useEntryStore();
+  const { entries, loadEntries, setFilter, setStatusPay, links, meta } =
+    useEntryStore();
 
   const options = [
     { name: "Reservas", link: `/eventos/reservas/${eventId}` },
@@ -53,6 +54,11 @@ export function EntryPage() {
 
   const handlePageChange = (page: number) => {
     loadEntries(page, Number.parseInt(eventId || "0"));
+  };
+
+  const handleStatusPay = (status_pay: string) => {
+    setStatusPay(status_pay);
+    loadEntries(1, Number.parseInt(eventId || "0"));
   };
 
   return (
@@ -108,10 +114,12 @@ export function EntryPage() {
                 <TabsTrigger
                   value="todas"
                   className="flex-1 font-poopins text-base rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                  onClick={() => handleStatusPay("")}
                 >
                   Todas las entradas
                 </TabsTrigger>
                 <TabsTrigger
+                  onClick={() => handleStatusPay("Pendiente")}
                   value="validas"
                   className="flex-1 font-poopins text-base rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                 >
@@ -214,8 +222,8 @@ export function EntryPage() {
               </TabsContent>
 
               <TabsContent value="validas">
-              <div className="bg-white rounded-2xl shadow-sm p-6">
-              <Table className="w-full">
+                <div className="bg-white rounded-2xl shadow-sm p-6">
+                  <Table className="w-full">
                     <TableHeader>
                       <TableRow className=" ">
                         <TableHead className="font-inter text-base text-foreground text-center p-2">

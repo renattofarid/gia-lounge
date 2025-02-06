@@ -7,6 +7,7 @@ export interface getEntryProps {
   page: number;
   name?: string;
   eventId?: number;
+  status_pay?: string;
   // companyId: number;
 }
 
@@ -15,6 +16,7 @@ export const getEntries = async ({
   eventId,
   // companyId,
   name,
+  status_pay,
 }: getEntryProps): Promise<EntryCollection> => {
   const config: AxiosRequestConfig = {
     params: {
@@ -22,6 +24,7 @@ export const getEntries = async ({
       eventId,
       // company_id: companyId,
       name,
+      status_pay,
       per_page: PER_PAGE,
     },
   };
