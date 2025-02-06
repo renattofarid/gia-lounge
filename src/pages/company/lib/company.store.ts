@@ -9,6 +9,8 @@ interface CompanyStore {
   meta: Meta;
   companyId: number;
   setCompanyId: (id: number) => void;
+  selectCompany: CompanyItem | null;
+  setSelectCompany: (company: CompanyItem) => void;
   loading: boolean;
   loadCompanies: (page: number) => void;
 }
@@ -35,7 +37,11 @@ export const useComapanyStore = create<CompanyStore>((set) => ({
   setCompanyId: (id: number) => {
     set(() => ({ companyId: id }));
   },
-  loading: false,
+  selectCompany: null,
+  setSelectCompany: (company: CompanyItem) => {
+    set(() => ({ selectCompany: company }));
+  },
+  loading: true,
   loadCompanies: async (page: number) => {
     set(() => ({ loading: true }));
     const response: CompanyCollection = await getCompanys({ page });

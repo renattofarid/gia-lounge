@@ -7,38 +7,40 @@ export interface StationCollection {
 }
 
 export interface StationItem {
-  id: number;
-  name: string;
-  type: string;
-  status: string;
-  description: string;
-  server_id: null;
-  route: null;
-  environment_id: number;
-  environment: Environment;
+  id:               number;
+  name:             string;
+  description:      string;
+  type:             string;
+  status:           string;
+  route:            null | string;
+  server_id:        null;
+  date_reservation: string;
+  reservation:      Reservation | null;
+  environment_id:   number;
+  environment:      Environment;
 }
 
-interface Environment {
-  id: number;
-  name: string;
+export interface Environment {
+  id:          number;
+  name:        string;
   description: string;
-  route: null;
-  status: string;
-  server_id: null;
-  company_id: number;
-  company: Company;
+  route:       string;
+  status:      string;
+  server_id:   null;
+  company_id:  number;
+  company:     Company;
 }
-
-interface Company {
-  id: number;
-  ruc: string;
+export interface Company {
+  id:            number;
+  ruc:           string;
   business_name: string;
-  address: string;
-  phone: string;
-  email: string;
-  route: string;
-  status: string;
+  address:       string;
+  phone:         string;
+  email:         string;
+  route:         string;
+  status:        string;
 }
+
 
 export interface StationRequest {
   name: string;
@@ -48,3 +50,29 @@ export interface StationRequest {
   environment_id: number;
   route?: File;
 }
+
+
+
+export interface Reservation {
+  person:     Person;
+  nro_people: string;
+}
+
+export interface Person {
+  id:              number;
+  type_document:   string;
+  type_person:     string;
+  number_document: string;
+  names:           string;
+  father_surname:  string;
+  mother_surname:  string;
+  business_name:   string;
+  address:         string;
+  phone:           string;
+  email:           string;
+  ocupation:       string;
+  status:          string;
+  server_id:       null;
+}
+
+

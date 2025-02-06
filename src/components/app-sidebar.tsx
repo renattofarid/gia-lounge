@@ -11,8 +11,12 @@ export function AppSidebar() {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  const handleNavigate = (link: string) => {
-    navigate(link);
+  const handleNavigate = (item: { name: string; link: string }) => {
+    if (item.name === "Regresar") {
+      navigate(-1); 
+    } else {
+      navigate(item.link); 
+    }
   };
 
   useEffect(() => {
@@ -36,7 +40,7 @@ export function AppSidebar() {
             key={index}
             size="icon"
             className="bg-primary/60 rounded-full h-10 w-10"
-            onClick={() => handleNavigate(item.link)}
+            onClick={() => handleNavigate(item)}
           >
             <Icon className="min-w-5 min-h-5" />
           </Button>
@@ -47,7 +51,7 @@ export function AppSidebar() {
         <Button
           size="icon"
           variant={resolvedTheme === "dark" ? "default" : "ghost"}
-          className={`rounded-full h-10 w-10`}
+          className="rounded-full h-10 w-10"
           onClick={() => toggleTheme("dark")}
         >
           <Moon className="h-5 w-5" />
@@ -56,7 +60,7 @@ export function AppSidebar() {
         <Button
           size="icon"
           variant={resolvedTheme === "light" ? "default" : "ghost"}
-          className={`rounded-full h-10 w-10`}
+          className="rounded-full h-10 w-10"
           onClick={() => toggleTheme("light")}
         >
           <Sun className="h-5 w-5" />

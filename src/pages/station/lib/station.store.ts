@@ -1,19 +1,20 @@
 import { create } from "zustand";
-import {  Meta } from "@/lib/global.interface";
+import { Links, Meta } from "@/lib/global.interface";
 import { StationCollection, StationItem } from "./station.interface";
 import { getStation } from "./station.actions";
 // import { ReservationItem } from "@/pages/reservations/lib/reservation.interface";
 
-interface Stationtore {
+interface StationStore {
   stations: StationItem[];
   // reservations: ReservationItem
+  links: Links;
   meta: Meta;
   loading: boolean;
   loadStations: (page: number, environmentId?: number) => void;
   // loadReservations: (stationId: number) => void;
 }
 
-export const useStationStore = create<Stationtore>((set) => ({
+export const useStationStore = create<StationStore>((set) => ({
   stations: [],
   // reservations: [],
   // loadReservations: async (stationId: number) => {
@@ -40,7 +41,7 @@ export const useStationStore = create<Stationtore>((set) => ({
     to: 0,
     total: 0,
   },
-  loading: false,
+  loading: true,
   loadStations: async (page: number, environmentId?: number) => {
     set(() => ({ loading: true }));
     const response: StationCollection = await getStation({

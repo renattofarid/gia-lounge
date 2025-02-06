@@ -19,7 +19,7 @@ import { DialogFooter } from "@/components/ui/dialog";
 import { errorToast, successToast } from "@/lib/core.function";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useEventStore } from "../lib/event.store";
 import { createEvent } from "../lib/event.actions";
 import { Textarea } from "@/components/ui/textarea";
@@ -33,24 +33,35 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const EventSchema = z.object({
   name: z.string().nonempty("El nombre es obligatorio"),
   comment: z.string().optional(),
   event_datetime: z.date(),
+  company_id: z.number(),
 });
 
 interface AddEventProps {
   onClose: () => void;
+  companyId: number;
 }
 
-export default function CreateEvent({ onClose }: AddEventProps) {
+export default function CreateEvent({ onClose, companyId }: AddEventProps) {
   const form = useForm<z.infer<typeof EventSchema>>({
     resolver: zodResolver(EventSchema),
     defaultValues: {
       name: "",
       comment: "",
       event_datetime: new Date(),
+      company_id: companyId,
     },
   });
 
@@ -62,21 +73,26 @@ export default function CreateEvent({ onClose }: AddEventProps) {
       form.setValue("event_datetime", date);
     }
   }
- 
+
+  const { companies, loadCompanies } = useComapanyStore();
+
+  useEffect(() => {
+    loadCompanies(1);
+  }, []);
+
   function handleTimeChange(type: "hour" | "minute", value: string) {
     const currentDate = form.getValues("event_datetime") || new Date();
     let newDate = new Date(currentDate);
- 
+
     if (type === "hour") {
       const hour = parseInt(value, 10);
       newDate.setHours(hour);
     } else if (type === "minute") {
       newDate.setMinutes(parseInt(value, 10));
     }
- 
+
     form.setValue("event_datetime", newDate);
   }
- 
 
   const handleFormSubmit = async (data: z.infer<typeof EventSchema>) => {
     try {
@@ -84,7 +100,7 @@ export default function CreateEvent({ onClose }: AddEventProps) {
       const payload = { ...data, event_datetime: formattedDate };
 
       setIsSubmitting(true);
-      await createEvent(payload); 
+      await createEvent(payload);
       successToast("Evento guardado correctamente");
       onClose();
     } catch (error: any) {
@@ -117,6 +133,39 @@ export default function CreateEvent({ onClose }: AddEventProps) {
               <div className="w-full space-y-4 rounded-lg bg-secondary p-6 text-sm">
                 <FormField
                   control={form.control}
+                  name="company_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-normal">
+                        Compañía
+                      </FormLabel>
+                      <Select
+                        value={field.value?.toString()}
+                        onValueChange={(value) => field.onChange(Number(value))}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccione compañía" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {companies.map((company) => (
+                            <SelectItem
+                              key={company.id}
+                              value={company.id.toString()}
+                            >
+                              {company.business_name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem>
@@ -141,7 +190,7 @@ export default function CreateEvent({ onClose }: AddEventProps) {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-normal font-poopins">
-                      Comentario
+                        Comentario
                       </FormLabel>
                       <FormControl>
                         <Textarea
@@ -160,7 +209,9 @@ export default function CreateEvent({ onClose }: AddEventProps) {
                   name="event_datetime"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="text-sm font-normal font-poopins">Seleccionar fecha y hora</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Seleccionar fecha y hora
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>

@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DynamicAvatar } from "@/components/dinamyc-avatar";
 import { Check, MoreVertical } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useEnvironmentStore } from "../lib/environment.store";
 import { EnvironmentItem } from "../lib/environment.interface";
 import DeleteDialog from "@/components/delete-dialog";
@@ -26,10 +26,12 @@ import { deleteEnvironment } from "../lib/environment.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import UpdateEnvironment from "./updateEnvironment";
 import SkeletonTable from "@/components/skeleton-table";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 export default function EnvironmentPage() {
-  const { companyId } = useParams<{ companyId: string }>();
-  const { environments, loadEnvironments, loading } = useEnvironmentStore();
+  const { companyId } = useComapanyStore();
+  const { environments, loadEnvironments, loading, setEnvironmentId } =
+    useEnvironmentStore();
 
   const [selectedEnvironment, setSelectedEnvironment] = useState<number | null>(
     null
@@ -45,14 +47,15 @@ export default function EnvironmentPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    loadEnvironments(1, companyId ? Number(companyId) : undefined);
-  }, [loadEnvironments, companyId]);
+    if (companyId) loadEnvironments(1, companyId);
+    else navigate("/empresas");
+  }, []);
 
   const options = [
     { name: "Empresas", link: "/empresas" },
     { name: "Salones", link: "/empresas/salones" },
     { name: "Mesas/Box", link: "/empresas/mesas" },
-    {name: "Eventos", link: "/empresas/eventos"},
+    { name: "Eventos", link: "/empresas/eventos" },
   ];
 
   // const handleSelectEnvironment = (id: number) => {
@@ -97,8 +100,8 @@ export default function EnvironmentPage() {
 
   const handleConfirm = () => {
     if (selectedEnvironment) {
-      console.log("Salón seleccionado:", selectedEnvironment);
-      navigate(`/empresas/mesas/${selectedEnvironment}`);
+      setEnvironmentId(selectedEnvironment);
+      navigate(`/empresas/mesas`);
     } else {
       errorToast("Por favor, selecciona un salon.");
     }

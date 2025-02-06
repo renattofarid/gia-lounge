@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Hash, MoreVertical, Search } from "lucide-react";
-import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useStationStore } from "../lib/station.store";
 import type { StationItem } from "../lib/station.interface";
 import DeleteDialog from "@/components/delete-dialog";
@@ -43,31 +43,35 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { ReservationDetails } from "./detailReserva";
+import { Pagination } from "@/components/pagination";
 
 export default function StationPage() {
-  const { environmentId } = useParams<{ environmentId: string }>();
-  const { stations, loadStations, loading } = useStationStore();
-  const { environments, loadEnvironments } = useEnvironmentStore();
-  const [selectedEnvironmentId, setSelectedEnvironmentId] = useState<
-    string | undefined
-  >(environmentId);
+  const { environmentId, setEnvironmentId } = useEnvironmentStore();
+  const { stations, loadStations, loading, links, meta } = useStationStore();
+  const { environments } = useEnvironmentStore();
   const [filter, setFilter] = useState("");
+  const navigator = useNavigate();
 
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
   );
+
   const [idDeleteSelected, setIdDeleteSelected] = useState<number>(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isShowReservationDialogOpen, setIsShowReservationDialogOpen] =
+    useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  const [selectedStation, setSelectedStation] = useState<StationItem | null>(
+    null
+  );
+
   useEffect(() => {
-    loadEnvironments(1);
-    loadStations(
-      1,
-      selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-    );
-  }, [loadStations, loadEnvironments, selectedEnvironmentId]);
+    if (environmentId) loadStations(1, environmentId);
+    else navigator("/empresas/salones");
+  }, []);
 
   const options = [
     { name: "Empresas", link: "/empresas" },
@@ -88,19 +92,13 @@ export default function StationPage() {
 
   const handleClose = () => {
     setIsDialogOpen(false);
-    loadStations(
-      1,
-      selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-    );
+    loadStations(1, environmentId);
   };
 
   const handleDelete = () => {
     deleteStation(idDeleteSelected)
       .then(() => {
-        loadStations(
-          1,
-          selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-        );
+        loadStations(1, environmentId);
         setIsDeleteDialogOpen(false);
         successToast("Mesa eliminada correctamente");
       })
@@ -111,15 +109,22 @@ export default function StationPage() {
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
-    loadStations(
-      1,
-      selectedEnvironmentId ? Number(selectedEnvironmentId) : undefined
-    );
+    loadStations(1, environmentId);
+  };
+
+  const handleShowDetails = (station: StationItem) => {
+    setSelectedStation(station);
+    setIsShowReservationDialogOpen(true);
+  };
+
+  const handleCloseReservationDetails = () => {
+    setIsShowReservationDialogOpen(false);
+    setSelectedStation(null);
   };
 
   const handleEnvironmentChange = (value: string) => {
-    setSelectedEnvironmentId(value === "all" ? undefined : value);
-    loadStations(1, value === "all" ? undefined : Number(value));
+    setEnvironmentId(Number(value));
+    loadStations(1, Number(value));
   };
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -129,6 +134,10 @@ export default function StationPage() {
   const filteredStations = stations.filter((station) =>
     station.name.toLowerCase().includes(filter.toLowerCase())
   );
+
+  const handlePageChange = (page: number) => {
+    loadStations(page, environmentId);
+  };
 
   return (
     <Layout options={options}>
@@ -175,7 +184,7 @@ export default function StationPage() {
                       </DialogDescription>
                     </DialogHeader>
                     <CreateStation
-                      environmentId={Number(selectedEnvironmentId)}
+                      environmentId={Number(environmentId)}
                       onClose={handleClose}
                     />
                   </DialogContent>
@@ -188,13 +197,12 @@ export default function StationPage() {
           <div className="w-full mb-4 flex justify-end">
             <Select
               onValueChange={handleEnvironmentChange}
-              value={selectedEnvironmentId || "all"}
+              value={environmentId.toString()}
             >
               <SelectTrigger className="w-[200px] items-center">
                 <SelectValue placeholder="Seleccionar Salón" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todos los Salones</SelectItem>
                 {environments.map((env) => (
                   <SelectItem key={env.id} value={env.id.toString()}>
                     {`${env.name} - ${env.company.business_name}`}
@@ -214,6 +222,9 @@ export default function StationPage() {
                   Tipo
                 </TableHead>
                 <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  Fecha de reserva
+                </TableHead>
+                <TableHead className="font-inter text-base text-foreground text-center p-2">
                   Estado
                 </TableHead>
                 <TableHead className="font-inter text-base text-foreground text-center p-2">
@@ -231,6 +242,10 @@ export default function StationPage() {
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
                     <Badge>{station.type}</Badge>
                   </TableCell>
+                  <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                    {station.date_reservation}
+                  </TableCell>
+
                   <TableCell className="font-inter text-center py-2 px-2 text-sm">
                     <Badge
                       className={`${
@@ -268,7 +283,10 @@ export default function StationPage() {
                         >
                           <span>Eliminar</span>
                         </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                        <DropdownMenuItem
+                          onClick={() => handleShowDetails(station)}
+                          className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                        >
                           <span>Detalles</span>
                         </DropdownMenuItem>
                       </DropdownMenuContent>
@@ -278,6 +296,12 @@ export default function StationPage() {
               ))}
             </TableBody>
           </Table>
+
+          <Pagination
+            links={links}
+            meta={meta}
+            onPageChange={handlePageChange}
+          />
 
           <Dialog
             open={isUpdateDialogOpen}
@@ -291,7 +315,7 @@ export default function StationPage() {
                 <DialogDescription />
               </DialogHeader>
               <UpdateStation
-                environmentId={Number(selectedEnvironmentId)}
+                environmentId={Number(environmentId)}
                 onClose={handleUpdateClose}
                 station={stationUpdate}
               />
@@ -303,6 +327,28 @@ export default function StationPage() {
             onConfirm={handleDelete}
             onCancel={() => setIsDeleteDialogOpen(false)}
           />
+
+          <Dialog
+            open={isShowReservationDialogOpen}
+            onOpenChange={setIsShowReservationDialogOpen}
+          >
+            <DialogContent className="p-6 max-w-5xl">
+              <DialogHeader>
+                <DialogTitle className="font-inter">
+                  Detalle de la Reserva
+                </DialogTitle>
+                <DialogDescription>
+                  {selectedStation && `Mesa: ${selectedStation.name}`}
+                </DialogDescription>
+              </DialogHeader>
+              {selectedStation && (
+                <ReservationDetails
+                  station={selectedStation}
+                  onClose={handleCloseReservationDetails}
+                />
+              )}
+            </DialogContent>
+          </Dialog>
         </div>
       )}
     </Layout>

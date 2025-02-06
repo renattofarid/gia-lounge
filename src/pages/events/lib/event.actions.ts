@@ -6,7 +6,7 @@ import { EventCollection } from "./event.interface";
 export interface getEventsProps {
   page: number;
   name?: string;
-  companyId: number;
+  companyId?: number;
 }
 
 export const getEvents = async ({

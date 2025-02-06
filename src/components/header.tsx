@@ -9,35 +9,20 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
-import { useEffect, useState } from "react";
-import { getCompany } from "@/pages/company/lib/company.actions";
+// import { useEffect, useState } from "react";
+// import { getCompany } from "@/pages/company/lib/company.actions";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function Header() {
   const { clearAuth } = useAuthStore();
   const navigate = useNavigate();
 
-  const { companyId, loadCompanies } = useComapanyStore();
-  const [companyLogo, setCompanyLogo] = useState<string | null>(null); // Estado para guardar el logo
+  const { selectCompany } = useComapanyStore();
 
   const handleLogout = () => {
     clearAuth();
     navigate("/login"); // Redirige al usuario a la página de inicio de sesión
   };
-  useEffect(() => {
-    const fetchCompany = async () => {
-      try {
-        await loadCompanies(1); // 
-        const selectedCompany = await getCompany(companyId); // Obtiene la compañía por ID
-        setCompanyLogo(selectedCompany?.route || null); // Establece el logo
-      } catch (error) {
-        console.error("Error al cargar la compañía:", error);
-      }
-    };
-
-    if (companyId) {
-      fetchCompany();
-    }
-  }, [companyId, loadCompanies]);
 
   return (
     <header className="">
@@ -55,12 +40,13 @@ export default function Header() {
             className="rounded-full bg-foreground hover:bg-foreground/80"
           >
             {/* <Store className="min-w-5 min-h-5" /> */}
-            {companyLogo ? (
-              <img
-                src={companyLogo}
-                alt="Logo de la compañía"
-                className="h-8 w-8 object-cover rounded-full"
-              />
+            {selectCompany ? (
+              <Avatar>
+                <AvatarImage src={selectCompany.route} alt="Logo Empresa" />
+                <AvatarFallback className="bg-gray-200 text-gray-600 flex items-center justify-center w-full h-full rounded-full">
+                  {selectCompany.business_name[0]?.toUpperCase() || "E"}
+                </AvatarFallback>
+              </Avatar>
             ) : (
               <span className="text-white">
                 <Store />
