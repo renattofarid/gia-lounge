@@ -199,7 +199,7 @@ export default function StationPage() {
               onValueChange={handleEnvironmentChange}
               value={environmentId.toString()}
             >
-              <SelectTrigger className="w-[200px] items-center">
+              <SelectTrigger className="w-[200px] items-center dark:border-gray-800">
                 <SelectValue placeholder="Seleccionar Salón" />
               </SelectTrigger>
               <SelectContent>
@@ -250,10 +250,11 @@ export default function StationPage() {
                     <Badge
                       className={`${
                         station.status === "Reservado"
-                          ? "text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE]"
-                          : station.status === "Disponible"
-                          ? "text-[#96C451] bg-[#E5FFBD99] hover:bg-[#E5FFBD]"
-                          : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5]"
+                        ? "text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE] dark:text-[#FF945D] dark:bg-[#7A3A24] dark:hover:bg-[#9A4B30]"
+                        : station.status === "Disponible"
+                        ? "text-[#96C451] bg-[#E5FFBD99] hover:bg-[#E5FFBD] dark:text-green-200 dark:bg-green-950 dark:hover:bg-[#3A5E26]"
+                        : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5] dark:bg-rose-950 dark:text-rose-200 dark:hover:bg-[#742828]"
+
                       }`}
                     >
                       {station.status}

@@ -27,6 +27,7 @@ import {
 import { LoaderCircle } from "lucide-react";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
@@ -76,9 +77,10 @@ export default function UpdateStation({
   // );
 
   const { environments, loading, loadEnvironments } = useEnvironmentStore();
+  const { companyId } = useComapanyStore();
 
   useEffect(() => {
-    loadEnvironments(1);
+    loadEnvironments(1, companyId);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -95,7 +97,14 @@ export default function UpdateStation({
         // route: file ?? undefined,
       };
       await updateStation(station.id, stantionData);
-      successToast("Mesa guardada correctamente");
+      // successToast("Mesa guardada correctamente");
+
+      successToast(
+        `${
+          data.type === "MESA" ? "Mesa guardada" : "Box guardado"
+        } correctamente`
+      );
+
       setIsSending(false);
       onClose();
     } catch (error) {

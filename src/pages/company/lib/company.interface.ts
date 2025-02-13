@@ -11,7 +11,7 @@ export interface CompanyItem {
   address: string;
   phone: string;
   email: string;
-  route: string;
+  route: string ;
 }
 
 export interface CompanyRequest {

@@ -86,13 +86,13 @@ export default function ReservationsPage() {
       <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
         <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 max-w-screen-xl">
           {statsData.map((stat, index) => (
-            <Card key={index} className="p-4 bg-white rounded-3xl ">
+            <Card key={index} className="p-4 bg-card rounded-3xl ">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
                   <img src="/icono.png" className="w-6 h-6 object-contain" />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-base font-inter text-gray-900">
+                  <span className="text-base font-inter text-foreground">
                     {stat.label}
                   </span>
                   <span className="text-xl font-inter font-bold">
@@ -136,7 +136,7 @@ export default function ReservationsPage() {
             </div>
 
             {/* Selects y botón de descarga */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 ">
               <Select defaultValue="all">
                 <SelectTrigger className="w-[120px]">
                   <SelectValue placeholder="Estado" />
@@ -180,7 +180,7 @@ export default function ReservationsPage() {
 
         {/* Reservations Table */}
         <Table>
-          <TableHeader>
+          <TableHeader className="">
             <TableRow>
               <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Cod.

@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/select";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
@@ -74,9 +75,11 @@ export default function CreateStation({
   // );
 
   const { environments, loading, loadEnvironments } = useEnvironmentStore();
+  const { companyId } = useComapanyStore();
 
   useEffect(() => {
-    loadEnvironments(1);
+    loadEnvironments(1, companyId);
+    console.log(loadEnvironments);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -93,7 +96,8 @@ export default function CreateStation({
         // route: file ?? undefined,
       };
       await createStation(stationData);
-      successToast("Mesa guardada correctamente");
+      //PONER MESA O BOX SEGUN EL TIPO
+      successToast(`${data.type === "MESA" ? "Mesa guardada" : "Box guardado"} correctamente`)
       setIsSending(false);
       onClose();
     } catch (error) {
@@ -136,7 +140,7 @@ export default function CreateStation({
                         onValueChange={(value) => field.onChange(Number(value))} // Convierte a número
                         defaultValue={
                           field.value ? field.value.toString() : undefined
-                        } 
+                        }
                       >
                         <FormControl>
                           <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">

@@ -225,8 +225,8 @@ export default function EventPage() {
                         <Badge
                           className={`${
                             event.status === "Próximo"
-                              ? "text-[#7A37B8] bg-[#7A37B84F] hover:bg-[#7A37B8] hover:text-white"
-                              : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5]"
+                              ? "text-[#7A37B8] bg-[#7A37B84F] hover:bg-[#7A37B8] hover:text-white dark:bg-violet-950 dark:text-violet-200 dark:hover:bg-violet-900"
+                              : "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FFA5A5] dark:bg-rose-950 dark:text-rose-200 dark:hover:bg-[#742828]"
                           }`}
                         >
                           {event.status}
