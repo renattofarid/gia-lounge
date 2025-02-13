@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Calendar, MoreVertical, Search } from "lucide-react";
+import { CalendarIcon, MoreVertical, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -41,6 +41,13 @@ import { es } from "date-fns/locale";
 import UpdateEvent from "./updateEventPage";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 import SkeletonTable from "@/components/skeleton-table";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
 
 export default function EventPage() {
   const options = [
@@ -66,15 +73,26 @@ export default function EventPage() {
 
   const [eventSelected, setEventSelected] = useState({} as EventItem);
   const [idSelected, setIdSelected] = useState(0);
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [dateSelected, setDateSelected] = useState<string | undefined>(
+    undefined
+  );
 
   const handleClose = () => {
     setIsAddDialogOpen(false);
-    loadEvents(1, companyId);
+    loadEvents(1, companyId, dateSelected);
+  };
+
+  const handleSelectDate = (date?: Date) => {
+    if (!date) return;
+    setDate(date);
+    setDateSelected(format(date, "dd-MM-yyyy"));
+    loadEvents(1, companyId, format(date, "yyyy-MM-dd"));
   };
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
-    loadEvents(1, companyId);
+    loadEvents(1, companyId, dateSelected);
   };
 
   const handleClickDelete = (id: number) => {
@@ -87,7 +105,7 @@ export default function EventPage() {
       await deleteEvent(idSelected).then(() => {
         setIsDeleteDialogOpen(false);
         successToast("Evento eliminado correctamente");
-        loadEvents(1, companyId);
+        loadEvents(1, companyId, dateSelected);
       });
     } catch (error) {
       errorToast("Error al eliminar el evento");
@@ -105,11 +123,11 @@ export default function EventPage() {
   };
 
   const handleSearch = () => {
-    loadEvents(1, companyId);
+    loadEvents(1, companyId, dateSelected);
   };
 
   useEffect(() => {
-    if (companyId) loadEvents(1, companyId);
+    if (companyId) loadEvents(1, companyId, dateSelected);
     else navigator("/empresas");
   }, []);
 
@@ -130,6 +148,32 @@ export default function EventPage() {
               <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full">
                 <div className="flex gap-2 flex-col sm:flex-row w-full justify-end">
                   <div className="flex gap-2">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"outline"}
+                          className={cn(
+                            "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon />
+                          {date ? (
+                            format(date, "yyyy-MM-dd", { locale: es })
+                          ) : (
+                            <span>Seleccionar Fecha</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={(date) => handleSelectDate(date)}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                     <Input
                       placeholder="Busqueda ..."
                       className="sm:w-[300px] font-poopins text-sm"
@@ -163,7 +207,10 @@ export default function EventPage() {
                           Agregar Evento
                         </DialogTitle>
                       </DialogHeader>
-                      <CreateEvent onClose={handleClose} companyId={companyId} />
+                      <CreateEvent
+                        onClose={handleClose}
+                        companyId={companyId}
+                      />
                     </DialogContent>
                   </Dialog>
                 </div>
@@ -208,7 +255,7 @@ export default function EventPage() {
                   {events.map((event) => (
                     <TableRow key={event.id}>
                       <TableCell className="flex gap-2 justify-start items-center text-sm font-inter py-2 px-2 ">
-                        <Calendar className="w-5 h-5" />
+                        <CalendarIcon className="w-5 h-5" />
                         {format(
                           new Date(event.event_datetime),
                           "dd 'de' MMMM 'del' yyyy 'a las' HH:mm",
