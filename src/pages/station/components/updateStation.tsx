@@ -107,8 +107,14 @@ export default function UpdateStation({
 
       setIsSending(false);
       onClose();
-    } catch (error) {
-      errorToast("Ocurrió un error al guardar la mesa");
+    } catch (error:any) {
+      console.error("Error capturado:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Ocurrió un error al guardar los datos";
+      errorToast(errorMessage);
+    } finally {
+
       setIsSending(false);
     }
   };
@@ -308,7 +314,7 @@ export default function UpdateStation({
               variant="outline"
               type="reset"
               onClick={onClose}
-              className="bg-foreground text-white font-inter hover:bg-foreground/95 hover:text-white text-sm"
+              className="bg-foreground text-white dark:text-black font-inter hover:bg-foreground/95 hover:text-white text-sm"
             >
               Cancelar
             </Button>
