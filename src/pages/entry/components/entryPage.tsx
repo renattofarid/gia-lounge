@@ -1,73 +1,46 @@
-"use client";
+"use client"
 
-import { useParams } from "react-router-dom";
-import { useEntryStore } from "../lib/entry.store";
-import { useEffect } from "react";
-import Layout from "@/components/layouts/layout";
-import { Search, Download, MoreVertical } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Pagination } from "@/components/pagination";
-import { Skeleton } from "@/components/ui/skeleton";
+import { useParams } from "react-router-dom"
+import { useEntryStore } from "../lib/entry.store"
+import { useEffect } from "react"
+import Layout from "@/components/layouts/layout"
+import { Search, Download, MoreVertical } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow }    from "@/components/ui/table"
+import { Pagination } from "@/components/pagination"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export function EntryPage() {
-  const { eventId } = useParams<{ eventId: string }>();
-  const {
-    entries,
-    loadEntries,
-    setFilter,
-    setStatusPay,
-    links,
-    meta,
-    loading,
-  } = useEntryStore();
+  const { eventId } = useParams<{ eventId: string }>()
+  const { entries, loadEntries, setFilter, setStatusPay, links, meta, loading } = useEntryStore()
 
   const options = [
     { name: "Reservas", link: `/eventos/reservas/${eventId}` },
     { name: "Entradas", link: `/eventos/entradas/${eventId}` },
-  ];
+  ]
 
   useEffect(() => {
     if (eventId) {
-      loadEntries(1, Number.parseInt(eventId));
+      loadEntries(1, Number.parseInt(eventId))
     }
-  }, [eventId, loadEntries]);
+  }, [eventId, loadEntries])
 
   const handleSearch = (value: string) => {
-    setFilter(value);
-    loadEntries(1, Number.parseInt(eventId || "0"));
-  };
+    setFilter(value)
+    loadEntries(1, Number.parseInt(eventId || "0"))
+  }
 
   const handlePageChange = (page: number) => {
-    loadEntries(page, Number.parseInt(eventId || "0"));
-  };
+    loadEntries(page, Number.parseInt(eventId || "0"))
+  }
 
   const handleStatusPay = (status_pay: string) => {
-    setStatusPay(status_pay);
-    loadEntries(1, Number.parseInt(eventId || "0"));
-  };
+    setStatusPay(status_pay)
+    loadEntries(1, Number.parseInt(eventId || "0"))
+  }
 
   return (
     <Layout options={options}>
@@ -75,9 +48,7 @@ export function EntryPage() {
         <div className="w-full max-w-screen-2xl mx-auto space-y-6">
           <div className="space-y-4">
             <h1 className="text-2xl font-bold font-inter">Entradas</h1>
-            <p className="text-sm text-muted-foreground font-inter">
-              Listado de entradas por evento.
-            </p>
+            <p className="text-sm text-muted-foreground font-inter">Listado de entradas por evento.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end items-center gap-2 w-full">
@@ -87,33 +58,10 @@ export function EntryPage() {
                 onChange={(e) => handleSearch(e.target.value)}
                 className="sm:w-[300px] font-poopins text-sm"
               />
-              <Button
-                size="icon"
-                className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
-                // onClick={handleSearch}
-              >
-                <Search className="min-w-4 min-h-4 text-secondary" />
+              <Button size="icon" className="bg-foreground hover:bg-foreground/90 text-background min-w-9 h-9">
+                <Search className="min-w-4 min-h-4" />
               </Button>
             </div>
-            {/* <Select>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos</SelectItem>
-                <SelectItem value="Pendientes">Pendiente</SelectItem>
-                <SelectItem value="completed">Completado</SelectItem>
-              </SelectContent>
-            </Select> */}
-            {/* <Select>
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Seleccione evento" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="event1">Evento 1</SelectItem>
-                      <SelectItem value="event2">Evento 2</SelectItem>
-                    </SelectContent>
-                  </Select> */}
           </div>
 
           <div className="flex sm:flex-col flex-row justify-between items-center gap-2 w-full">
@@ -142,24 +90,15 @@ export function EntryPage() {
               </TabsList>
 
               <TabsContent value="todas">
-                {/* Table */}
-                <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="bg-card rounded-2xl shadow-sm p-6">
                   <div className="flex flex-col gap-4 w-full">
                     <Table className="w-full">
                       <TableHeader>
-                        <TableRow className="">
-                          <TableHead className="font-inter text-base text-foreground text-center p-2">
-                            Nombre
-                          </TableHead>
-                          <TableHead className="font-inter text-base text-foreground text-center p-2">
-                            Fecha
-                          </TableHead>
-                          <TableHead className="font-inter text-base text-foreground text-center p-2">
-                            Estado de pago
-                          </TableHead>
-                          <TableHead className="font-inter text-base text-foreground text-center p-2">
-                            Estado de ingreso
-                          </TableHead>
+                        <TableRow>
+                          <TableHead className="font-inter text-base text-center p-2">Nombre</TableHead>
+                          <TableHead className="font-inter text-base text-center p-2">Fecha</TableHead>
+                          <TableHead className="font-inter text-base text-center p-2">Estado de pago</TableHead>
+                          <TableHead className="font-inter text-base text-center p-2">Estado de ingreso</TableHead>
                           <TableHead className="p-2 w-[100px]"></TableHead>
                         </TableRow>
                       </TableHeader>
@@ -190,19 +129,16 @@ export function EntryPage() {
                                   {entry.person.names}
                                 </TableCell>
                                 <TableCell className="p-2 font-inter text-sm text-center">
-                                  {new Date(
-                                    entry.entry_datetime
-                                  ).toLocaleDateString()}
+                                  {new Date(entry.entry_datetime).toLocaleDateString()}
                                 </TableCell>
-
                                 <TableCell className="p-2 font-inter text-sm text-center">
                                   <span
                                     className={`inline-flex items-center px-2 py-1 rounded-full text-sm
-                              ${
-                                entry.status_pay === "Pendiente"
-                                  ? "bg-rose-100 text-rose-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                              }`}
+                                      ${
+                                        entry.status_pay === "Pendiente"
+                                          ? "dark:bg-rose-950 dark:text-rose-200 bg-rose-100 text-rose-700"
+                                          : "dark:bg-yellow-950 dark:text-yellow-200 bg-yellow-100 text-yellow-700"
+                                      }`}
                                   >
                                     {entry.status_pay}
                                   </span>
@@ -210,11 +146,11 @@ export function EntryPage() {
                                 <TableCell className="p-4 font-inter text-sm text-center">
                                   <span
                                     className={`inline-flex items-center px-2 py-1 rounded-full text-sm
-                              ${
-                                entry.status_entry === "Ingresado"
-                                  ? "bg-green-100 text-green-700"
-                                  : "bg-blue-100 text-blue-700"
-                              }`}
+                                      ${
+                                        entry.status_entry === "Ingresado"
+                                          ? "dark:bg-green-950 dark:text-green-200 bg-green-100 text-green-700"
+                                          : "dark:bg-blue-950 dark:text-blue-200 bg-blue-100 text-blue-700"
+                                      }`}
                                   >
                                     {entry.status_entry}
                                   </span>
@@ -231,12 +167,8 @@ export function EntryPage() {
                                         </Button>
                                       </DropdownMenuTrigger>
                                       <DropdownMenuContent align="end">
-                                        <DropdownMenuItem>
-                                          Ver detalles
-                                        </DropdownMenuItem>
-                                        <DropdownMenuItem>
-                                          Descargar
-                                        </DropdownMenuItem>
+                                        <DropdownMenuItem>Ver detalles</DropdownMenuItem>
+                                        <DropdownMenuItem>Descargar</DropdownMenuItem>
                                       </DropdownMenuContent>
                                     </DropdownMenu>
                                   </div>
@@ -250,22 +182,14 @@ export function EntryPage() {
               </TabsContent>
 
               <TabsContent value="validas">
-                <div className="bg-white rounded-2xl shadow-sm p-6">
+                <div className="bg-card rounded-2xl shadow-sm p-6">
                   <Table className="w-full">
                     <TableHeader>
-                      <TableRow className=" ">
-                        <TableHead className="font-inter text-base text-foreground text-center p-2">
-                          Nombre
-                        </TableHead>
-                        <TableHead className="font-inter text-base text-foreground text-center p-2">
-                          Fecha
-                        </TableHead>
-                        <TableHead className="font-inter text-base text-foreground text-center p-2">
-                          Estado de pago
-                        </TableHead>
-                        <TableHead className="font-inter text-base text-foreground text-center p-2">
-                          Estado de ingreso
-                        </TableHead>
+                      <TableRow>
+                        <TableHead className="font-inter text-base text-center p-2">Nombre</TableHead>
+                        <TableHead className="font-inter text-base text-center p-2">Fecha</TableHead>
+                        <TableHead className="font-inter text-base text-center p-2">Estado de pago</TableHead>
+                        <TableHead className="font-inter text-base text-center p-2">Estado de ingreso</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -284,29 +208,24 @@ export function EntryPage() {
                               <TableCell className="p-2">
                                 <Skeleton className="h-6 w-32 mx-auto" />
                               </TableCell>
-                              <TableCell className="p-2">
-                                <Skeleton className="h-6 w-10 mx-auto" />
-                              </TableCell>
                             </TableRow>
                           ))
                         : entries
-                            .filter((entry) => entry.status_pay === "Pendiente") // Filtrado
+                            .filter((entry) => entry.status_pay === "Pendiente")
                             .map((entry) => (
                               <TableRow key={entry.id}>
                                 <TableCell className="p-4 font-inter text-sm text-center">
                                   {entry.person.names}
                                 </TableCell>
                                 <TableCell className="p-4 font-inter text-sm text-center">
-                                  {new Date(
-                                    entry.entry_datetime
-                                  ).toLocaleDateString()}
+                                  {new Date(entry.entry_datetime).toLocaleDateString()}
                                 </TableCell>
                                 <TableCell className="p-4 font-inter text-sm text-center">
                                   <span
                                     className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
                                       entry.status_pay === "Pendiente"
-                                        ? "bg-rose-100 text-rose-700"
-                                        : "bg-yellow-100 text-yellow-700"
+                                        ? "dark:bg-rose-950 dark:text-rose-200 bg-rose-100 text-rose-700"
+                                        : "dark:bg-yellow-950 dark:text-yellow-200 bg-yellow-100 text-yellow-700"
                                     }`}
                                   >
                                     {entry.status_pay}
@@ -316,8 +235,8 @@ export function EntryPage() {
                                   <span
                                     className={`inline-flex items-center px-2 py-1 rounded-full text-sm ${
                                       entry.status_entry === "Ingresado"
-                                        ? "bg-green-100 text-green-700"
-                                        : "bg-blue-100 text-blue-700"
+                                        ? "dark:bg-green-950 dark:text-green-200 bg-green-100 text-green-700"
+                                        : "dark:bg-blue-950 dark:text-blue-200 bg-blue-100 text-blue-700"
                                     }`}
                                   >
                                     {entry.status_entry}
@@ -332,22 +251,16 @@ export function EntryPage() {
 
               <TabsContent value="reporte">
                 <div className="space-y-4">
-                  {/* Add content for report tab */}
-                  <p className="text-muted-foreground">
-                    Contenido del reporte de entradas
-                  </p>
+                  <p className="text-muted-foreground">Contenido del reporte de entradas</p>
                 </div>
               </TabsContent>
             </Tabs>
 
-            <Pagination
-              links={links}
-              meta={meta}
-              onPageChange={handlePageChange}
-            />
+            <Pagination links={links} meta={meta} onPageChange={handlePageChange} />
           </div>
         </div>
       </div>
     </Layout>
-  );
+  )
 }
+

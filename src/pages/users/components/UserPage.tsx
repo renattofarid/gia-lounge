@@ -33,6 +33,8 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import DeleteDialog from "@/components/delete-dialog";
 import { deleteUser } from "../lib/user.actions";
 import { errorToast, successToast } from "@/lib/core.function";
+// import { useAuthStore } from "@/pages/auth/lib/auth.store";
+// import { USER_TYPE } from "@/lib/menu";
 
 export default function UserPage() {
   const options = [
@@ -41,6 +43,8 @@ export default function UserPage() {
   ];
 
   // STORE
+  // const type = USER_TYPE;
+  // const { permisos } = useAuthStore();
   const { users, loadUsers, filter, setFilter } = useUserStore();
 
   // STATE
@@ -219,10 +223,9 @@ export default function UserPage() {
                             <span className="font-inter">Editar</span>
                           </DropdownMenuItem>
 
-                          {/* Permisos */}
-                          <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
+                          {/* <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
                             <span>Permisos</span>
-                          </DropdownMenuItem>
+                          </DropdownMenuItem> */}
 
                           {/* Eliminar opción */}
                           <DropdownMenuItem

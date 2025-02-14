@@ -6,6 +6,23 @@ export interface UserCollection {
   meta: Meta;
 }
 
+export interface UserRequest {
+  username: string;
+  password: string;
+  type_document: string;
+  type_person: string;
+  business_name?: string;
+  address: string;
+  occupation?: string;
+  phone?: string;
+  email?: string;
+  number_document: string;
+  names?: string;
+  father_surname?: string;
+  mother_surname?: string;
+  rol_id: number;
+}
+
 export interface UserItem {
   id: number;
   name: string;

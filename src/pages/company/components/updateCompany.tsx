@@ -18,7 +18,10 @@ const CompanySchema = z.object({
   ruc: z.string().nonempty(),
   business_name: z.string().optional(),
   address: z.string().nonempty(),
-  phone: z.string().nonempty(),
+  phone: z
+    .string()
+    .nonempty()
+    .regex(/^\d{9}$/, "El teléfono debe tener 9 dígitos"),
   email: z.string().email(),
   route: z.string().optional(),
 })
@@ -54,18 +57,17 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
-        const file = event.target.files[0]
+        const newFile = event.target.files[0]
         // Clean up the previous preview URL if it exists
         if (previewImage && !previewImage.startsWith("http")) {
           URL.revokeObjectURL(previewImage)
         }
-        const imageUrl = URL.createObjectURL(file)
+        const imageUrl = URL.createObjectURL(newFile)
         setPreviewImage(imageUrl)
-        form.setValue("route", file.name)
-        setFile(file)
+        setFile(newFile)
       }
     },
-    [form, previewImage],
+    [previewImage],
   )
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -79,7 +81,7 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
         address: data.address,
         phone: data.phone,
         email: data.email,
-        route: file ?? undefined,
+        route: file || undefined,
       }
       await updateCompany(company.id, companyData)
       successToast("Empresa guardada correctamente")
@@ -216,6 +218,11 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                           placeholder="Teléfono"
+                          maxLength={9}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
+                          onInput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))}
+                          {...field}
                           {...field}
                         />
                       </FormControl>

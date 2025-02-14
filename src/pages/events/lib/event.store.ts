@@ -10,7 +10,7 @@ interface EventStore {
   loading: boolean;
   filter: string;
   setFilter: (filter: string) => void;
-  loadEvents: (page: number, companyId?: number) => void;
+  loadEvents: (page: number, companyId?: number, date?: string) => void;
 }
 
 export const useEventStore = create<EventStore>((set, get) => ({
@@ -34,7 +34,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
   loading: true,
   filter: "",
   setFilter: (filter: string) => set({ filter }),
-  loadEvents: async (page: number, companyId?: number) => {
+  loadEvents: async (page: number, companyId?: number, date?: string) => {
     set(() => ({ loading: true }));
     try {
       const filter = get().filter;
@@ -42,6 +42,7 @@ export const useEventStore = create<EventStore>((set, get) => ({
         page,
         companyId,
         name: filter,
+        event_datetime: date,
       });
 
       set(() => ({

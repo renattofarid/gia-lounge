@@ -217,6 +217,9 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                           placeholder="Teléfono"
                           maxLength={9}
+                          pattern="[0-9]*"
+                          inputMode="numeric"
+                          onInput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))}
                           {...field}
                         />
                       </FormControl>
