@@ -25,13 +25,14 @@ const CompanySchema = z.object({
   ruc: z
     .string()
     .nonempty("El RUC es obligatorio")
-    .length(11, "El RUC debe tener exactamente 11 dígitos"),
+    .length(11, "El RUC debe tener exactamente 11 dígitos")
+    .regex(/^\d+$/, "El RUC solo debe contener números"),
   business_name: z.string().optional(),
   address: z.string().nonempty(),
   phone: z
-  .string()
-  .nonempty("El teléfono es obligatorio")
-  .regex(/^\d{9}$/, "El teléfono debe tener 9 dígitos"),
+    .string()
+    .nonempty("El teléfono es obligatorio")
+    .regex(/^\d{9}$/, "El teléfono debe tener 9 dígitos"),
   email: z.string().email(),
   route: z.string().optional(),
 });
@@ -134,7 +135,7 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
                 <FormField
                   control={form.control}
                   name="ruc"
-                  render={({ field}) => (
+                  render={({ field }) => (
                     <FormItem className="relative">
                       <FormLabel className="text-sm font-normal">RUC</FormLabel>
                       <FormControl>
@@ -143,6 +144,9 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Número de documento"
                             maxLength={11}
+                            pattern="[0-9]*" 
+                            inputMode="numeric"
+                            onInput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))} // Elimina cualquier carácter que no sea número
                             {...field}
                           />
                           <button
@@ -219,7 +223,10 @@ export default function CreateCompanyPage({ onClose }: AddCompanyProps) {
                           maxLength={9}
                           pattern="[0-9]*"
                           inputMode="numeric"
-                          onInput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))}
+                          onInput={(e) =>
+                            (e.currentTarget.value =
+                              e.currentTarget.value.replace(/\D/g, ""))
+                          }
                           {...field}
                         />
                       </FormControl>

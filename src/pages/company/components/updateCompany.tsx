@@ -1,21 +1,32 @@
-"use client"
+"use client";
 
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useState, useCallback, useEffect } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState, useCallback, useEffect } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 
-import { errorToast, successToast } from "@/lib/core.function"
-import { Skeleton } from "@/components/ui/skeleton"
-import { updateCompany } from "../lib/company.actions"
-import { searchPersonByRUC } from "@/pages/users/lib/user.actions"
-import type { CompanyItem, CompanyRequest } from "../lib/company.interface"
+import { errorToast, successToast } from "@/lib/core.function";
+import { Skeleton } from "@/components/ui/skeleton";
+import { updateCompany } from "../lib/company.actions";
+import { searchPersonByRUC } from "@/pages/users/lib/user.actions";
+import type { CompanyItem, CompanyRequest } from "../lib/company.interface";
 
 const CompanySchema = z.object({
-  ruc: z.string().nonempty(),
+  ruc: z
+    .string()
+    .nonempty()
+    .length(11, "El RUC debe tener exactamente 11 dígitos")
+    .regex(/^\d+$/, "El RUC solo debe contener números"),
   business_name: z.string().optional(),
   address: z.string().nonempty(),
   phone: z
@@ -24,17 +35,22 @@ const CompanySchema = z.object({
     .regex(/^\d{9}$/, "El teléfono debe tener 9 dígitos"),
   email: z.string().email(),
   route: z.string().optional(),
-})
+});
 
 interface AddCompanyProps {
-  onClose: () => void
-  company: CompanyItem
+  onClose: () => void;
+  company: CompanyItem;
 }
 
-export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(company.route || null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [file, setFile] = useState<File | null>(null)
+export default function UpdateCompanyPage({
+  onClose,
+  company,
+}: AddCompanyProps) {
+  const [previewImage, setPreviewImage] = useState<string | null>(
+    company.route || null
+  );
+  const [isLoading, setIsLoading] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof CompanySchema>>({
     resolver: zodResolver(CompanySchema),
@@ -46,35 +62,35 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
       email: company.email,
       route: "",
     },
-  })
+  });
 
   useEffect(() => {
     if (company.route) {
-      setPreviewImage(company.route)
+      setPreviewImage(company.route);
     }
-  }, [company.route])
+  }, [company.route]);
 
   const handleFileChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       if (event.target.files && event.target.files[0]) {
-        const newFile = event.target.files[0]
+        const newFile = event.target.files[0];
         // Clean up the previous preview URL if it exists
         if (previewImage && !previewImage.startsWith("http")) {
-          URL.revokeObjectURL(previewImage)
+          URL.revokeObjectURL(previewImage);
         }
-        const imageUrl = URL.createObjectURL(newFile)
-        setPreviewImage(imageUrl)
-        setFile(newFile)
+        const imageUrl = URL.createObjectURL(newFile);
+        setPreviewImage(imageUrl);
+        setFile(newFile);
       }
     },
-    [previewImage],
-  )
+    [previewImage]
+  );
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
-      setIsLoading(true)
-      const data = form.getValues()
+      setIsLoading(true);
+      const data = form.getValues();
       const companyData: CompanyRequest = {
         ruc: data.ruc,
         business_name: data.business_name ?? "",
@@ -82,44 +98,44 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
         phone: data.phone,
         email: data.email,
         route: file || undefined,
-      }
-      await updateCompany(company.id, companyData)
-      successToast("Empresa guardada correctamente")
-      setIsLoading(false)
-      onClose()
+      };
+      await updateCompany(company.id, companyData);
+      successToast("Empresa guardada correctamente");
+      setIsLoading(false);
+      onClose();
     } catch (error) {
-      errorToast("Ocurrió un error al guardar la empresa")
-      setIsLoading(false)
+      errorToast("Ocurrió un error al guardar la empresa");
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleSearchCompany = async () => {
     try {
-      const number_document = form.getValues("ruc")
-      if (!number_document) return
+      const number_document = form.getValues("ruc");
+      if (!number_document) return;
 
-      const company = await searchPersonByRUC(number_document)
+      const company = await searchPersonByRUC(number_document);
       if (company.code === 11) {
-        errorToast("No se encontró la Empresa")
-        return
+        errorToast("No se encontró la Empresa");
+        return;
       }
 
-      form.setValue("business_name", company.RazonSocial)
-      form.setValue("address", company.Direccion)
-      form.setValue("phone", company.phone)
+      form.setValue("business_name", company.RazonSocial);
+      form.setValue("address", company.Direccion);
+      form.setValue("phone", company.phone);
     } catch (error) {
-      errorToast("No se encontró la Empresa")
+      errorToast("No se encontró la Empresa");
     }
-  }
+  };
 
   useEffect(() => {
     return () => {
       // Cleanup preview URL when component unmounts
       if (previewImage && !previewImage.startsWith("http")) {
-        URL.revokeObjectURL(previewImage)
+        URL.revokeObjectURL(previewImage);
       }
-    }
-  }, [previewImage])
+    };
+  }, [previewImage]);
 
   if (isLoading) {
     return (
@@ -128,7 +144,7 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
           <Skeleton key={i} className="w-full h-4" />
         ))}
       </div>
-    )
+    );
   }
 
   return (
@@ -151,6 +167,12 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Número de documento"
                             maxLength={11}
+                            pattern="[0-9]*"
+                            inputMode="numeric"
+                            onInput={(e) =>
+                              (e.currentTarget.value =
+                                e.currentTarget.value.replace(/\D/g, ""))
+                            } // Elimina cualquier carácter que no sea número
                             {...field}
                           />
                           <button
@@ -177,7 +199,9 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                   name="business_name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">Nombre</FormLabel>
+                      <FormLabel className="text-sm font-normal">
+                        Nombre
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -195,7 +219,9 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                   name="address"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">Dirección</FormLabel>
+                      <FormLabel className="text-sm font-normal">
+                        Dirección
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -213,7 +239,9 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                   name="phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">Teléfono</FormLabel>
+                      <FormLabel className="text-sm font-normal">
+                        Teléfono
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -221,7 +249,10 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                           maxLength={9}
                           pattern="[0-9]*"
                           inputMode="numeric"
-                          onInput={(e) => (e.currentTarget.value = e.currentTarget.value.replace(/\D/g, ""))}
+                          onInput={(e) =>
+                            (e.currentTarget.value =
+                              e.currentTarget.value.replace(/\D/g, ""))
+                          }
                           {...field}
                           {...field}
                         />
@@ -236,7 +267,9 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal">E-mail</FormLabel>
+                      <FormLabel className="text-sm font-normal">
+                        E-mail
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -259,7 +292,9 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
                 name="route"
                 render={({}) => (
                   <FormItem className="col-span-2">
-                    <FormLabel className="text-sm font-normal">Imagen de la empresa</FormLabel>
+                    <FormLabel className="text-sm font-normal">
+                      Imagen de la empresa
+                    </FormLabel>
                     <FormControl>
                       <div className="flex flex-col items-start gap-4">
                         <div className="flex-1">
@@ -297,13 +332,16 @@ export default function UpdateCompanyPage({ onClose, company }: AddCompanyProps)
             >
               Cancelar
             </Button>
-            <Button type="submit" disabled={isLoading} className="bg-[#6366f1] hover:bg-[#818cf8]">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="bg-[#6366f1] hover:bg-[#818cf8]"
+            >
               Guardar
             </Button>
           </div>
         </form>
       </Form>
     </div>
-  )
+  );
 }
-
