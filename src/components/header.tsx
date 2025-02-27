@@ -1,45 +1,89 @@
+"use client";
+
+// import type React from "react";
+
 import { Store, User } from "lucide-react";
-import { Button } from "./ui/button";
-import { useAuthStore } from "@/pages/auth/lib/auth.store";
 import { useNavigate } from "react-router-dom";
+// import { useState } from "react";
+
+import { useAuthStore } from "@/pages/auth/lib/auth.store";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { useComapanyStore } from "@/pages/company/lib/company.store";
-// import { useEffect, useState } from "react";
-// import { getCompany } from "@/pages/company/lib/company.actions";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+// import { Input } from "./ui/input";
+// import { cn } from "@/lib/utils";
+import { IconWithTooltip } from "./IconWithTooltip";
 
 export default function Header() {
   const { clearAuth } = useAuthStore();
   const navigate = useNavigate();
-
   const { selectCompany } = useComapanyStore();
+  // const [isSearching, setIsSearching] = useState(false);
 
   const handleLogout = () => {
     clearAuth();
-    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+    navigate("/login");
   };
+
+  // const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.currentTarget);
+  //   const searchQuery = formData.get("search");
+  //   console.log("Searching for:", searchQuery);
+  //   // Add your search logic here
+  // };
 
   return (
     <header className="">
       <div className="flex justify-between p-4">
         <img src="/logo.svg" alt="" className="h-10" />
-        <div className="flex justify-between gap-2">
-          <Button
-            size="icon"
-            className="rounded-full bg-pink-400 hover:bg-pink-400/80"
-          >
-            <User className="min-w-5 min-h-5" />
-          </Button>
+        <div className="flex justify-between gap-2 items-center">
+          <div className="relative">
+            {/* <form onSubmit={handleSearch} className="flex items-center">
+              <div
+                className={cn(
+                  "relative flex items-center transition-all duration-300 ease-in-out",
+                  isSearching ? "w-[200px]" : "w-10"
+                )}
+              >
+                <Input
+                  type="search"
+                  placeholder="Búsqueda..."
+                  name="search"
+                  className={cn(
+                    "rounded-full bg-gradient-to-r from-pink-400 to-pink-300 border-0 placeholder:text-white text-white focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300",
+                    !isSearching && "cursor-pointer",
+                    "h-10" // Match button height
+                  )}
+                  onClick={() => !isSearching && setIsSearching(true)}
+                  readOnly={!isSearching}
+                />
+                <div className="absolute right-2 flex items-center">
+                  {isSearching ? (
+                    <X
+                      className="h-5 w-5 text-white hover:scale-110 transition-transform cursor-pointer"
+                      onClick={() => setIsSearching(false)}
+                    />
+                  ) : (
+                    <Search
+                      className="h-5 w-5 text-white"
+                      onClick={() => setIsSearching(true)}
+                    />
+                  )}
+                </div>
+              </div>
+            </form> */}
+          </div>
           <Button
             size="icon"
             className="rounded-full bg-foreground hover:bg-foreground/80"
           >
-            {/* <Store className="min-w-5 min-h-5" /> */}
             {selectCompany ? (
               <Avatar>
                 <AvatarImage src={selectCompany.route} alt="Logo Empresa" />
@@ -49,8 +93,10 @@ export default function Header() {
               </Avatar>
             ) : (
               <span className="text-white">
-                <Store />
-              </span> // Emoji o fallback
+                {/* <Store /> */}
+
+                <IconWithTooltip icon={Store} label="Compañia" />
+              </span>
             )}
           </Button>
 
@@ -61,7 +107,9 @@ export default function Header() {
                 className="rounded-full"
                 aria-label="User menu"
               >
-                <User className="min-w-5 min-h-5" />
+                <IconWithTooltip icon={User} label="Cerrar sesion" />
+
+                {/* <User className="min-w-5 min-h-5" /> */}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
