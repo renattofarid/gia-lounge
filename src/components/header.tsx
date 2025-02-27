@@ -1,10 +1,10 @@
 "use client";
 
-import type React from "react";
+// import type React from "react";
 
-import { Search, X, Store, User } from "lucide-react";
+import { Store, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+// import { useState } from "react";
 
 import { useAuthStore } from "@/pages/auth/lib/auth.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
@@ -16,28 +16,28 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Input } from "./ui/input";
-import { cn } from "@/lib/utils";
+// import { Input } from "./ui/input";
+// import { cn } from "@/lib/utils";
 import { IconWithTooltip } from "./IconWithTooltip";
 
 export default function Header() {
   const { clearAuth } = useAuthStore();
   const navigate = useNavigate();
   const { selectCompany } = useComapanyStore();
-  const [isSearching, setIsSearching] = useState(false);
+  // const [isSearching, setIsSearching] = useState(false);
 
   const handleLogout = () => {
     clearAuth();
     navigate("/login");
   };
 
-  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const searchQuery = formData.get("search");
-    console.log("Searching for:", searchQuery);
-    // Add your search logic here
-  };
+  // const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.currentTarget);
+  //   const searchQuery = formData.get("search");
+  //   console.log("Searching for:", searchQuery);
+  //   // Add your search logic here
+  // };
 
   return (
     <header className="">
@@ -45,7 +45,7 @@ export default function Header() {
         <img src="/logo.svg" alt="" className="h-10" />
         <div className="flex justify-between gap-2 items-center">
           <div className="relative">
-            <form onSubmit={handleSearch} className="flex items-center">
+            {/* <form onSubmit={handleSearch} className="flex items-center">
               <div
                 className={cn(
                   "relative flex items-center transition-all duration-300 ease-in-out",
@@ -78,7 +78,7 @@ export default function Header() {
                   )}
                 </div>
               </div>
-            </form>
+            </form> */}
           </div>
           <Button
             size="icon"
