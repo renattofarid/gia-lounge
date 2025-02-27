@@ -1,17 +1,20 @@
+"use client";
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
-import { LucideIcon } from "lucide-react";
+import { type LucideIcon } from 'lucide-react';
 
 interface IconWithTooltipProps {
   icon: LucideIcon; 
   label: string;
+  className?: string;
 }
 
-export function IconWithTooltip({ icon: Icon, label }: IconWithTooltipProps) {
+export function IconWithTooltip({ icon: Icon, label, className = "min-h-5 min-w-5 flex items-center" }: IconWithTooltipProps) {
   return (
     <TooltipProvider>
       <Tooltip>
-        <TooltipTrigger asChild>
-          <Icon className="h-5 w-5 cursor-pointer" />
+        <TooltipTrigger>
+          <Icon className={className} />
         </TooltipTrigger>
         <TooltipContent>
           <p>{label}</p>

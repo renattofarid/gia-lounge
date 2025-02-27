@@ -18,6 +18,7 @@ import {
 } from "./ui/dropdown-menu";
 import { Input } from "./ui/input";
 import { cn } from "@/lib/utils";
+import { IconWithTooltip } from "./IconWithTooltip";
 
 export default function Header() {
   const { clearAuth } = useAuthStore();
@@ -92,7 +93,9 @@ export default function Header() {
               </Avatar>
             ) : (
               <span className="text-white">
-                <Store />
+                {/* <Store /> */}
+
+                <IconWithTooltip icon={Store} label="Compañia" />
               </span>
             )}
           </Button>
@@ -104,7 +107,9 @@ export default function Header() {
                 className="rounded-full"
                 aria-label="User menu"
               >
-                <User className="min-w-5 min-h-5" />
+                <IconWithTooltip icon={User} label="Cerrar sesion" />
+
+                {/* <User className="min-w-5 min-h-5" /> */}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-36">
