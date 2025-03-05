@@ -33,12 +33,34 @@ import { deleteRol } from "../lib/rol.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import UpdateRolPage from "./updateRol";
 import PermissionsDialog from "./permissionsAdd";
+import { useAuthStore } from "@/pages/auth/lib/auth.store";
 
 export default function RolPage() {
-  const options = [
-    { name: "Usuarios", link: "/usuarios" },
-    { name: "Roles", link: "/usuarios/roles" },
+  const allOptions = [
+    {
+      name: "Usuarios",
+      link: "/usuarios",
+      permission: { name: "Leer", type: "Usuarios", link: "/usuarios" },
+    },
+    {
+      name: "Roles",
+      link: "/usuarios/roles",
+      permission: {
+        name: "Leer Roles",
+        type: "Roles",
+        link: "/usuarios/roles",
+      },
+    },
   ];
+
+  const { permisos } = useAuthStore();
+
+  const filteredOptions = allOptions.filter((option) => {
+    return permisos.some(
+      (p) =>
+        p.name === option.permission.name && p.type === option.permission.type
+    );
+  });
 
   // STORE
   const { roles, loadRoles, filter, setFilter } = useRolStore();
@@ -108,7 +130,7 @@ export default function RolPage() {
   }, [loadRoles]);
 
   return (
-    <Layout options={options}>
+    <Layout options={filteredOptions}>
       <div className="flex w-full justify-center items-start">
         <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
           <div className="flex flex-col sm:flex-row w-full gap-2">

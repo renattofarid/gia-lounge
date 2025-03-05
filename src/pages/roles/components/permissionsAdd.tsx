@@ -98,8 +98,8 @@ export default function PermissionsDialog({
       <div className="mt-8 flex justify-end gap-2">
         <Button
           type="button"
-          variant="outline"
-          className="bg-foreground text-secondary hover:bg-gray-800 border-0"
+          variant="secondary"
+          className="bg-foreground text-secondary hover:bg-black/85 border-0"
           onClick={onClose}
         >
           Cancelar

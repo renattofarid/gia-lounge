@@ -1,19 +1,14 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -27,10 +22,12 @@ import { login } from "../service/auth.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 
 const formSchema = z.object({
-  user: z.string()
+  user: z
+    .string()
     .nonempty("El usuario no puede estar vacío")
     .max(50, "El usuario no puede tener más de 50 caracteres"),
-  password: z.string()
+  password: z
+    .string()
     .nonempty("La contraseña no puede estar vacía")
     .max(50, "La contraseña no puede tener más de 50 caracteres"),
 });
@@ -58,7 +55,8 @@ export default function SignInPage() {
       successToast("Inicio de sesión exitoso");
       navigate("/inicio");
     } catch (error: any) {
-      const errorMessage = error.response?.data?.message || "Error al iniciar sesión.";
+      const errorMessage =
+        error.response?.data?.message || "Error al iniciar sesión.";
       console.log("Error al iniciar sesión:", errorMessage);
       console.error("Detalles del error:", error);
       errorToast("Error al iniciar sesión", errorMessage);
@@ -66,7 +64,10 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ background: '#EFEAFE' }}>
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: "#EFEAFE" }}
+    >
       <Card className="w-[400px] shadow-lg">
         {/* Logo */}
         <div className="flex justify-center mt-6">
@@ -104,8 +105,8 @@ export default function SignInPage() {
                           placeholder="Ingresa tu usuario"
                         />
                       </FormControl>
-                      <Mail 
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                      <Mail
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                         size={18}
                       />
                     </div>
@@ -131,8 +132,8 @@ export default function SignInPage() {
                           placeholder="Ingresa tu contraseña"
                         />
                       </FormControl>
-                      <Lock 
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" 
+                      <Lock
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
                         size={18}
                       />
                       <button
@@ -140,7 +141,11 @@ export default function SignInPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                       >
-                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                        {showPassword ? (
+                          <EyeOff size={18} />
+                        ) : (
+                          <Eye size={18} />
+                        )}
                       </button>
                     </div>
                     <FormMessage />
@@ -148,7 +153,7 @@ export default function SignInPage() {
                 )}
               />
 
-              <Button 
+              <Button
                 type="submit"
                 className="w-full py-2 px-4 mt-6 bg-[#9A7FFF] hover:bg-[#5238B3]"
               >
@@ -170,4 +175,3 @@ export default function SignInPage() {
     </div>
   );
 }
-

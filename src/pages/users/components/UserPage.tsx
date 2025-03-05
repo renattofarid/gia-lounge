@@ -33,19 +33,45 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import DeleteDialog from "@/components/delete-dialog";
 import { deleteUser } from "../lib/user.actions";
 import { errorToast, successToast } from "@/lib/core.function";
+import { useHasPermission } from "@/hooks/useHasPermission";
+import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { USER_TYPE } from "@/lib/menu";
 
 export default function UserPage() {
-  const options = [
-    { name: "Usuarios", link: "/usuarios" },
-    { name: "Roles", link: "/usuarios/roles" },
+  const allOptions = [
+    {
+      name: "Usuarios",
+      link: "/usuarios",
+      permission: { name: "Leer", type: "Usuarios", link: "/usuarios" },
+    },
+    {
+      name: "Roles",
+      link: "/usuarios/roles",
+      permission: {
+        name: "Leer Roles",
+        type: "Roles",
+        link: "/usuarios/roles",
+      },
+    },
   ];
+
+  const { permisos } = useAuthStore();
+
+  const filteredOptions = allOptions.filter((option) => {
+    return permisos.some(
+      (p) =>
+        p.name === option.permission.name && p.type === option.permission.type
+    );
+  });
 
   // STORE
   // const type = USER_TYPE;
   // const { permisos } = useAuthStore();
   const { users, loadUsers, filter, setFilter } = useUserStore();
+  const canCreateUser = useHasPermission("Crear", "Usuarios");
+  const canEditUser = useHasPermission("Editar", "Usuarios");
+  const canDeleteUser = useHasPermission("Eliminar", "Usuarios");
 
   // STATE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -100,7 +126,7 @@ export default function UserPage() {
   }, [loadUsers]);
 
   return (
-    <Layout options={options}>
+    <Layout options={filteredOptions}>
       <div className="flex w-full justify-center items-start">
         <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
           <div className="flex flex-col sm:flex-row w-full gap-2">
@@ -127,27 +153,29 @@ export default function UserPage() {
                     <Search className="min-w-4 min-h-4 text-secondary" />
                   </Button>
                 </div>
-                <Dialog
-                  open={isAddDialogOpen}
-                  onOpenChange={setIsAddDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button
-                      className="bg-violet-500 hover:bg-violet-600 font-inter"
-                      onClick={() => setIsAddDialogOpen(true)}
-                    >
-                      Agregar usuario
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-5xl p-6">
-                    <DialogHeader>
-                      <DialogTitle className="font-inter">
-                        Agregar Usuario
-                      </DialogTitle>
-                    </DialogHeader>
-                    <CreateUserPage onClose={handleClose} />
-                  </DialogContent>
-                </Dialog>
+                {canCreateUser && (
+                  <Dialog
+                    open={isAddDialogOpen}
+                    onOpenChange={setIsAddDialogOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <Button
+                        className="bg-violet-500 hover:bg-violet-600 font-inter"
+                        onClick={() => setIsAddDialogOpen(true)}
+                      >
+                        Agregar usuario
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-5xl p-6">
+                      <DialogHeader>
+                        <DialogTitle className="font-inter">
+                          Agregar Usuario
+                        </DialogTitle>
+                      </DialogHeader>
+                      <CreateUserPage onClose={handleClose} />
+                    </DialogContent>
+                  </Dialog>
+                )}
               </div>
             </div>
           </div>
@@ -203,40 +231,42 @@ export default function UserPage() {
                           </Badge>
                         )}
                     </TableCell>
-                    <TableCell className="font-inter er py-2 px-2 text-sm">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="bg-transparent hover:bg-gray-100"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48">
-                          {/* Editar opción */}
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => handleClickUpdate(user)}
-                          >
-                            <span className="font-inter">Editar</span>
-                          </DropdownMenuItem>
+                    {(canEditUser || canDeleteUser) && (
+                      <TableCell className="font-inter er py-2 px-2 text-sm">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="bg-transparent hover:bg-gray-100"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-48">
+                            {canEditUser && (
+                              // Editar opción
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleClickUpdate(user)}
+                              >
+                                <span className="font-inter">Editar</span>
+                              </DropdownMenuItem>
+                            )}
 
-                          {/* <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
-                            <span>Permisos</span>
-                          </DropdownMenuItem> */}
-
-                          {/* Eliminar opción */}
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => handleClickDelete(user.id)}
-                          >
-                            <span>Eliminar</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+                            {canDeleteUser && (
+                              // Eliminar opción
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleClickDelete(user.id)}
+                              >
+                                <span>Eliminar</span>
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    )}
                   </TableRow>
                 ))}
               </TableBody>
