@@ -5,6 +5,7 @@ import { EventCollection } from "./event.interface";
 export interface getEventsProps {
   page: number;
   name?: string;
+  perPage?: number;
   companyId?: number;
   event_datetime?: string;
 }
@@ -12,6 +13,7 @@ export interface getEventsProps {
 export const getEvents = async ({
   page,
   name,
+  perPage = 3,
   companyId,
   event_datetime,
 }: getEventsProps): Promise<EventCollection> => {
@@ -19,6 +21,7 @@ export const getEvents = async ({
     params: {
       page,
       name,
+      per_page: perPage,
       company_id: companyId,
       event_datetime,
     },

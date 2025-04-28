@@ -223,7 +223,7 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                               {field.value ? (
                                 format(field.value, "dd/MM/yyyy HH:mm")
                               ) : (
-                                <span>MM/DD/YYYY HH:mm</span>
+                                <span>DD/MM/YYYY HH:mm</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -235,7 +235,6 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                               mode="single"
                               selected={field.value}
                               onSelect={handleDateSelect}
-                              initialFocus
                             />
                             <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
                               <ScrollArea className="w-64 sm:w-auto">
@@ -305,9 +304,7 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                           </div>
                         </PopoverContent>
                       </Popover>
-                      {/* <FormDescription>
-                Please select your preferred date and time.
-              </FormDescription> */}
+                     
                       <FormMessage />
                     </FormItem>
                   )}

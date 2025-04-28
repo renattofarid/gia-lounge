@@ -31,11 +31,13 @@ import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
+  environment_id: z.number(),
   description: z.string().optional(),
   type: z.string().nonempty(),
   status: z.string().nonempty(),
   route: z.string().optional(),
-  environment_id: z.number(),
+  price: z.string().optional(),
+  sort: z.number()
 });
 
 interface UpdateStationProps {
@@ -61,6 +63,8 @@ export default function UpdateStation({
       type: station.type,
       status: station.status,
       environment_id: station.environment_id,
+      price: station.price,
+      sort: station.sort ?? 0,
     },
   });
 
@@ -94,6 +98,8 @@ export default function UpdateStation({
         type: data.type,
         status: data.status,
         environment_id: Number(data.environment_id),
+        price: data.price ?? "0",
+        sort: data.sort,
         // route: file ?? undefined,
       };
       await updateStation(station.id, stantionData);
@@ -107,14 +113,13 @@ export default function UpdateStation({
 
       setIsSending(false);
       onClose();
-    } catch (error:any) {
+    } catch (error: any) {
       console.error("Error capturado:", error);
       const errorMessage =
         error?.response?.data?.message ||
         "Ocurrió un error al guardar los datos";
       errorToast(errorMessage);
     } finally {
-
       setIsSending(false);
     }
   };
@@ -272,6 +277,48 @@ export default function UpdateStation({
                   </FormItem>
                 )}
               />
+              <div className="flex flex-row gap-4">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Precio por defecto
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Precio"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sort"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Orden
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Orden"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
 
               {/* <FormField
               control={form.control}

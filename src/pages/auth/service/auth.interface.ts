@@ -12,6 +12,7 @@ export interface User {
   rol_id: number;
   person: Person;
   rol: Rol;
+  
 }
 
 export interface Person {

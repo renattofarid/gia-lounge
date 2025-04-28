@@ -10,9 +10,11 @@ import { useAuthStore } from "./pages/auth/lib/auth.store";
 import ReservationsPage from "./pages/reservations/components/reservationsPage";
 import EventPage from "./pages/events/components/eventPage";
 import { EntryPage } from "./pages/entry/components/entryPage";
-import HomePage from "./pages/home/components/HomePage";
+// import HomePage from "./pages/home/components/HomePage";
 import { useHasPermission } from "./hooks/useHasPermission";
 import { errorToast } from "./lib/core.function";
+import HomePage from "./pages/home/components/Homepage";
+// import LotteryPage from "./pages/lottery/components/lotteryPage";
 
 // const isAuthenticated = () => {
 //   return localStorage.getItem("token") !== null;
@@ -30,16 +32,16 @@ function ProtectedRoute({
   const { token } = useAuthStore();
 
   // Llamamos siempre a useHasPermission
-  const hasPermission = useHasPermission(
-    requiredPermission ?? "",
-    requiredType ?? ""
-  );
+  // const hasPermission = useHasPermission(
+  //   requiredPermission ?? "",
+  //   requiredType ?? ""
+  // );
 
   if (!token) return <Navigate to="/login" replace />;
-  if (requiredPermission && requiredType && !hasPermission) {
-    errorToast("No tienes permisos para acceder a este recurso");
-    return <Navigate to="/inicio" replace />;
-  }
+  // if (requiredPermission && requiredType && !hasPermission) {
+  //   errorToast("No tienes permisos para acceder a este recurso");
+  //   return <Navigate to="/inicio" replace />;
+  // }
   return children;
 }
 
@@ -69,7 +71,7 @@ export default function App() {
             path="/inicio"
             element={
               <ProtectedRoute>
-                <HomePage />
+                <HomePage />  
               </ProtectedRoute>
             }
           />
@@ -95,33 +97,33 @@ export default function App() {
           <Route
             path="/empresas"
             element={
-              <ProtectedRoute requiredPermission="Leer" requiredType="Empresas">
+              // <ProtectedRoute requiredPermission="Leer" requiredType="Empresas">
                 <CompanyPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
             path="/empresas/salones"
             element={
-              <ProtectedRoute requiredPermission="Leer" requiredType="Salones">
+              // <ProtectedRoute requiredPermission="Leer" requiredType="Salones">
                 <EnvironmentPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
             path="/empresas/mesas"
             element={
-              <ProtectedRoute requiredPermission="Leer" requiredType="Mesas">
+              // <ProtectedRoute requiredPermission="Leer" requiredType="Mesas">
                 <StationPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
             path="/empresas/eventos"
             element={
-              <ProtectedRoute requiredPermission="Leer" requiredType="Eventos">
+              // <ProtectedRoute requiredPermission="Leer" requiredType="Eventos">
                 <EventPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
@@ -132,6 +134,14 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+           {/* <Route
+            path="/empresas/sorteos"
+            element={
+              <ProtectedRoute requiredPermission="Leer" requiredType="Sorteos">
+                <LotteryPage />
+              </ProtectedRoute>
+            }
+          /> */}
           <Route
             path="/empresas/eventos/:companyId"
             element={

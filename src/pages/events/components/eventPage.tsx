@@ -18,7 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CalendarIcon, MoreVertical, Search } from "lucide-react";
+import { CalendarIcon, Loader2, MoreVertical, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,7 +40,6 @@ import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import UpdateEvent from "./updateEventPage";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
-import SkeletonTable from "@/components/skeleton-table";
 import {
   Popover,
   PopoverContent,
@@ -48,20 +47,55 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
+import { Pagination } from "@/components/pagination";
+// import { useAuthStore } from "@/pages/auth/lib/auth.store";
+// import { useHasPermission } from "@/hooks/useHasPermission";
 
 export default function EventPage() {
   const options = [
-    { name: "Empresas", link: "/empresas" },
-    { name: "Salones", link: "/empresas/salones" },
-    { name: "Mesas/Box", link: "/empresas/mesas" },
-    { name: "Eventos", link: "/empresas/eventos" },
-    // { name: "Reservas", link: "/eventos/reservas" },
-    // { name: "Entradas", link: "/eventos/entradas" },
+    {
+      name: "Eventos",
+      link: "/empresas",
+      permission: { name: "Leer", type: "Evento" },
+    },
+    {
+      name: "Salones",
+      link: "/empresas/salones",
+      permission: { name: "Leer", type: "Salón" },
+    },
+    {
+      name: "Eventos/Box",
+      link: "/empresas/mesas",
+      permission: { name: "Leer", type: "Evento" },
+    },
+    {
+      name: "Eventos",
+      link: "/empresas/eventos",
+      permission: { name: "Leer", type: "Evento" },
+    },
   ];
 
   const { companyId } = useComapanyStore();
+  // const { permisos } = useAuthStore();
 
-  const { events, loadEvents, filter, setFilter, loading } = useEventStore();
+  // const filteredOptions = options.filter((option) =>
+  //   permisos.some(
+  //     (p) =>
+  //       p.name === option.permission.name && p.type === option.permission.type
+  //   )
+  // );
+
+  const filteredOptions = options;
+
+  // const canCreateEvent = useHasPermission("Crear", "Evento");
+  // const canUpdateEvent = useHasPermission("Actualizar", "Evento");
+  // const canDeleteEvent = useHasPermission("Eliminar", "Evento");
+
+  const canCreateEvent = true;
+  const canUpdateEvent = true;
+  const canDeleteEvent = true;
+
+  const { events, loadEvents, filter, setFilter, loading,meta, links } = useEventStore();
 
   // NAVIGATOR
   const navigator = useNavigate();
@@ -126,15 +160,21 @@ export default function EventPage() {
     loadEvents(1, companyId, dateSelected);
   };
 
+  const handlePageChange = (page: number) => {
+    loadEvents(page);
+  };
+
   useEffect(() => {
     if (companyId) loadEvents(1, companyId, dateSelected);
     else navigator("/empresas");
   }, []);
 
   return (
-    <Layout options={options}>
+    <Layout options={filteredOptions}>
       {loading ? (
-        <SkeletonTable />
+        <div className="flex items-center justify-center w-full h-full">
+          <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+        </div>
       ) : (
         <div className="flex w-full justify-center items-start">
           <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
@@ -188,31 +228,34 @@ export default function EventPage() {
                       <Search className="min-w-4 min-h-4 text-secondary" />
                     </Button>
                   </div>
-                  <Dialog
-                    open={isAddDialogOpen}
-                    onOpenChange={setIsAddDialogOpen}
-                    modal={false}
-                  >
-                    <DialogTrigger asChild>
-                      <Button
-                        className="bg-violet-500 hover:bg-violet-600 font-inter"
-                        onClick={() => setIsAddDialogOpen(true)}
-                      >
-                        Agregar evento
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-2xl p-6">
-                      <DialogHeader>
-                        <DialogTitle className="font-inter">
-                          Agregar Evento
-                        </DialogTitle>
-                      </DialogHeader>
-                      <CreateEvent
-                        onClose={handleClose}
-                        companyId={companyId}
-                      />
-                    </DialogContent>
-                  </Dialog>
+
+                  {canCreateEvent && (
+                    <Dialog
+                      open={isAddDialogOpen}
+                      onOpenChange={setIsAddDialogOpen}
+                      modal={false}
+                    >
+                      <DialogTrigger asChild>
+                        <Button
+                          className="bg-violet-500 hover:bg-violet-600 font-inter"
+                          onClick={() => setIsAddDialogOpen(true)}
+                        >
+                          Agregar evento
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-2xl p-6">
+                        <DialogHeader>
+                          <DialogTitle className="font-inter">
+                            Agregar Evento
+                          </DialogTitle>
+                        </DialogHeader>
+                        <CreateEvent
+                          onClose={handleClose}
+                          companyId={companyId}
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               </div>
             </div>
@@ -247,6 +290,9 @@ export default function EventPage() {
                       Comentario
                     </TableHead>
                     <TableHead className="font-inter text-base text-foreground text-center p-2">
+                      Precios
+                    </TableHead>
+                    <TableHead className="font-inter text-base text-foreground text-center p-2">
                       Estado
                     </TableHead>
                   </TableRow>
@@ -267,6 +313,20 @@ export default function EventPage() {
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-sm">
                         {event.comment}
+                      </TableCell>
+                      <TableCell className="font-inter text-center py-2 px-2 text-sm">
+                        <div className="flex flex-col gap-2 justify-center items-start font-poopins">
+                          <div className="flex  items-center w-full gap-6">
+                            <Badge className="bg-blue-100 text-blue-600 hover:bg-blue-200 hover:text-blue-700 dark:bg-blue-900 dark:text-blue-300 dark:hover:bg-blue-800 dark:hover:text-white">
+                              Mesa S/ {event.pricetable}
+                            </Badge>
+                          </div>
+                          <div className="flex  items-center w-full">
+                            <Badge className="bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700 dark:bg-green-900 dark:text-green-300 dark:hover:bg-green-800 dark:hover:text-white">
+                              Box S/ {event.pricebox}
+                            </Badge>
+                          </div>
+                        </div>
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-sm">
                         <Badge
@@ -291,21 +351,23 @@ export default function EventPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-48">
-                            {/* Editar opción */}
-                            <DropdownMenuItem
-                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => handleClickUpdate(event)}
-                            >
-                              <span className="font-inter">Editar</span>
-                            </DropdownMenuItem>
+                            {canUpdateEvent && (
+                              <DropdownMenuItem
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                onClick={() => handleClickUpdate(event)}
+                              >
+                                <span className="font-inter">Editar</span>
+                              </DropdownMenuItem>
+                            )}
 
-                            {/* Eliminar opción */}
-                            <DropdownMenuItem
-                              onClick={() => handleClickDelete(event.id)}
-                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            >
-                              <span>Eliminar</span>
-                            </DropdownMenuItem>
+                            {canDeleteEvent && (
+                              <DropdownMenuItem
+                                onClick={() => handleClickDelete(event.id)}
+                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                              >
+                                <span>Eliminar</span>
+                              </DropdownMenuItem>
+                            )}
 
                             {/* Detalles opción con submenú */}
                             <DropdownMenuSub>
@@ -339,6 +401,13 @@ export default function EventPage() {
                   ))}
                 </TableBody>
               </Table>
+                <div className="mt-10">
+                <Pagination
+                  links={links}
+                  meta={meta}
+                  onPageChange={handlePageChange}
+                />
+                </div>
             </div>
           </div>
           <Dialog
@@ -346,7 +415,7 @@ export default function EventPage() {
             onOpenChange={setIsUpdateDialogOpen}
             modal={false}
           >
-            <DialogContent className="max-w-5xl p-6">
+            <DialogContent className="max-w-5xl p-6 ">
               <DialogHeader>
                 <DialogTitle className="font-inter">
                   Actualizar Evento
