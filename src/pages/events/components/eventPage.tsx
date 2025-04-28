@@ -95,7 +95,8 @@ export default function EventPage() {
   const canUpdateEvent = true;
   const canDeleteEvent = true;
 
-  const { events, loadEvents, filter, setFilter, loading,meta, links } = useEventStore();
+  const { events, loadEvents, filter, setFilter, loading, meta, links } =
+    useEventStore();
 
   // NAVIGATOR
   const navigator = useNavigate();
@@ -401,20 +402,16 @@ export default function EventPage() {
                   ))}
                 </TableBody>
               </Table>
-                <div className="mt-10">
+              <div className="mt-10">
                 <Pagination
                   links={links}
                   meta={meta}
                   onPageChange={handlePageChange}
                 />
-                </div>
+              </div>
             </div>
           </div>
-          <Dialog
-            open={isUpdateDialogOpen}
-            onOpenChange={setIsUpdateDialogOpen}
-            modal={false}
-          >
+          <Dialog open={isUpdateDialogOpen} modal={false}>
             <DialogContent className="max-w-5xl p-6 ">
               <DialogHeader>
                 <DialogTitle className="font-inter">
