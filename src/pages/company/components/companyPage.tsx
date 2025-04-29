@@ -20,15 +20,14 @@ import CreateCompanyPage from "./addCompany";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
 import { errorToast, successToast } from "@/lib/core.function";
-import { MoreVertical } from "lucide-react";
+import { Loader2, MoreVertical } from "lucide-react";
 import { CompanyItem } from "../lib/company.interface";
 import UpdateCompanyPage from "./updateCompany";
 import { deleteCompany } from "../lib/company.actions";
 import DeleteDialog from "@/components/delete-dialog";
-import SkeletonTable from "@/components/skeleton-table";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
-import { useHasPermission } from "@/hooks/useHasPermission";
+// import { useHasPermission } from "@/hooks/useHasPermission";
 
 export default function CompanyPage() {
   const options = [
@@ -83,10 +82,14 @@ export default function CompanyPage() {
     const filteredOptions = options
 
 
-  const canCreateCompany = useHasPermission("Crear", "Empresa");
-  const canUpdateCompany = useHasPermission("Actualizar", "Empresa");
-  const canDeleteCompany = useHasPermission("Eliminar", "Empresa");
+  // const canCreateCompany = useHasPermission("Crear", "Empresa");
+  // const canUpdateCompany = useHasPermission("Actualizar", "Empresa");
+  // const canDeleteCompany = useHasPermission("Eliminar", "Empresa");
 
+
+    const canCreateCompany = true;
+  const canUpdateCompany = true;
+  const canDeleteCompany = true;
   //STORE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
@@ -161,7 +164,9 @@ export default function CompanyPage() {
   return (
     <Layout options={filteredOptions}>
       {loading ? (
-        <SkeletonTable />
+        <div className="flex items-center justify-center w-full h-full">
+        <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+      </div>
       ) : (
         <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
           {/* Encabezado */}

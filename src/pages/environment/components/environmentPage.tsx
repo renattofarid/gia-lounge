@@ -16,7 +16,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DynamicAvatar } from "@/components/dinamyc-avatar";
-import { Check, MoreVertical } from "lucide-react";
+import { Check, Loader2, MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEnvironmentStore } from "../lib/environment.store";
 import { EnvironmentItem } from "../lib/environment.interface";
@@ -25,7 +25,6 @@ import CreateEnvironment from "./addEnvironment";
 import { deleteEnvironment } from "../lib/environment.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import UpdateEnvironment from "./updateEnvironment";
-import SkeletonTable from "@/components/skeleton-table";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 import { useHasPermission } from "@/hooks/useHasPermission";
@@ -164,7 +163,9 @@ export default function EnvironmentPage() {
   return (
     <Layout options={filteredOptions}>
       {loading ? (
-        <SkeletonTable />
+        <div className="flex items-center justify-center w-full h-full">
+        <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+      </div>
       ) : (
         <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
           {/* Encabezado */}

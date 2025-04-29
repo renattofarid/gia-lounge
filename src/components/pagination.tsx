@@ -50,7 +50,7 @@ export function Pagination({ links, meta, onPageChange }: PaginationProps) {
   const pageNumbers = createPageNumbers()
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full py-4 px-2 border-t mt-auto">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 w-full py-4 px-2  mt-auto">
       <div className="text-sm text-muted-foreground">
         Mostrando <span className="font-medium">{meta.from || 0}</span> a{" "}
         <span className="font-medium">{meta.to || 0}</span> de <span className="font-medium">{meta.total}</span>{" "}

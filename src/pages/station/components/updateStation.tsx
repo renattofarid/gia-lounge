@@ -24,9 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { LoaderCircle } from "lucide-react";
+import { Loader2, LoaderCircle } from "lucide-react";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 const StationSchema = z.object({
@@ -124,15 +123,14 @@ export default function UpdateStation({
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex flex-col gap-6 p-6 bg-secondary">
-        {[...Array(7)].map((_, i) => (
-          <Skeleton key={i} className="w-full h-4" />
-        ))}
-      </div>
-    );
-  }
+ if (loading) {
+     return (
+       <div className="flex flex-col gap-6 p-6 items-center justify-center">
+         <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+       </div>
+     );
+   }
+ 
 
   return (
     <div className="p-2 ">
@@ -358,17 +356,18 @@ export default function UpdateStation({
 
           <div className="flex justify-end gap-2">
             <Button
-              variant="outline"
+              variant="secondary"
               type="reset"
               onClick={onClose}
-              className="bg-foreground text-white dark:text-black font-inter hover:bg-foreground/95 hover:text-white text-sm"
+              className="font-inter text-sm"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
+              variant="default"
               disabled={isSending}
-              className="bg-[#6366f1] hover:bg-[#818cf8]"
+              className="font-inter text-sm flex items-center gap-2"
             >
               {isSending ? "Guardando" : "Guardar"}
               {isSending ? (

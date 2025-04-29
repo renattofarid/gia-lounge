@@ -11,8 +11,8 @@ import ReservationsPage from "./pages/reservations/components/reservationsPage";
 import EventPage from "./pages/events/components/eventPage";
 import { EntryPage } from "./pages/entry/components/entryPage";
 // import HomePage from "./pages/home/components/HomePage";
-import { useHasPermission } from "./hooks/useHasPermission";
-import { errorToast } from "./lib/core.function";
+// import { useHasPermission } from "./hooks/useHasPermission";
+// import { errorToast } from "./lib/core.function";
 import HomePage from "./pages/home/components/Homepage";
 // import LotteryPage from "./pages/lottery/components/lotteryPage";
 
@@ -22,8 +22,8 @@ import HomePage from "./pages/home/components/Homepage";
 
 function ProtectedRoute({
   children,
-  requiredPermission,
-  requiredType,
+  // requiredPermission,
+  // requiredType,
 }: {
   children: JSX.Element;
   requiredPermission?: string;

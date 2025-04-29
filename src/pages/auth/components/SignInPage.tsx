@@ -66,9 +66,9 @@ export default function SignInPage() {
   return (
     <div
       className="min-h-screen flex items-center justify-center"
-      style={{ background: "#EFEAFE" }}
+      style={{ background: "#EFEAFE"  }}
     >
-      <Card className="w-[400px] shadow-lg">
+      <Card className="w-[400px] shadow-lg ">
         {/* Logo */}
         <div className="flex justify-center mt-6">
           <img
@@ -81,7 +81,7 @@ export default function SignInPage() {
         </div>
 
         <CardHeader>
-          <CardTitle className="text-center text-2xl font-semibold font-inter text-foreground/90">
+          <CardTitle className="text-center text-2xl font-semibold font-inter text-foreground/90" >
             Iniciar Sesión
           </CardTitle>
         </CardHeader>
@@ -94,7 +94,7 @@ export default function SignInPage() {
                 name="user"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="block text-sm font-medium text-gray-700 font-inter">
+                    <FormLabel className="block text-sm font-medium text-gray-700 font-inter dark:text-white">
                       Usuario
                     </FormLabel>
                     <div className="relative">
@@ -120,8 +120,8 @@ export default function SignInPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="block text-sm font-medium text-gray-700 font-inter">
-                      Contraseña
+                    <FormLabel className="block text-sm font-medium text-gray-700 font-inter dark:text-white">
+                    Contraseña
                     </FormLabel>
                     <div className="relative">
                       <FormControl>
@@ -155,7 +155,7 @@ export default function SignInPage() {
 
               <Button
                 type="submit"
-                className="w-full py-2 px-4 mt-6 bg-[#9A7FFF] hover:bg-[#5238B3]"
+                className="w-full py-2 px-4 mt-6 bg-[#9A7FFF] hover:bg-[#5238B3] font-poopins"
               >
                 Iniciar Sesión
               </Button>

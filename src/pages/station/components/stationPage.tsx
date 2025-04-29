@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import Layout from "@/components/layouts/layout";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/pagination";
 import { ReservationDetails } from "./detailReserva";
@@ -40,7 +40,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { Hash, MoreVertical, Search, Loader2 } from "lucide-react";
+import { Hash, MoreVertical, Loader2 } from "lucide-react";
 import { useStationStore } from "../lib/station.store";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
@@ -57,7 +57,7 @@ export default function StationPage() {
   const { stations, loadStations, loading, links, meta } = useStationStore();
   // const { permisos } = useAuthStore();
 
-  const [filter, setFilter] = useState("");
+  const [filter] = useState("");
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
   );
@@ -75,14 +75,18 @@ export default function StationPage() {
   // const canUpdateStation = useHasPermission("Actualizar", "Mesa");
   // const canDeleteStation = useHasPermission("Eliminar", "Mesa");
 
+  const canCreateStation = true;
+  const canUpdateStation = true;
+  const canDeleteStation = true;
+
   useEffect(() => {
     if (environmentId) loadStations(1, environmentId);
     else navigator("/empresas/salones");
   }, []);
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
-  };
+  // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFilter(e.target.value);
+  // };
 
   const filteredStations = stations.filter((station) =>
     station.name.toLowerCase().includes(filter.toLowerCase())
@@ -188,10 +192,10 @@ export default function StationPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <Input
                   placeholder="Buscar..."
-                  className="sm:w-[300px] font-poopins text-sm"
+                  className="sm:w-[300px] font-poopins text-[13px]"
                   value={filter}
                   onChange={handleFilterChange}
                 />
@@ -201,29 +205,29 @@ export default function StationPage() {
                 >
                   <Search className="w-4 h-4" />
                 </Button>
-              </div>
+              </div> */}
 
-              {/* {canCreateStation && ( */}
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
-                    Agregar mesa
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className="p-6 max-w-3xl">
-                  <DialogHeader>
-                    <DialogTitle>Agregar Mesa</DialogTitle>
-                    <DialogDescription>
-                      Gestione las mesas de la empresa seleccionada.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <CreateStation
-                    environmentId={environmentId}
-                    onClose={handleCloseCreate}
-                  />
-                </DialogContent>
-              </Dialog>
-              {/* )} */}
+              {canCreateStation && (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
+                      Agregar mesa
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="p-6 max-w-3xl">
+                    <DialogHeader>
+                      <DialogTitle>Agregar Mesa</DialogTitle>
+                      <DialogDescription>
+                        Gestione las mesas de la empresa seleccionada.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <CreateStation
+                      environmentId={environmentId}
+                      onClose={handleCloseCreate}
+                    />
+                  </DialogContent>
+                </Dialog>
+              )}
             </div>
           </div>
 
@@ -233,7 +237,7 @@ export default function StationPage() {
               onValueChange={handleEnvironmentChange}
               value={environmentId.toString()}
             >
-              <SelectTrigger className="w-[200px]">
+              <SelectTrigger className="w-[250px]">
                 <SelectValue placeholder="Seleccionar salón" />
               </SelectTrigger>
               <SelectContent>
@@ -247,26 +251,26 @@ export default function StationPage() {
           </div>
 
           {/* Table */}
-          <div className="w-full flex flex-col rounded-lg">
+          <div className="w-full flex flex-col rounded-lg pt-2">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Nombre
                   </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Tipo
                   </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Fecha de reserva
                   </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Estado
                   </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Detalles
                   </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Acciones
                   </TableHead>
                 </TableRow>
@@ -274,29 +278,41 @@ export default function StationPage() {
               <TableBody>
                 {filteredStations.map((station) => (
                   <TableRow key={station.id}>
-                    <TableCell className="flex items-center gap-2">
+                    <TableCell className="font-inter text-center gap-2">
+                      <div className="flex items-center">
                       <Hash className="w-3 h-3" />
                       {station.name}
+                      </div>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                       <Badge>{station.type}</Badge>
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                       {station.date_reservation}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                       <Badge className={getStatusClass(station.status)}>
                         {station.status}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-center">
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-sm font-medium text-gray-700">
-                          Precio: S/.{station.price}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          Orden: {station.sort}
-                        </span>
+                    <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
+                      <div className="flex flex-col gap-2 items-center">
+                        <div className="flex items-center gap-2 font-inter text-[13px]">
+                          <Badge
+                            variant="outline"
+                            className="bg-violet-50/50 text-violet-700 border-violet-200 hover:bg-violet-100/50 dark:bg-violet-900/20 dark:text-violet-300 dark:border-violet-800/50 dark:hover:bg-violet-900/30 font-normal py-0.5"
+                          >
+                            Precio S/ {station.price}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className="bg-gray-50/50 text-gray-700 border-gray-200 hover:bg-gray-100/50 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800/50 dark:hover:bg-gray-900/30 font-normal py-0.5"
+                          >
+                            Orden: {station.sort}
+                          </Badge>
+                        </div>
                       </div>
                     </TableCell>
                     <TableCell className="text-center">
@@ -307,20 +323,20 @@ export default function StationPage() {
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          {/* {canUpdateStation && ( */}
-                          <DropdownMenuItem
-                            onClick={() => handleClickUpdate(station)}
-                          >
-                            Actualizar
-                          </DropdownMenuItem>
-                          {/* )} */}
-                          {/* {canDeleteStation && ( */}
-                          <DropdownMenuItem
-                            onClick={() => handleClickDelete(station.id)}
-                          >
-                            Eliminar
-                          </DropdownMenuItem>
-                          {/* )} */}
+                          {canUpdateStation && (
+                            <DropdownMenuItem
+                              onClick={() => handleClickUpdate(station)}
+                            >
+                              Actualizar
+                            </DropdownMenuItem>
+                          )}
+                          {canDeleteStation && (
+                            <DropdownMenuItem
+                              onClick={() => handleClickDelete(station.id)}
+                            >
+                              Eliminar
+                            </DropdownMenuItem>
+                          )}
                           <DropdownMenuItem
                             onClick={() => handleShowDetails(station)}
                           >
@@ -397,10 +413,10 @@ export default function StationPage() {
 function getStatusClass(status: string) {
   switch (status) {
     case "Reservado":
-      return "text-[#FC6C28] bg-[#FFC8AE8F]";
+      return "text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE] dark:text-[#FF8A50] dark:bg-[#5A1E0E] dark:hover:bg-[#7A2F1A]";
     case "Disponible":
-      return "text-[#96C451] bg-[#E5FFBD99]";
+      return "text-[#2F8F2F] bg-[#78d8784f] hover:bg-[#5fbf5f] hover:text-white dark:bg-green-950 dark:text-green-200 dark:hover:bg-green-800";
     default:
-      return "text-[#E84747] bg-[#FFA5A54F]";
+      return "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FF8A8A] dark:text-[#FF6B6B] dark:bg-[#5A1E1E] dark:hover:bg-[#7A2F2F]";
   }
 }
