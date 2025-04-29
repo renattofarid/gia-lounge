@@ -18,4 +18,6 @@ export interface EventItem {
   user: User;
   company_id: number;
   company: CompanyItem;
+  pricebox?:  string;
+  pricetable?: string;
 }

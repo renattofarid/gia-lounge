@@ -2,7 +2,7 @@
 
 // import type React from "react";
 
-import { Store, User } from "lucide-react";
+import { LogOut, Store, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 // import { useState } from "react";
 
@@ -14,6 +14,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 // import { Input } from "./ui/input";
@@ -21,7 +22,7 @@ import {
 import { IconWithTooltip } from "./IconWithTooltip";
 
 export default function Header() {
-  const { clearAuth } = useAuthStore();
+  const { user, clearAuth } = useAuthStore();
   const navigate = useNavigate();
   const { selectCompany } = useComapanyStore();
   // const [isSearching, setIsSearching] = useState(false);
@@ -92,11 +93,7 @@ export default function Header() {
                 </AvatarFallback>
               </Avatar>
             ) : (
-              <span className="text-white">
-                {/* <Store /> */}
-
-                <IconWithTooltip icon={Store} label="Compañia" />
-              </span>
+              <IconWithTooltip icon={Store} label="Compañía" />
             )}
           </Button>
 
@@ -107,13 +104,20 @@ export default function Header() {
                 className="rounded-full"
                 aria-label="User menu"
               >
-                <IconWithTooltip icon={User} label="Cerrar sesion" />
-
-                {/* <User className="min-w-5 min-h-5" /> */}
+                <IconWithTooltip icon={User} label="Perfil" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-36">
-              <DropdownMenuItem onClick={handleLogout} className="font-inter">
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuItem className="text-xs gap-2">
+                <User className="min-w-4 min-h-4" />
+                {user?.name}
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className="font-inter gap-2"
+              >
+                <LogOut className="min-w-4 min-h-4" />
                 Cerrar sesión
               </DropdownMenuItem>
             </DropdownMenuContent>

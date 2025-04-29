@@ -13,9 +13,10 @@ export async function login(body: LoginBody): Promise<AuthResponse> {
     const { data } = await api.post<AuthResponse>("/login", body);
 
     // Guardar el token y el usuario en el store
-    const { setToken, setUser } = useAuthStore.getState();
+    const { setToken, setUser, setPermisos } = useAuthStore.getState();
     setToken(data.token);
     setUser(data.user);
+    setPermisos(data.user.rol.permissions);
 
     return data;
   } catch (error: any) {

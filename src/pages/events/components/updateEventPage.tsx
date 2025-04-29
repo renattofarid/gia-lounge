@@ -21,7 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { useEffect, useState } from "react";
 import { useEventStore } from "../lib/event.store";
-import {  updateEvent } from "../lib/event.actions";
+import { updateEvent } from "../lib/event.actions";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Popover,
@@ -34,7 +34,13 @@ import { Calendar } from "@/components/ui/calendar";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { EventItem } from "../lib/event.interface";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 const EventSchema = z.object({
@@ -42,6 +48,8 @@ const EventSchema = z.object({
   comment: z.string().optional(),
   event_datetime: z.date(),
   company_id: z.number(),
+  pricebox: z.string().optional(),
+  pricetable: z.string().optional(),
 });
 
 interface UpdateEventProps {
@@ -49,7 +57,7 @@ interface UpdateEventProps {
   event: EventItem;
 }
 
-export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
+export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
   const form = useForm<z.infer<typeof EventSchema>>({
     resolver: zodResolver(EventSchema),
     defaultValues: {
@@ -57,17 +65,19 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
       comment: event.comment,
       event_datetime: new Date(event.event_datetime),
       company_id: event.company_id,
+      pricebox: event.pricebox || "",
+      pricetable: event.pricetable || "",
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { loading } = useEventStore();
 
-    const { companies, loadCompanies } = useComapanyStore();
-  
-    useEffect(() => {
-      loadCompanies(1);
-    }, []);
+  const { companies, loadCompanies } = useComapanyStore();
+
+  useEffect(() => {
+    loadCompanies(1);
+  }, []);
 
   function handleDateSelect(date: Date | undefined) {
     if (date) {
@@ -124,11 +134,10 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
             {/* Campos del formulario */}
-            
+
             <div className="flex flex-col gap-6">
               <div className="w-full space-y-4 rounded-lg bg-secondary p-6 text-sm">
-                
-              <FormField
+                <FormField
                   control={form.control}
                   name="company_id"
                   render={({ field }) => (
@@ -161,7 +170,6 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                   )}
                 />
 
-                
                 <FormField
                   control={form.control}
                   name="name"
@@ -223,7 +231,7 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                               {field.value ? (
                                 format(field.value, "dd/MM/yyyy HH:mm")
                               ) : (
-                                <span>MM/DD/YYYY HH:mm</span>
+                                <span>DD/MM/YYYY HH:mm</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -235,7 +243,6 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                               mode="single"
                               selected={field.value}
                               onSelect={handleDateSelect}
-                              initialFocus
                             />
                             <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
                               <ScrollArea className="w-64 sm:w-auto">
@@ -305,13 +312,55 @@ export default function UpdateEvent({ event, onClose}: UpdateEventProps) {
                           </div>
                         </PopoverContent>
                       </Popover>
-                      {/* <FormDescription>
-                Please select your preferred date and time.
-              </FormDescription> */}
+
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                <div className="flex flex-col  justify-between sm:flex-row gap-4">
+                  <FormField
+                    control={form.control}
+                    name="pricebox"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormLabel className="text-sm font-normal font-poopins">
+                          Precio del Box
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Precio del Box"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="pricetable"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormLabel className="text-sm font-normal font-poopins">
+                          Precio de la Mesa
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Precio de la Mesa"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
             </div>
 

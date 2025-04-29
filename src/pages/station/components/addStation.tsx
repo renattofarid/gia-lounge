@@ -25,8 +25,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { Loader2 } from "lucide-react";
 
 const StationSchema = z.object({
   name: z.string().nonempty(),
@@ -35,6 +35,8 @@ const StationSchema = z.object({
   type: z.string().nonempty(),
   status: z.string().nonempty(),
   route: z.string().optional(),
+  price: z.string().optional(),
+  sort: z.number(),
 });
 
 interface AddStationProps {
@@ -58,6 +60,8 @@ export default function CreateStation({
       type: "",
       description: "",
       status: "",
+      price: "",
+      sort: 0,
       environment_id: environmentId,
     },
   });
@@ -93,25 +97,32 @@ export default function CreateStation({
         type: data.type,
         status: data.status,
         environment_id: Number(data.environment_id),
+        price: data.price ?? "0",
+        sort: data.sort ?? 0,
         // route: file ?? undefined,
       };
       await createStation(stationData);
       //PONER MESA O BOX SEGUN EL TIPO
-      successToast(`${data.type === "MESA" ? "Mesa guardada" : "Box guardado"} correctamente`)
+      successToast(
+        `${
+          data.type === "MESA" ? "Mesa guardada" : "Box guardado"
+        } correctamente`
+      );
       setIsSending(false);
       onClose();
-    } catch (error) {
-      errorToast("Ocurrió un error al guardar la mesa");
+    } catch (error: any) {
+      const errorMessage =
+        error?.response?.data?.message || "Error desconocido";
+
+      errorToast(errorMessage);
       setIsSending(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col gap-6 p-6 bg-secondary">
-        {[...Array(7)].map((_, i) => (
-          <Skeleton key={i} className="w-full h-4" />
-        ))}
+      <div className="flex flex-col gap-6 p-6 items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
       </div>
     );
   }
@@ -262,6 +273,49 @@ export default function CreateStation({
                 )}
               />
 
+              <div className="flex flex-row gap-4">
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Precio por defecto
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Precio"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sort"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-medium">
+                        Orden
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Orden"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               {/* <FormField
                 control={form.control}
                 name="route"
@@ -300,17 +354,18 @@ export default function CreateStation({
 
           <div className="flex justify-end gap-2">
             <Button
-              variant="outline"
-              type="reset"
+              variant="secondary"
+              // type="reset"
               onClick={onClose}
-              className="bg-foreground text-white font-inter hover:bg-foreground/95 hover:text-white text-sm"
+              className="font-inter text-sm"
             >
               Cancelar
             </Button>
             <Button
               type="submit"
               disabled={isSending}
-              className="bg-[#6366f1] hover:bg-[#818cf8]"
+              className="font-inter text-sm"
+              variant="default"
             >
               Guardar
             </Button>

@@ -13,6 +13,7 @@ export interface MenuItem {
   name: string;
   icon: string;
   link: string;
+  permissions?: { name: string; type: string; link: string }[];
 }
 
 export const iconComponents: Record<string, any> = {
@@ -43,6 +44,18 @@ export const menuItems: MenuItem[] = [
     name: "Usuarios",
     icon: "User",
     link: "/usuarios",
+    permissions: [
+      {
+        name: "Leer",
+        type: "Usuarios",
+        link: "/usuarios",
+      },
+      {
+        name: "Leer Roles",
+        type: "Roles",
+        link: "/usuarios/roles",
+      },
+    ],
   },
   {
     id: 4,
@@ -69,3 +82,5 @@ export const menuItems: MenuItem[] = [
     link: "/",
   },
 ];
+
+export const USER_TYPE = "Usuarios";

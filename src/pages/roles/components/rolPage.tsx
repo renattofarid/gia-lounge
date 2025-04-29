@@ -19,7 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { MoreVertical, Search } from "lucide-react";
+import { Loader2, MoreVertical, Search } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,15 +33,38 @@ import { deleteRol } from "../lib/rol.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import UpdateRolPage from "./updateRol";
 import PermissionsDialog from "./permissionsAdd";
+import { useAuthStore } from "@/pages/auth/lib/auth.store";
+import { Pagination } from "@/components/pagination";
 
 export default function RolPage() {
-  const options = [
-    { name: "Usuarios", link: "/usuarios" },
-    { name: "Roles", link: "/usuarios/roles" },
+  const allOptions = [
+    {
+      name: "Usuarios",
+      link: "/usuarios",
+      permission: { name: "Leer", type: "Usuarios", link: "/usuarios" },
+    },
+    {
+      name: "Roles",
+      link: "/usuarios/roles",
+      permission: {
+        name: "Leer Roles",
+        type: "Roles",
+        link: "/usuarios/roles",
+      },
+    },
   ];
 
+  const { permisos } = useAuthStore();
+
+  const filteredOptions = allOptions.filter((option) => {
+    return permisos.some(
+      (p) =>
+        p.name === option.permission.name && p.type === option.permission.type
+    );
+  });
+
   // STORE
-  const { roles, loadRoles, filter, setFilter } = useRolStore();
+  const { roles, loadRoles, filter, setFilter, loading, links, meta } = useRolStore();
 
   // STATE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -107,8 +130,12 @@ export default function RolPage() {
     loadRoles(1);
   }, [loadRoles]);
 
+  const handlePageChange = (page: number) => {
+    loadRoles(page);
+  };
+
   return (
-    <Layout options={options}>
+    <Layout options={filteredOptions}>
       <div className="flex w-full justify-center items-start">
         <div className="flex flex-col gap-4 w-full justify-between items-center mb-6 px-4 max-w-screen-2xl">
           <div className="flex flex-col sm:flex-row w-full gap-2">
@@ -159,108 +186,118 @@ export default function RolPage() {
               </div>
             </div>
           </div>
-          <div className="rounded-lg w-full">
-            <Table className="">
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
-                    Nombre
-                  </TableHead>
-                  <TableHead className="font-inter text-base text-foreground text-center p-2">
-                    Opciones
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {roles.map((rol) => (
-                  <TableRow key={rol.id}>
-                    <TableCell className="font-inter py-2 px-2 text-sm">
-                      <strong>{rol.name}</strong>
-                    </TableCell>
-                    <TableCell className="font-inter py-2 px-2 text-sm flex justify-center">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="bg-transparent hover:bg-gray-100"
-                          >
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48">
-                          {/* Editar opción */}
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-green-200 cursor-pointer"
-                            onClick={() => handleClickUpdate(rol)}
-                          >
-                            <span className="font-inter">Editar</span>
-                          </DropdownMenuItem>
-
-                          {/* Permisos */}
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => handleClickPermission(rol)}
-                          >
-                            <span>Permisos</span>
-                          </DropdownMenuItem>
-
-                          {/* Eliminar opción */}
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-red-200 cursor-pointer"
-                            onClick={() => handleClickDelete(rol.id)}
-                          >
-                            <span>Eliminar</span>
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
+          {loading ? (
+            <div className="flex justify-center items-center h-full w-full">
+              <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+            </div>
+          ) : (
+            <div className="rounded-lg w-full">
+              <Table className="">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="font-inter text-base text-foreground text-center p-2">
+                      Nombre
+                    </TableHead>
+                    <TableHead className="font-inter text-base text-foreground text-center p-2">
+                      Opciones
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-          <Dialog
-            open={isUpdateDialogOpen}
-            onOpenChange={setIsUpdateDialogOpen}
-          >
-            <DialogContent className="p-6">
-              <DialogHeader>
-                <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
+                </TableHeader>
+                <TableBody>
+                  {roles.map((rol) => (
+                    <TableRow key={rol.id}>
+                      <TableCell className="font-inter py-2 px-2 text-sm">
+                        <strong>{rol.name}</strong>
+                      </TableCell>
+                      <TableCell className="font-inter py-2 px-2 text-sm flex justify-center">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="bg-transparent hover:bg-gray-100"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent className="w-48">
+                            {/* Editar opción */}
+                            <DropdownMenuItem
+                              className="flex items-center space-x-2 hover:bg-green-200 cursor-pointer"
+                              onClick={() => handleClickUpdate(rol)}
+                            >
+                              <span className="font-inter">Editar</span>
+                            </DropdownMenuItem>
 
-                <DialogDescription className="font-poopins text-sm">
-                  Actualiza la información del rol seleccionado
-                </DialogDescription>
-              </DialogHeader>
-              <UpdateRolPage onClose={handleUpdateClose} rol={roleSelected} />
-            </DialogContent>
-          </Dialog>
+                            {/* Permisos */}
+                            <DropdownMenuItem
+                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => handleClickPermission(rol)}
+                            >
+                              <span>Permisos</span>
+                            </DropdownMenuItem>
 
-          <Dialog
-            open={isPermissionDialogOpen}
-            onOpenChange={setIsPermissionDialogOpen}
-          >
-            <DialogContent className="p-6">
-              <DialogHeader>
-                <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
-                <DialogDescription className="font-poopins text-sm">
-                  Actualiza la información del rol seleccionado
-                </DialogDescription>
-              </DialogHeader>
-              <PermissionsDialog
-                id={rolePermissions.id}
-                onClose={handleClosePermission}
-                permissionsRol={rolePermissions.permissions}
-              />
-            </DialogContent>
-          </Dialog>
-
-          <DeleteDialog
-            isOpen={isDeleteDialogOpen}
-            onConfirm={handleDelete}
-            onCancel={() => setIsDeleteDialogOpen(false)}
-          />
+                            {/* Eliminar opción */}
+                            <DropdownMenuItem
+                              className="flex items-center space-x-2 hover:bg-red-200 cursor-pointer"
+                              onClick={() => handleClickDelete(rol.id)}
+                            >
+                              <span>Eliminar</span>
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <div className="mt-auto">
+                <Pagination
+                  links={links}
+                  meta={meta}
+                  onPageChange={handlePageChange}
+                />
+              </div>
+            </div>
+          )}
         </div>
+        <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+          <DialogContent className="p-6">
+            <DialogHeader>
+              <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
+
+              <DialogDescription className="font-poopins text-sm">
+                Actualiza la información del rol seleccionado
+              </DialogDescription>
+            </DialogHeader>
+            <UpdateRolPage onClose={handleUpdateClose} rol={roleSelected} />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog
+          open={isPermissionDialogOpen}
+          onOpenChange={setIsPermissionDialogOpen}
+        >
+          <DialogContent className="p-6">
+            <DialogHeader>
+              <DialogTitle className="font-inter">Actualizar Rol</DialogTitle>
+              <DialogDescription className="font-poopins text-sm">
+                Actualiza la información del rol seleccionado
+              </DialogDescription>
+            </DialogHeader>
+            <PermissionsDialog
+              id={rolePermissions.id}
+              onClose={handleClosePermission}
+              permissionsRol={rolePermissions.permissions}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <DeleteDialog
+          isOpen={isDeleteDialogOpen}
+          onConfirm={handleDelete}
+          onCancel={() => setIsDeleteDialogOpen(false)}
+        />
       </div>
     </Layout>
   );

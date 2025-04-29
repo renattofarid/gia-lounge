@@ -10,6 +10,8 @@ export interface StationItem {
   id:               number;
   name:             string;
   description:      string;
+  price:            string;
+  sort:             number | null;
   type:             string;
   status:           string;
   route:            null | string;
@@ -49,6 +51,8 @@ export interface StationRequest {
   status: string;
   environment_id: number;
   route?: File;
+  price: string;
+  sort: number;
 }
 
 

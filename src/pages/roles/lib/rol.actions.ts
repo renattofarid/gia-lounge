@@ -14,7 +14,7 @@ export interface getRolesProps {
 
 export const getRoles = async ({
   page,
-  per_page,
+  per_page = 5,
   name,
 }: getRolesProps): Promise<RolCollection> => {
   const config: AxiosRequestConfig = {

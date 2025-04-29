@@ -20,22 +20,76 @@ import CreateCompanyPage from "./addCompany";
 import { DialogDescription } from "@radix-ui/react-dialog";
 import { useNavigate } from "react-router-dom";
 import { errorToast, successToast } from "@/lib/core.function";
-import { MoreVertical } from "lucide-react";
+import { Loader2, MoreVertical } from "lucide-react";
 import { CompanyItem } from "../lib/company.interface";
 import UpdateCompanyPage from "./updateCompany";
 import { deleteCompany } from "../lib/company.actions";
 import DeleteDialog from "@/components/delete-dialog";
-import SkeletonTable from "@/components/skeleton-table";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
+// import { useAuthStore } from "@/pages/auth/lib/auth.store";
+// import { useHasPermission } from "@/hooks/useHasPermission";
 
 export default function CompanyPage() {
   const options = [
-    { name: "Empresas", link: "/empresas" },
-    { name: "Salones", link: "/empresas/salones" },
-    { name: "Mesas/Box", link: "/empresas/mesas" },
-    { name: "Eventos", link: "/empresas/eventos" },
+    {
+      name: "Empresas",
+      link: "/empresas",
+      permission: {
+        name: "Leer",
+        type: "Empresa",
+        link: "/empresas",
+      },
+    },
+    {
+      name: "Salones",
+      link: "/empresas/salones",
+      permission: {
+        name: "Leer",
+        type: "Salón",
+        link: "/empresas/salones",
+      },
+    },
+    {
+      name: "Mesas/Box",
+      link: "/empresas/mesas",
+      permission: {
+        name: "Leer",
+        type: "Mesa",
+        link: "/empresas/mesas",
+      },
+    },
+
+    {
+      name: "Eventos",
+      link: "/empresas/eventos",
+      permission: {
+        name: "Leer",
+        type: "Evento",
+        link: "/empresas/eventos",
+      },
+    },
   ];
 
+  // const { permisos } = useAuthStore();
+
+  // const filteredOptions = options.filter((option) => {
+  //   return permisos.some(
+  //     (p) =>
+  //       p.name === option.permission.name && p.type === option.permission.type
+  //   );
+  // });
+
+    const filteredOptions = options
+
+
+  // const canCreateCompany = useHasPermission("Crear", "Empresa");
+  // const canUpdateCompany = useHasPermission("Actualizar", "Empresa");
+  // const canDeleteCompany = useHasPermission("Eliminar", "Empresa");
+
+
+    const canCreateCompany = true;
+  const canUpdateCompany = true;
+  const canDeleteCompany = true;
   //STORE
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
 
@@ -108,9 +162,11 @@ export default function CompanyPage() {
   };
 
   return (
-    <Layout options={options}>
+    <Layout options={filteredOptions}>
       {loading ? (
-        <SkeletonTable />
+        <div className="flex items-center justify-center w-full h-full">
+        <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+      </div>
       ) : (
         <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
           {/* Encabezado */}
@@ -121,21 +177,25 @@ export default function CompanyPage() {
                 Seleccione su empresa.
               </p>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
-                  Agregar Empresa
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="p-6 max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle>Agregar Empresa</DialogTitle>
-                  <DialogDescription>Gestione sus empresas.</DialogDescription>
-                </DialogHeader>
-                <CreateCompanyPage onClose={handleClose} />
-                {/* Formulario de creación de empresa */}
-              </DialogContent>
-            </Dialog>
+            {canCreateCompany && (
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
+                    Agregar Empresa
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="p-6 max-w-3xl">
+                  <DialogHeader>
+                    <DialogTitle>Agregar Empresa</DialogTitle>
+                    <DialogDescription>
+                      Gestione sus empresas.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <CreateCompanyPage onClose={handleClose} />
+                  {/* Formulario de creación de empresa */}
+                </DialogContent>
+              </Dialog>
+            )}
           </div>
 
           {/* Lista de Empresas */}
@@ -190,30 +250,34 @@ export default function CompanyPage() {
                     >
                       {company.business_name}
                     </p>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
-                        {/* Editar opción */}
-                        <DropdownMenuItem
-                          className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => handleClickUpdate(company)}
-                        >
-                          <span className="font-inter">Editar</span>
-                        </DropdownMenuItem>
-
-                        {/* Eliminar opción */}
-                        <DropdownMenuItem
-                          className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                          onClick={() => handleClickDelete(company.id)}
-                        >
-                          <span>Eliminar</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                    {(canUpdateCompany || canDeleteCompany) && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="icon">
+                            <MoreVertical className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-48">
+                          {canUpdateCompany && (
+                            <DropdownMenuItem
+                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => handleClickUpdate(company)}
+                            >
+                              <span className="font-inter">Editar</span>
+                            </DropdownMenuItem>
+                          )}
+                          {/* Eliminar opción */}
+                          {canDeleteCompany && (
+                            <DropdownMenuItem
+                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => handleClickDelete(company.id)}
+                            >
+                              <span>Eliminar</span>
+                            </DropdownMenuItem>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </div>
                 </div>
               ))
