@@ -34,10 +34,12 @@ import { Card } from "@/components/ui/card";
 import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 export default function ReservationsPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const { events, loadEvents } = useEventStore();
+  const { companyId } = useComapanyStore();
 
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>(
     eventId
@@ -70,7 +72,7 @@ export default function ReservationsPage() {
   // );
 
   useEffect(() => {
-    loadEvents(1);
+    loadEvents(1, companyId, undefined, 0);
     loadReservations(1, selectedEventId ? Number(selectedEventId) : undefined);
   }, [loadEvents, loadReservations, selectedEventId]);
 
@@ -193,7 +195,7 @@ export default function ReservationsPage() {
                 de reserva
               </TableHead>
               <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                N° <br/>
+                N° <br />
                 personas
               </TableHead>
               <TableHead className="font-inter text-sm text-foreground p-2 text-center">
@@ -203,8 +205,7 @@ export default function ReservationsPage() {
                 Box
               </TableHead>
               <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                N° mesa <br/>
-                o box
+                N° mesa <br />o box
               </TableHead>
               <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                 Estado
