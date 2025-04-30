@@ -168,8 +168,9 @@ export default function EventPage() {
   // }
 
   const handlePageChange = (page: number) => {
-    loadEvents(page);
+    loadEvents(page, companyId, dateSelected);
   };
+  
 
   useEffect(() => {
     if (companyId) loadEvents(1, companyId, dateSelected);
