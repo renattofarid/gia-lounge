@@ -160,7 +160,7 @@ export default function ReservationsPage() {
 
               {/* Selects y botón de descarga */}
               <div className="flex items-center gap-2 ">
-                <Select defaultValue="all">
+                {/* <Select defaultValue="all">
                   <SelectTrigger className="w-[120px]">
                     <SelectValue placeholder="Estado" />
                   </SelectTrigger>
@@ -170,7 +170,7 @@ export default function ReservationsPage() {
                     <SelectItem value="cancelado">Cancelado</SelectItem>
                     <SelectItem value="completado">Completado</SelectItem>
                   </SelectContent>
-                </Select>
+                </Select> */}
 
                 <Select
                   onValueChange={handleEventChange}
