@@ -65,7 +65,7 @@ export default function EventPage() {
       permission: { name: "Leer", type: "Salón" },
     },
     {
-      name: "Eventos/Box",
+      name: "Mesas/Box",
       link: "/empresas/mesas",
       permission: { name: "Leer", type: "Evento" },
     },

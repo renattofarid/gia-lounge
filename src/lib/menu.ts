@@ -67,7 +67,7 @@ export const menuItems: MenuItem[] = [
     id: 5,
     name: "Eventos",
     icon: "Drama",
-    link: "/",
+    link: "/empresas/eventos",
   },
   {
     id: 6,
