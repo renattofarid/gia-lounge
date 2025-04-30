@@ -21,7 +21,7 @@ export const getEvents = async ({
     params: {
       page,
       name,
-      per_page: perPage,
+      per_page: perPage === 0 ? undefined : perPage,
       company_id: companyId,
       event_datetime,
     },

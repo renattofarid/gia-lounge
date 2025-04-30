@@ -65,7 +65,7 @@ export default function EventPage() {
       permission: { name: "Leer", type: "Salón" },
     },
     {
-      name: "Eventos/Box",
+      name: "Mesas/Box",
       link: "/empresas/mesas",
       permission: { name: "Leer", type: "Evento" },
     },
@@ -168,8 +168,9 @@ export default function EventPage() {
   // }
 
   const handlePageChange = (page: number) => {
-    loadEvents(page);
+    loadEvents(page, companyId, dateSelected);
   };
+  
 
   useEffect(() => {
     if (companyId) loadEvents(1, companyId, dateSelected);
