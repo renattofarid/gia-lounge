@@ -27,7 +27,7 @@ import { errorToast, successToast } from "@/lib/core.function";
 import UpdateEnvironment from "./updateEnvironment";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
-import { useHasPermission } from "@/hooks/useHasPermission";
+// import { useHasPermission } from "@/hooks/useHasPermission";
 
 export default function EnvironmentPage() {
   const { companyId } = useComapanyStore();
@@ -54,11 +54,11 @@ export default function EnvironmentPage() {
 
   const options = [
     {
-      name: "Salons",
+      name: "Empresas",
       link: "/empresas",
       permission: {
         name: "Leer",
-        type: "Salon",
+        type: "Empresa",
         link: "/empresas",
       },
     },
@@ -102,9 +102,13 @@ export default function EnvironmentPage() {
   const filteredOptions = options
 
 
-  const canCreateEnvironment = useHasPermission("Crear", "Salon");
-  const canUpdateEnvironment = useHasPermission("Actualizar", "Salon");
-  const canDeleteEnvironment = useHasPermission("Eliminar", "Salon");
+  // const canCreateEnvironment = useHasPermission("Crear", "Salon");
+  // const canUpdateEnvironment = useHasPermission("Actualizar", "Salon");
+  // const canDeleteEnvironment = useHasPermission("Eliminar", "Salon");
+
+   const canCreateEnvironment = true;
+  const canUpdateEnvironment = true;
+  const canDeleteEnvironment = true;
 
   // const handleSelectEnvironment = (id: number) => {
   //   console.log("Salón seleccionado:", id);
@@ -183,7 +187,7 @@ export default function EnvironmentPage() {
                     Agregar salón
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="p-6 max-w-xl">
+                <DialogContent className="p-6 max-w-md">
                   <DialogHeader>
                     <DialogTitle>Agregar Salón</DialogTitle>
                     <DialogDescription>

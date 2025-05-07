@@ -68,6 +68,7 @@ export default function CompanyPage() {
         link: "/empresas/eventos",
       },
     },
+    
   ];
 
   // const { permisos } = useAuthStore();
@@ -79,15 +80,13 @@ export default function CompanyPage() {
   //   );
   // });
 
-    const filteredOptions = options
-
+  const filteredOptions = options;
 
   // const canCreateCompany = useHasPermission("Crear", "Empresa");
   // const canUpdateCompany = useHasPermission("Actualizar", "Empresa");
   // const canDeleteCompany = useHasPermission("Eliminar", "Empresa");
 
-
-    const canCreateCompany = true;
+  const canCreateCompany = true;
   const canUpdateCompany = true;
   const canDeleteCompany = true;
   //STORE
@@ -165,8 +164,8 @@ export default function CompanyPage() {
     <Layout options={filteredOptions}>
       {loading ? (
         <div className="flex items-center justify-center w-full h-full">
-        <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
-      </div>
+          <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+        </div>
       ) : (
         <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
           {/* Encabezado */}
@@ -205,11 +204,13 @@ export default function CompanyPage() {
                 ? "grid-cols-1"
                 : companies.length === 2
                 ? "grid-cols-2"
-                : "grid-cols-3"
+                : "grid-cols-4"
             }  gap-6 justify-center items-center flex-wrap`}
           >
             {loading ? (
-              <p className="text-gray-500">Cargando empresas...</p>
+              <div className="flex items-center justify-center w-full h-full">
+                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+              </div>
             ) : (
               companies.map((company) => (
                 <div
@@ -286,7 +287,7 @@ export default function CompanyPage() {
 
           <Button
             onClick={handleConfirm}
-            className="mt-6 bg-violet-500 hover:bg-violet-600 px-6 py-2 rounded-lg text-secondary font-inter"
+            className="mt-8 bg-violet-500 hover:bg-violet-600 px-6 py-2 rounded-lg text-secondary font-inter"
           >
             Confirmar
           </Button>

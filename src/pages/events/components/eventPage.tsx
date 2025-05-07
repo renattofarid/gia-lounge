@@ -8,6 +8,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
@@ -19,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { CalendarIcon, Loader2, MoreVertical, X } from "lucide-react";
+import { CalendarIcon, Loader2, MoreVertical, Search, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,31 +50,50 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Pagination } from "@/components/pagination";
+import { Input } from "@/components/ui/input";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { useHasPermission } from "@/hooks/useHasPermission";
 
 export default function EventPage() {
   const options = [
     {
-      name: "Eventos",
+      name: "Empresas",
       link: "/empresas",
-      permission: { name: "Leer", type: "Evento" },
+      permission: {
+        name: "Leer",
+        type: "Empresa",
+        link: "/empresas",
+      },
     },
     {
       name: "Salones",
       link: "/empresas/salones",
-      permission: { name: "Leer", type: "Salón" },
+      permission: {
+        name: "Leer",
+        type: "Salón",
+        link: "/empresas/salones",
+      },
     },
     {
       name: "Mesas/Box",
       link: "/empresas/mesas",
-      permission: { name: "Leer", type: "Evento" },
+      permission: {
+        name: "Leer",
+        type: "Mesa",
+        link: "/empresas/mesas",
+      },
     },
+
     {
       name: "Eventos",
       link: "/empresas/eventos",
-      permission: { name: "Leer", type: "Evento" },
+      permission: {
+        name: "Leer",
+        type: "Evento",
+        link: "/empresas/eventos",
+      },
     },
+    
   ];
 
   const { companyId } = useComapanyStore();
@@ -106,6 +126,7 @@ export default function EventPage() {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
+  const [search, setSearch] = useState("");
   const [eventSelected, setEventSelected] = useState({} as EventItem);
   const [idSelected, setIdSelected] = useState(0);
   const [date, setDate] = useState<Date | undefined>(undefined);
@@ -158,19 +179,13 @@ export default function EventPage() {
     setIsUpdateDialogOpen(true);
   };
 
-  // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = e.target.value
-  //   setFilter(value)
-  // }
-
-  // const handleSearch = () => {
-  //   loadEvents(1, companyId, dateSelected)
-  // }
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+  };
 
   const handlePageChange = (page: number) => {
     loadEvents(page, companyId, dateSelected);
   };
-  
 
   useEffect(() => {
     if (companyId) loadEvents(1, companyId, dateSelected);
@@ -194,42 +209,18 @@ export default function EventPage() {
             </div>
             <div className="flex flex-col sm:flex-row gap-2">
               <div className="flex gap-2">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {date ? (
-                        format(date, "yyyy-MM-dd", { locale: es })
-                      ) : (
-                        <span>Seleccionar Fecha</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(date) => handleSelectDate(date)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-                {date && (
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleClearDateFilter}
-                    title="Limpiar filtro de fecha"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+                <Input
+                  placeholder="Buscar..."
+                  className="sm:w-[300px] font-poopins text-[13px]"
+                  value={search}
+                  onChange={handleFilterChange}
+                />
+                <Button
+                  size="icon"
+                  className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
               </div>
 
               {canCreateEvent && (
@@ -246,34 +237,63 @@ export default function EventPage() {
                       Agregar evento
                     </Button>
                   </DialogTrigger>
-                  <DialogContent className="max-w-2xl p-6">
-                    <DialogHeader>
-                      <DialogTitle className="font-inter">
-                        Agregar Evento
-                      </DialogTitle>
-                    </DialogHeader>
-                    <CreateEvent onClose={handleClose} companyId={companyId} />
-                  </DialogContent>
+                  <DialogPortal>
+                    <div className="fixed inset-0 z-40 bg-black/50 " />
+                    <DialogContent className="max-w-2xl p-6">
+                      <DialogHeader>
+                        <DialogTitle className="font-inter">
+                          Agregar Evento
+                        </DialogTitle>
+                      </DialogHeader>
+                      <CreateEvent
+                        onClose={handleClose}
+                        companyId={companyId}
+                      />
+                    </DialogContent>
+                  </DialogPortal>
                 </Dialog>
               )}
             </div>
           </div>
 
-          {/* <div className="w-full mb-4 flex justify-end">
-            <Select onValueChange={handleEnvironmentChange} value={selectedEnvironmentId || "all"}>
-              <SelectTrigger className="w-[200px] items-center">
-                <SelectValue placeholder="Seleccionar Salón" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los Salones</SelectItem>
-                {environments.map((env) => (
-                  <SelectItem key={env.id} value={env.id.toString()}>
-                    {env.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div> */}
+          <div className="w-full mb-4 flex justify-end">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  className={cn(
+                    "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
+                    !date && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? (
+                    format(date, "yyyy-MM-dd", { locale: es })
+                  ) : (
+                    <span>Seleccionar Fecha</span>
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(date) => handleSelectDate(date)}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+            {date && (
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleClearDateFilter}
+                title="Limpiar filtro de fecha"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
           <div className="w-full flex flex-col rounded-lg pt-2">
             <Table className="">

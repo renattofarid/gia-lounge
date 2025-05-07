@@ -79,8 +79,14 @@ export const menuItems: MenuItem[] = [
     id: 7,
     name: "Sorteos",
     icon: "Gift",
-    link: "/",
+    link: "/promociones",
   },
+  {
+    id:8,
+    name: "Configuracion",
+    icon: "Settings",
+    link: "/configutacion",
+  }
 ];
 
 export const USER_TYPE = "Usuarios";
