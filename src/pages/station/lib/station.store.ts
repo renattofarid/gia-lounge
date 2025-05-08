@@ -1,30 +1,18 @@
-import { create } from "zustand";
-import { Links, Meta } from "@/lib/global.interface";
-import { StationCollection, StationItem } from "./station.interface";
-import { getStation } from "./station.actions";
-// import { ReservationItem } from "@/pages/reservations/lib/reservation.interface";
+import { create } from "zustand"
+import type { Links, Meta } from "@/lib/global.interface"
+import type { StationCollection, StationItem } from "./station.interface"
+import { getStation } from "./station.actions"
 
 interface StationStore {
-  stations: StationItem[];
-  // reservations: ReservationItem
-  links: Links;
-  meta: Meta;
-  loading: boolean;
-  loadStations: (page: number, environmentId?: number) => void;
-  // loadReservations: (stationId: number) => void;
+  stations: StationItem[]
+  links: Links
+  meta: Meta
+  loading: boolean
+  loadStations: (page: number, environmentId?: number, date?: string, eventId?: string) => void
 }
 
 export const useStationStore = create<StationStore>((set) => ({
   stations: [],
-  // reservations: [],
-  // loadReservations: async (stationId: number) => {
-  //   set(() => ({ loading: true }));
-  //   const response: ReservationItem = await getStation(stationId);
-  //   set(() => ({
-  //     reservations: response,
-  //     loading: false,
-  //   }));
-  // }
   links: {
     first: "",
     last: "",
@@ -42,17 +30,19 @@ export const useStationStore = create<StationStore>((set) => ({
     total: 0,
   },
   loading: true,
-  loadStations: async (page: number, environmentId?: number) => {
-    set(() => ({ loading: true }));
+  loadStations: async (page: number, environmentId?: number, date?: string, eventId?: string) => {
+    set(() => ({ loading: true }))
     const response: StationCollection = await getStation({
       page,
       environmentId,
-    });
+      date_reservation: date,
+      event_id: eventId,
+    })
     set(() => ({
       stations: response.data,
       links: response.links,
       meta: response.meta,
       loading: false,
-    }));
+    }))
   },
-}));
+}))

@@ -92,10 +92,10 @@ export default function CreateEnvironment({
   }
 
   return (
-    <div className="p-6 rounded-lg">
+    <div className=" rounded-lg">
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
+          <div className="grid grid-cols-1 ">
             {/* Formulario */}
             <div className="flex flex-col gap-4">
               <div className="w-full rounded-lg bg-secondary p-4 text-sm space-y-4 font-inter">

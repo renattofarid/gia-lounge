@@ -14,6 +14,9 @@ import { EntryPage } from "./pages/entry/components/entryPage";
 // import { useHasPermission } from "./hooks/useHasPermission";
 // import { errorToast } from "./lib/core.function";
 import HomePage from "./pages/home/components/Homepage";
+import PromocionesPage from "./pages/promotions/components/promotionPage";
+import ConfigurationPage from "./pages/configuracion/components/configurationPage";
+import GalleryPage from "./pages/gallery/components/galleryPage";
 // import LotteryPage from "./pages/lottery/components/lotteryPage";
 
 // const isAuthenticated = () => {
@@ -22,9 +25,9 @@ import HomePage from "./pages/home/components/Homepage";
 
 function ProtectedRoute({
   children,
-  // requiredPermission,
-  // requiredType,
-}: {
+}: // requiredPermission,
+// requiredType,
+{
   children: JSX.Element;
   requiredPermission?: string;
   requiredType?: string;
@@ -71,7 +74,7 @@ export default function App() {
             path="/inicio"
             element={
               <ProtectedRoute>
-                <HomePage />  
+                <HomePage />
               </ProtectedRoute>
             }
           />
@@ -98,7 +101,7 @@ export default function App() {
             path="/empresas"
             element={
               // <ProtectedRoute requiredPermission="Leer" requiredType="Empresas">
-                <CompanyPage />
+              <CompanyPage />
               // </ProtectedRoute>
             }
           />
@@ -106,7 +109,7 @@ export default function App() {
             path="/empresas/salones"
             element={
               // <ProtectedRoute requiredPermission="Leer" requiredType="Salones">
-                <EnvironmentPage />
+              <EnvironmentPage />
               // </ProtectedRoute>
             }
           />
@@ -114,7 +117,7 @@ export default function App() {
             path="/empresas/mesas"
             element={
               // <ProtectedRoute requiredPermission="Leer" requiredType="Mesas">
-                <StationPage />
+              <StationPage />
               // </ProtectedRoute>
             }
           />
@@ -122,7 +125,7 @@ export default function App() {
             path="/empresas/eventos"
             element={
               // <ProtectedRoute requiredPermission="Leer" requiredType="Eventos">
-                <EventPage />
+              <EventPage />
               // </ProtectedRoute>
             }
           />
@@ -134,7 +137,7 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-           {/* <Route
+          {/* <Route
             path="/empresas/sorteos"
             element={
               <ProtectedRoute requiredPermission="Leer" requiredType="Sorteos">
@@ -174,6 +177,11 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/promociones" element={<PromocionesPage />} />
+
+          <Route path="/configuracion" element={<ConfigurationPage />} />
+
+          <Route path="/galeria" element={<GalleryPage />} />
 
           {/* 404 */}
           <Route path="*" element={<Navigate to="/inicio" />} />

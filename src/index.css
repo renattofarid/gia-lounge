@@ -2,6 +2,36 @@
 @tailwind components;
 @tailwind utilities;
 
+hiddenScroll::-webkit-scrollbar-track {
+  background-color: transparent;
+  /* Color del fondo del scrollbar */
+}
+
+.hiddenScroll::-webkit-scrollbar {
+  width: 8px;
+  /* Ancho del scrollbar */
+}
+
+.hiddenScroll::-webkit-scrollbar-thumb {
+  background-color: #83838357;
+  /* Color del scrollbar cuando se arrastra */
+  border-radius: 2px;
+  /* Radio de borde del scrollbar */
+}
+
+.transparentScroll::-webkit-scrollbar-track {
+  background-color: transparent; 
+}
+
+.transparentScroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.transparentScroll::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  border-radius: 2px;
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

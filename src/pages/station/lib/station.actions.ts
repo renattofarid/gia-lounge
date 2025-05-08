@@ -6,17 +6,26 @@ import { PER_PAGE } from "@/lib/core.function";
 export interface getStationProps {
   page: number;
   environmentId?: number;
+  date_reservation?: string;
+  event_id?: string;
+  search?: string
 }
 
 export const getStation = async ({
   page,
   environmentId,
+  date_reservation,
+  event_id,
+  search,
 }: getStationProps): Promise<StationCollection> => {
   const config: AxiosRequestConfig = {
     params: {
       page,
       environment_id: environmentId,
       per_page: PER_PAGE,
+      date_reservation,
+      event_id,
+      search,
     },
   };
   const response = await api.get(`/station`, config);
