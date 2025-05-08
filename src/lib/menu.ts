@@ -3,6 +3,7 @@ import {
   ChevronLeft,
   User,
   Settings,
+  Settings2,
   Drama,
   Calendar,
   Gift,
@@ -24,6 +25,7 @@ export const iconComponents: Record<string, any> = {
   Drama,
   Calendar,
   Gift,
+  Settings2 
 };
 
 export const menuItems: MenuItem[] = [
@@ -84,7 +86,7 @@ export const menuItems: MenuItem[] = [
   {
     id:8,
     name: "Configuracion",
-    icon: "Settings",
+    icon: "Settings2",
     link: "/configutacion",
   }
 ];
