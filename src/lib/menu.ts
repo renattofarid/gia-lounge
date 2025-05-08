@@ -87,7 +87,7 @@ export const menuItems: MenuItem[] = [
     id:8,
     name: "Configuracion",
     icon: "Settings2",
-    link: "/configutacion",
+    link: "/configuracion",
   }
 ];
 

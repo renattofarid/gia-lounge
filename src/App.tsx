@@ -16,6 +16,7 @@ import { EntryPage } from "./pages/entry/components/entryPage";
 import HomePage from "./pages/home/components/Homepage";
 import PromocionesPage from "./pages/promotions/components/promotionPage";
 import ConfigurationPage from "./pages/configuracion/components/configurationPage";
+import GalleryPage from "./pages/gallery/components/galleryPage";
 // import LotteryPage from "./pages/lottery/components/lotteryPage";
 
 // const isAuthenticated = () => {
@@ -178,7 +179,9 @@ export default function App() {
           />
           <Route path="/promociones" element={<PromocionesPage />} />
 
-          <Route path="/configutacion" element={<ConfigurationPage />} />
+          <Route path="/configuracion" element={<ConfigurationPage />} />
+
+          <Route path="/galeria" element={<GalleryPage />} />
 
           {/* 404 */}
           <Route path="*" element={<Navigate to="/inicio" />} />
