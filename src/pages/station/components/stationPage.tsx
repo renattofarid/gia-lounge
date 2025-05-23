@@ -62,6 +62,9 @@ export default function StationPage() {
   const [statusFilter] = useState("Todos")
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>(undefined)
 
+  // const getValidEnvironmentId = () => environmentId === 0 ? undefined : environmentId
+
+
   // const canCreateStation = useHasPermission("Crear", "Mesa")
   // const canUpdateStation = useHasPermission("Actualizar", "Mesa")
   // const canDeleteStation = useHasPermission("Eliminar", "Mesa")
@@ -109,9 +112,19 @@ export default function StationPage() {
     return matchesName && matchesStatus
   })
 
+  // const handlePageChange = (page: number) => {
+  //   loadStations(page, environmentId, dateSelected, selectedEventId)
+  // }
+
   const handlePageChange = (page: number) => {
-    loadStations(page, environmentId, dateSelected, selectedEventId)
-  }
+  loadStations(
+    page,
+    environmentId && environmentId !== 0 ? environmentId : undefined,
+    dateSelected,
+    selectedEventId
+  )
+}
+
 
   const handleEnvironmentChange = (value: string) => {
     if (value === "all") {
