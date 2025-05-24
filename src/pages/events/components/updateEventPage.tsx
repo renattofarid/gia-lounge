@@ -23,16 +23,7 @@ import { useEffect, useState } from "react";
 import { useEventStore } from "../lib/event.store";
 import { updateEvent } from "../lib/event.actions";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import { EventItem } from "../lib/event.interface";
 import {
   Select,
@@ -42,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { DateTimePickerInline } from "@/components/DateTimePickerInline";
 
 const EventSchema = z.object({
   name: z.string().nonempty("El nombre es obligatorio"),
@@ -54,10 +46,15 @@ const EventSchema = z.object({
 
 interface UpdateEventProps {
   onClose: () => void;
+  onCloseModal: () => void;
   event: EventItem;
 }
 
-export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
+export default function UpdateEvent({
+  event,
+  onClose,
+  onCloseModal,
+}: UpdateEventProps) {
   const form = useForm<z.infer<typeof EventSchema>>({
     resolver: zodResolver(EventSchema),
     defaultValues: {
@@ -78,26 +75,6 @@ export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
   useEffect(() => {
     loadCompanies(1);
   }, []);
-
-  function handleDateSelect(date: Date | undefined) {
-    if (date) {
-      form.setValue("event_datetime", date);
-    }
-  }
-
-  function handleTimeChange(type: "hour" | "minute", value: string) {
-    const currentDate = form.getValues("event_datetime") || new Date();
-    let newDate = new Date(currentDate);
-
-    if (type === "hour") {
-      const hour = parseInt(value, 10);
-      newDate.setHours(hour);
-    } else if (type === "minute") {
-      newDate.setMinutes(parseInt(value, 10));
-    }
-
-    form.setValue("event_datetime", newDate);
-  }
 
   const handleFormSubmit = async (data: z.infer<typeof EventSchema>) => {
     try {
@@ -218,101 +195,12 @@ export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
                       <FormLabel className="text-sm font-normal font-poopins">
                         Seleccionar fecha y hora
                       </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal bg-secondary border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "dd/MM/yyyy HH:mm")
-                              ) : (
-                                <span>DD/MM/YYYY HH:mm</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <div className="sm:flex">
-                            <Calendar
-                              mode="single"
-                              selected={field.value}
-                              onSelect={handleDateSelect}
-                            />
-                            <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
-                              <ScrollArea className="w-64 sm:w-auto">
-                                <div className="flex sm:flex-col p-2">
-                                  {Array.from({ length: 24 }, (_, i) => i)
-                                    .reverse()
-                                    .map((hour) => (
-                                      <Button
-                                        key={hour}
-                                        size="icon"
-                                        variant={
-                                          field.value &&
-                                          field.value.getHours() === hour
-                                            ? "default"
-                                            : "ghost"
-                                        }
-                                        className="sm:w-full shrink-0 aspect-square"
-                                        onClick={() =>
-                                          handleTimeChange(
-                                            "hour",
-                                            hour.toString()
-                                          )
-                                        }
-                                      >
-                                        {hour}
-                                      </Button>
-                                    ))}
-                                </div>
-                                <ScrollBar
-                                  orientation="horizontal"
-                                  className="sm:hidden"
-                                />
-                              </ScrollArea>
-                              <ScrollArea className="w-64 sm:w-auto">
-                                <div className="flex sm:flex-col p-2">
-                                  {Array.from(
-                                    { length: 12 },
-                                    (_, i) => i * 5
-                                  ).map((minute) => (
-                                    <Button
-                                      key={minute}
-                                      size="icon"
-                                      variant={
-                                        field.value &&
-                                        field.value.getMinutes() === minute
-                                          ? "default"
-                                          : "ghost"
-                                      }
-                                      className="sm:w-full shrink-0 aspect-square"
-                                      onClick={() =>
-                                        handleTimeChange(
-                                          "minute",
-                                          minute.toString()
-                                        )
-                                      }
-                                    >
-                                      {minute.toString().padStart(2, "0")}
-                                    </Button>
-                                  ))}
-                                </div>
-                                <ScrollBar
-                                  orientation="horizontal"
-                                  className="sm:hidden"
-                                />
-                              </ScrollArea>
-                            </div>
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-
+                      <DateTimePickerInline
+                        value={field.value}
+                        onChange={(date) =>
+                          form.setValue("event_datetime", date)
+                        }
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -370,7 +258,7 @@ export default function UpdateEvent({ event, onClose }: UpdateEventProps) {
                 <Button
                   variant="outline"
                   type="button"
-                  onClick={onClose}
+                  onClick={onCloseModal}
                   className="bg-foreground text-secondary font-inter hover:bg-foreground/95 hover:text-secondary text-sm"
                 >
                   Cancelar

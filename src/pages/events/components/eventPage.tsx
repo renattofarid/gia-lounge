@@ -93,7 +93,6 @@ export default function EventPage() {
         link: "/empresas/eventos",
       },
     },
-    
   ];
 
   const { companyId } = useComapanyStore();
@@ -246,6 +245,7 @@ export default function EventPage() {
                         </DialogTitle>
                       </DialogHeader>
                       <CreateEvent
+                        onCloseModal={() => setIsAddDialogOpen(false)}
                         onClose={handleClose}
                         companyId={companyId}
                       />
@@ -467,16 +467,26 @@ export default function EventPage() {
               />
             </div>
           </div>
-          <Dialog open={isUpdateDialogOpen} modal={false}>
-            <DialogContent className="max-w-2xl p-6 ">
-              <DialogHeader>
-                <DialogTitle className="font-inter">
-                  Actualizar Evento
-                </DialogTitle>
-                <DialogDescription />
-              </DialogHeader>
-              <UpdateEvent onClose={handleUpdateClose} event={eventSelected} />
-            </DialogContent>
+          <Dialog
+            open={isUpdateDialogOpen}
+            onOpenChange={setIsUpdateDialogOpen}
+            modal={true}
+          >
+            <DialogPortal>
+              <DialogContent className="max-w-2xl p-6 ">
+                <DialogHeader>
+                  <DialogTitle className="font-inter">
+                    Actualizar Evento
+                  </DialogTitle>
+                  <DialogDescription />
+                </DialogHeader>
+                <UpdateEvent
+                  onCloseModal={() => setIsUpdateDialogOpen(false)}
+                  onClose={handleUpdateClose}
+                  event={eventSelected}
+                />
+              </DialogContent>
+            </DialogPortal>
           </Dialog>
 
           <DeleteDialog
