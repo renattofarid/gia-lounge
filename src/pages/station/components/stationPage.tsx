@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import Layout from "@/components/layouts/layout"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Pagination } from "@/components/pagination"
-import { ReservationDetails } from "./detailReserva"
-import CreateStation from "./addStation"
-import UpdateStation from "./updateStation"
+import Layout from "@/components/layouts/layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Pagination } from "@/components/pagination";
+import { ReservationDetails } from "./detailReserva";
+import CreateStation from "./addStation";
+import UpdateStation from "./updateStation";
 
 import {
   Dialog,
@@ -21,161 +21,206 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
-import { Hash, MoreVertical, Loader2, Search, CalendarIcon, X } from "lucide-react"
-import { useStationStore } from "../lib/station.store"
-import { useEnvironmentStore } from "@/pages/environment/lib/environment.store"
+import {
+  Hash,
+  MoreVertical,
+  Loader2,
+  Search,
+  CalendarIcon,
+  X,
+} from "lucide-react";
+import { useStationStore } from "../lib/station.store";
+import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store"
 // import { useHasPermission } from "@/hooks/useHasPermission"
-import { deleteStation } from "../lib/station.actions"
-import { errorToast, successToast } from "@/lib/core.function"
-import type { StationItem } from "../lib/station.interface"
-import DeleteDialog from "@/components/delete-dialog"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { Calendar } from "@/components/ui/calendar"
-import { es } from "date-fns/locale"
-import { useEventStore } from "@/pages/events/lib/event.store"
+import { deleteStation } from "../lib/station.actions";
+import { errorToast, successToast } from "@/lib/core.function";
+import type { StationItem } from "../lib/station.interface";
+import DeleteDialog from "@/components/delete-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { es } from "date-fns/locale";
+import { useEventStore } from "@/pages/events/lib/event.store";
 
 export default function StationPage() {
-  const navigator = useNavigate()
-  const { environmentId, setEnvironmentId, environments } = useEnvironmentStore()
-  const { stations, loadStations, loading, links, meta } = useStationStore()
-  const { events, loadEvents } = useEventStore()
+  const navigator = useNavigate();
+  const { environmentId, setEnvironmentId, environments } =
+    useEnvironmentStore();
+  const { stations, loadStations, loading, links, meta } = useStationStore();
+  const { events, loadEvents } = useEventStore();
   // const { permisos } = useAuthStore()
 
-  const [stationUpdate, setStationUpdate] = useState<StationItem>({} as StationItem)
-  const [idDeleteSelected, setIdDeleteSelected] = useState<number>(0)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
-  const [isShowReservationDialogOpen, setIsShowReservationDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [selectedStation, setSelectedStation] = useState<StationItem | null>(null)
-  const [date, setDate] = useState<Date | undefined>(undefined)
-  const [dateSelected, setDateSelected] = useState<string | undefined>(undefined)
-  const [search, setSearch] = useState("")
-  const [statusFilter] = useState("Todos")
-  const [selectedEventId, setSelectedEventId] = useState<string | undefined>(undefined)
+  const [stationUpdate, setStationUpdate] = useState<StationItem>(
+    {} as StationItem
+  );
+  const [idDeleteSelected, setIdDeleteSelected] = useState<number>(0);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+  const [isShowReservationDialogOpen, setIsShowReservationDialogOpen] =
+    useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [selectedStation, setSelectedStation] = useState<StationItem | null>(
+    null
+  );
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [dateSelected, setDateSelected] = useState<string | undefined>(
+    undefined
+  );
+  const [search, setSearch] = useState("");
+  const [statusFilter] = useState("Todos");
+  const [selectedEventId, setSelectedEventId] = useState<string | undefined>(
+    undefined
+  );
 
   // const getValidEnvironmentId = () => environmentId === 0 ? undefined : environmentId
-
 
   // const canCreateStation = useHasPermission("Crear", "Mesa")
   // const canUpdateStation = useHasPermission("Actualizar", "Mesa")
   // const canDeleteStation = useHasPermission("Eliminar", "Mesa")
 
-  const canCreateStation = true
-  const canUpdateStation = true
-  const canDeleteStation = true
+  const canCreateStation = true;
+  const canUpdateStation = true;
+  const canDeleteStation = true;
 
   useEffect(() => {
-    loadEvents(1)
+    loadEvents(1);
 
     if (environmentId) {
-      loadStations(1, environmentId, dateSelected, selectedEventId)
+      loadStations(1, environmentId, dateSelected, selectedEventId);
     } else {
-      navigator("/empresas/salones")
+      navigator("/empresas/salones");
     }
-  }, [])
+  }, []);
 
   const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value)
-  }
+    setSearch(e.target.value);
+  };
 
   const handleSelectDate = (date?: Date) => {
-    if (!date) return
-    setDate(date)
-    const formattedDate = format(date, "yyyy-MM-dd")
-    setDateSelected(formattedDate)
-    loadStations(1, environmentId, formattedDate, selectedEventId)
-  }
+    if (!date) return;
+    setDate(date);
+    const formattedDate = format(date, "yyyy-MM-dd");
+    setDateSelected(formattedDate);
+    loadStations(1, environmentId, formattedDate, selectedEventId);
+  };
 
   const handleClearDateFilter = () => {
-    setDate(undefined)
-    setDateSelected(undefined)
-    loadStations(1, environmentId, undefined, selectedEventId)
-  }
+    setDate(undefined);
+    setDateSelected(undefined);
+    loadStations(1, environmentId, undefined, selectedEventId);
+  };
 
   const handleEventChange = (value: string) => {
-    setSelectedEventId(value === "all" ? undefined : value)
-    loadStations(1, environmentId, dateSelected, value === "all" ? undefined : value)
-  }
+    setSelectedEventId(value === "all" ? undefined : value);
+    loadStations(
+      1,
+      environmentId,
+      dateSelected,
+      value === "all" ? undefined : value
+    );
+  };
 
   const filteredStations = stations.filter((station) => {
-    const matchesName = station.name.toLowerCase().includes(search.toLowerCase())
-    const matchesStatus = statusFilter === "Todos" || station.status === statusFilter
-    return matchesName && matchesStatus
-  })
+    const matchesName = station.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchesStatus =
+      statusFilter === "Todos" || station.status === statusFilter;
+    return matchesName && matchesStatus;
+  });
 
   // const handlePageChange = (page: number) => {
   //   loadStations(page, environmentId, dateSelected, selectedEventId)
   // }
 
   const handlePageChange = (page: number) => {
-  loadStations(
-    page,
-    environmentId && environmentId !== 0 ? environmentId : undefined,
-    dateSelected,
-    selectedEventId
-  )
-}
-
+    loadStations(
+      page,
+      environmentId && environmentId !== 0 ? environmentId : undefined,
+      dateSelected,
+      selectedEventId
+    );
+  };
 
   const handleEnvironmentChange = (value: string) => {
     if (value === "all") {
-      setEnvironmentId(0)
-      loadStations(1, undefined, dateSelected, selectedEventId)
+      setEnvironmentId(undefined);
+      loadStations(1, undefined, dateSelected, selectedEventId);
     } else {
-      setEnvironmentId(Number(value))
-      loadStations(1, Number(value), dateSelected, selectedEventId)
+      setEnvironmentId(Number(value));
+      loadStations(1, Number(value), dateSelected, selectedEventId);
     }
-  }
+  };
 
   const handleClickUpdate = (station: StationItem) => {
-    setStationUpdate(station)
-    setIsUpdateDialogOpen(true)
-  }
+    setStationUpdate(station);
+    setIsUpdateDialogOpen(true);
+  };
 
   const handleClickDelete = (id: number) => {
-    setIdDeleteSelected(id)
-    setIsDeleteDialogOpen(true)
-  }
+    setIdDeleteSelected(id);
+    setIsDeleteDialogOpen(true);
+  };
 
   const handleDelete = async () => {
     try {
-      await deleteStation(idDeleteSelected)
-      loadStations(1, environmentId, dateSelected, selectedEventId)
-      successToast("Mesa eliminada correctamente")
-      setIsDeleteDialogOpen(false)
+      await deleteStation(idDeleteSelected);
+      loadStations(1, environmentId, dateSelected, selectedEventId);
+      successToast("Mesa eliminada correctamente");
+      setIsDeleteDialogOpen(false);
     } catch {
-      errorToast("Error al eliminar la mesa")
+      errorToast("Error al eliminar la mesa");
     }
-  }
+  };
 
   const handleCloseCreate = () => {
-    setIsDialogOpen(false)
-    loadStations(1, environmentId, dateSelected, selectedEventId)
-  }
+    setIsDialogOpen(false);
+    loadStations(1, environmentId, dateSelected, selectedEventId);
+  };
 
   const handleCloseUpdate = () => {
-    setIsUpdateDialogOpen(false)
-    loadStations(1, environmentId, dateSelected, selectedEventId)
-  }
+    setIsUpdateDialogOpen(false);
+    loadStations(1, environmentId, dateSelected, selectedEventId);
+  };
 
   const handleShowDetails = (station: StationItem) => {
-    setSelectedStation(station)
-    setIsShowReservationDialogOpen(true)
-  }
+    setSelectedStation(station);
+    setIsShowReservationDialogOpen(true);
+  };
 
   const handleCloseReservationDetails = () => {
-    setSelectedStation(null)
-    setIsShowReservationDialogOpen(false)
-  }
+    setSelectedStation(null);
+    setIsShowReservationDialogOpen(false);
+  };
 
   const options = [
     {
@@ -214,7 +259,7 @@ export default function StationPage() {
         link: "/empresas/eventos",
       },
     },
-  ]
+  ];
 
   // const filteredOptions = options.filter((option) =>
   //   permisos.some(
@@ -223,7 +268,7 @@ export default function StationPage() {
   //   )
   // )
 
-  const filteredOptions = options
+  const filteredOptions = options;
 
   return (
     <Layout options={filteredOptions}>
@@ -237,7 +282,9 @@ export default function StationPage() {
           <div className="flex w-full justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold font-inter">Mesas</h1>
-              <p className="text-gray-500 text-base font-inter">Gestione las mesas de la empresa seleccionada.</p>
+              <p className="text-gray-500 text-base font-inter">
+                Gestione las mesas de la empresa seleccionada.
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-2">
@@ -248,7 +295,10 @@ export default function StationPage() {
                   value={search}
                   onChange={handleFilterChange}
                 />
-                <Button size="icon" className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9">
+                <Button
+                  size="icon"
+                  className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+                >
                   <Search className="w-4 h-4" />
                 </Button>
               </div>
@@ -256,14 +306,21 @@ export default function StationPage() {
               {canCreateStation && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button className="bg-violet-500 hover:bg-violet-600 font-inter">Agregar mesa</Button>
+                    <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
+                      Agregar mesa
+                    </Button>
                   </DialogTrigger>
                   <DialogContent className="p-6 max-w-3xl">
                     <DialogHeader>
                       <DialogTitle>Agregar Mesa</DialogTitle>
-                      <DialogDescription>Gestione las mesas de la empresa seleccionada.</DialogDescription>
+                      <DialogDescription>
+                        Gestione las mesas de la empresa seleccionada.
+                      </DialogDescription>
                     </DialogHeader>
-                    <CreateStation environmentId={environmentId} onClose={handleCloseCreate} />
+                    <CreateStation
+                      environmentId={environmentId}
+                      onClose={handleCloseCreate}
+                    />
                   </DialogContent>
                 </Dialog>
               )}
@@ -288,7 +345,10 @@ export default function StationPage() {
             </Select>
 
             {/* Filtro de Salón */}
-            <Select onValueChange={handleEnvironmentChange} value={environmentId ? environmentId.toString() : "all"}>
+            <Select
+              onValueChange={handleEnvironmentChange}
+              value={environmentId ? environmentId.toString() : "all"}
+            >
               <SelectTrigger className="w-[240px]">
                 <SelectValue placeholder="Seleccionar salón" />
               </SelectTrigger>
@@ -309,19 +369,33 @@ export default function StationPage() {
                   variant={"outline"}
                   className={cn(
                     "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
-                    !date && "text-muted-foreground",
+                    !date && "text-muted-foreground"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "dd/MM/yyyy", { locale: es }) : <span>Seleccionar Fecha</span>}
+                  {date ? (
+                    format(date, "dd/MM/yyyy", { locale: es })
+                  ) : (
+                    <span>Seleccionar Fecha</span>
+                  )}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
-                <Calendar mode="single" selected={date} onSelect={(date) => handleSelectDate(date)} initialFocus />
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={(date) => handleSelectDate(date)}
+                  initialFocus
+                />
               </PopoverContent>
             </Popover>
             {date && (
-              <Button variant="outline" size="icon" onClick={handleClearDateFilter} title="Limpiar filtro de fecha">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleClearDateFilter}
+                title="Limpiar filtro de fecha"
+              >
                 <X className="h-4 w-4" />
               </Button>
             )}
@@ -332,14 +406,24 @@ export default function StationPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">Nombre</TableHead>
-                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">Tipo</TableHead>
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
+                    Nombre
+                  </TableHead>
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
+                    Tipo
+                  </TableHead>
                   <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Fecha de reserva
                   </TableHead>
-                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">Estado</TableHead>
-                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">Detalles</TableHead>
-                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">Acciones</TableHead>
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
+                    Estado
+                  </TableHead>
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
+                    Detalles
+                  </TableHead>
+                  <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
+                    Acciones
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -359,7 +443,9 @@ export default function StationPage() {
                         {station.date_reservation}
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
-                        <Badge className={getStatusClass(station.status)}>{station.status}</Badge>
+                        <Badge className={getStatusClass(station.status)}>
+                          {station.status}
+                        </Badge>
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                         <div className="flex flex-col gap-2 items-center">
@@ -390,14 +476,24 @@ export default function StationPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             {canUpdateStation && (
-                              <DropdownMenuItem onClick={() => handleClickUpdate(station)}>Actualizar</DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() => handleClickUpdate(station)}
+                              >
+                                Actualizar
+                              </DropdownMenuItem>
                             )}
                             {canDeleteStation && (
-                              <DropdownMenuItem onClick={() => handleClickDelete(station.id)}>
+                              <DropdownMenuItem
+                                onClick={() => handleClickDelete(station.id)}
+                              >
                                 Eliminar
                               </DropdownMenuItem>
                             )}
-                            <DropdownMenuItem onClick={() => handleShowDetails(station)}>Detalles</DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => handleShowDetails(station)}
+                            >
+                              Detalles
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -411,7 +507,9 @@ export default function StationPage() {
                           {dateSelected
                             ? "No existe ninguna reservación para esa mesa en la fecha seleccionada"
                             : "No hay mesas disponibles"}
-                          {selectedEventId ? " para el evento seleccionado" : ""}
+                          {selectedEventId
+                            ? " para el evento seleccionado"
+                            : ""}
                           {environmentId ? " en el salón seleccionado" : ""}
                           {search ? ` con el término "${search}"` : ""}.
                         </p>
@@ -419,10 +517,11 @@ export default function StationPage() {
                           <Button
                             variant="ghost"
                             onClick={() => {
-                              if (dateSelected) handleClearDateFilter()
-                              if (selectedEventId) setSelectedEventId(undefined)
-                              if (search) setSearch("")
-                              loadStations(1, environmentId)
+                              if (dateSelected) handleClearDateFilter();
+                              if (selectedEventId)
+                                setSelectedEventId(undefined);
+                              if (search) setSearch("");
+                              loadStations(1, environmentId);
                             }}
                             className="mt-2"
                           >
@@ -438,17 +537,28 @@ export default function StationPage() {
             </Table>
 
             <div className="mt-6">
-              <Pagination links={links} meta={meta} onPageChange={handlePageChange} />
+              <Pagination
+                links={links}
+                meta={meta}
+                onPageChange={handlePageChange}
+              />
             </div>
           </div>
 
           {/* Update Dialog */}
-          <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+          <Dialog
+            open={isUpdateDialogOpen}
+            onOpenChange={setIsUpdateDialogOpen}
+          >
             <DialogContent className="p-6 max-w-3xl">
               <DialogHeader>
                 <DialogTitle>Actualizar Mesa</DialogTitle>
               </DialogHeader>
-              <UpdateStation environmentId={environmentId} onClose={handleCloseUpdate} station={stationUpdate} />
+              <UpdateStation
+                environmentId={environmentId}
+                onClose={handleCloseUpdate}
+                station={stationUpdate}
+              />
             </DialogContent>
           </Dialog>
 
@@ -460,31 +570,39 @@ export default function StationPage() {
           />
 
           {/* Reservation Details Dialog */}
-          <Dialog open={isShowReservationDialogOpen} onOpenChange={setIsShowReservationDialogOpen}>
+          <Dialog
+            open={isShowReservationDialogOpen}
+            onOpenChange={setIsShowReservationDialogOpen}
+          >
             <DialogContent className="p-6 max-w-5xl">
               <DialogHeader>
                 <DialogTitle>Detalle de la Reserva</DialogTitle>
-                <DialogDescription>{selectedStation && `Mesa: ${selectedStation.name}`}</DialogDescription>
+                <DialogDescription>
+                  {selectedStation && `Mesa: ${selectedStation.name}`}
+                </DialogDescription>
               </DialogHeader>
               {selectedStation && (
-                <ReservationDetails station={selectedStation} onClose={handleCloseReservationDetails} />
+                <ReservationDetails
+                  station={selectedStation}
+                  onClose={handleCloseReservationDetails}
+                />
               )}
             </DialogContent>
           </Dialog>
         </div>
       )}
     </Layout>
-  )
+  );
 }
 
 // Helper: color para estados
 function getStatusClass(status: string) {
   switch (status) {
     case "Reservado":
-      return "text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE] dark:text-[#FF8A50] dark:bg-[#5A1E0E] dark:hover:bg-[#7A2F1A]"
+      return "text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE] dark:text-[#FF8A50] dark:bg-[#5A1E0E] dark:hover:bg-[#7A2F1A]";
     case "Disponible":
-      return "text-[#2F8F2F] bg-[#78d8784f] hover:bg-[#5fbf5f] hover:text-white dark:bg-green-950 dark:text-green-200 dark:hover:bg-green-800"
+      return "text-[#2F8F2F] bg-[#78d8784f] hover:bg-[#5fbf5f] hover:text-white dark:bg-green-950 dark:text-green-200 dark:hover:bg-green-800";
     default:
-      return "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FF8A8A] dark:text-[#FF6B6B] dark:bg-[#5A1E1E] dark:hover:bg-[#7A2F2F]"
+      return "text-[#E84747] bg-[#FFA5A54F] hover:bg-[#FF8A8A] dark:text-[#FF6B6B] dark:bg-[#5A1E1E] dark:hover:bg-[#7A2F2F]";
   }
 }
