@@ -23,16 +23,7 @@ import { useEffect, useState } from "react";
 import { useEventStore } from "../lib/event.store";
 import { createEvent } from "../lib/event.actions";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 import {
   Select,
@@ -78,31 +69,12 @@ export default function CreateEvent({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { loading } = useEventStore();
 
-  function handleDateSelect(date: Date | undefined) {
-    if (date) {
-      form.setValue("event_datetime", date);
-    }
-  }
 
   const { companies, loadCompanies } = useComapanyStore();
 
   useEffect(() => {
     loadCompanies(1);
   }, []);
-
-  function handleTimeChange(type: "hour" | "minute", value: string) {
-    const currentDate = form.getValues("event_datetime") || new Date();
-    let newDate = new Date(currentDate);
-
-    if (type === "hour") {
-      const hour = parseInt(value, 10);
-      newDate.setHours(hour);
-    } else if (type === "minute") {
-      newDate.setMinutes(parseInt(value, 10));
-    }
-
-    form.setValue("event_datetime", newDate);
-  }
 
   const handleFormSubmit = async (data: z.infer<typeof EventSchema>) => {
     try {
