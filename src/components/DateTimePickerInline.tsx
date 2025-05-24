@@ -2,7 +2,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export function DateTimePickerInline({
   value,
@@ -12,6 +12,7 @@ export function DateTimePickerInline({
   onChange: (date: Date) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   function handleTimeChange(type: "hour" | "minute", valueNum: number) {
     const newDate = new Date(value);
@@ -20,8 +21,21 @@ export function DateTimePickerInline({
     onChange(newDate);
   }
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   return (
-    <div className="relative">
+    <div className="relative" ref={wrapperRef}>
       <Button
         type="button"
         variant="outline"
@@ -33,14 +47,16 @@ export function DateTimePickerInline({
 
       {open && (
         <div className="absolute bottom-full mb-2 z-50 bg-white shadow-md rounded-md p-0 flex w-fit">
-          {/* Calendario a la izquierda */}
           <Calendar
             mode="single"
             selected={value}
-            onSelect={(date) => date && onChange(date)}
+            onSelect={(date) => {
+              if (date) {
+                onChange(date);
+              }
+            }}
           />
 
-          {/* Scrollable hour/minute selectors */}
           <div className="flex max-h-[280px]">
             <div>
               <ScrollArea className="h-full w-fit rounded border-r">
