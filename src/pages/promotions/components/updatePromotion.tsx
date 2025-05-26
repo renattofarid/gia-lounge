@@ -1,26 +1,43 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { z } from "zod"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useEffect, useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { errorToast, successToast } from "@/lib/core.function"
-import { Calendar, ImagePlus } from "lucide-react"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Calendar as CalendarComponent } from "@/components/ui/calendar"
-import { cn } from "@/lib/utils"
-import { updatePromotion } from "../lib/promotion.actions"
-import { useProductStore } from "../lib/prodcut.store"
-import type { PromotionItem } from "../lib/promotions.interface"
+import { z } from "zod";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { errorToast, successToast } from "@/lib/core.function";
+import { Calendar, ImagePlus } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import { updatePromotion } from "../lib/promotion.actions";
+import { useProductStore } from "../lib/prodcut.store";
+import type { PromotionItem } from "../lib/promotions.interface";
 
 const PromotionSchema = z.object({
   product_id: z.coerce.number().min(1, "Selecciona un producto"),
@@ -36,25 +53,28 @@ const PromotionSchema = z.object({
   precio: z.string().nonempty("El precio es requerido"),
   description: z.string().nonempty("La descripción es requerida"),
   route: z.string().optional(),
-})
+});
 
-type PromotionFormValues = z.infer<typeof PromotionSchema>
+type PromotionFormValues = z.infer<typeof PromotionSchema>;
 
 interface UpdatePromotionProps {
-  onClose: () => void
-  promotion: PromotionItem | null
+  onClose: () => void;
+  promotion: PromotionItem | null;
 }
 
-export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionProps) {
-  const [previewImage, setPreviewImage] = useState<string | null>(null)
-  const [file, setFile] = useState<File | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+export default function UpdatePromotion({
+  onClose,
+  promotion,
+}: UpdatePromotionProps) {
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { products, loadProducts } = useProductStore()
+  const { products, loadProducts } = useProductStore();
 
   useEffect(() => {
-    loadProducts(1)
-  }, [])
+    loadProducts(1);
+  }, []);
 
   const form = useForm<PromotionFormValues>({
     resolver: zodResolver(PromotionSchema),
@@ -62,14 +82,16 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
       product_id: promotion?.product_id || 0,
       name: promotion?.name || "",
       title: promotion?.title || "",
-      date_start: promotion?.date_start ? new Date(promotion.date_start) : new Date(),
+      date_start: promotion?.date_start
+        ? new Date(promotion.date_start)
+        : new Date(),
       date_end: promotion?.date_end ? new Date(promotion.date_end) : new Date(),
       stock: promotion?.stock || 0,
       precio: promotion?.precio?.toString() || "",
       description: promotion?.description || "",
       route: promotion?.route || "",
     },
-  })
+  });
 
   // Actualizar el formulario cuando cambia la promoción seleccionada
   useEffect(() => {
@@ -78,70 +100,74 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
         product_id: promotion.product_id || 0,
         name: promotion.name || "",
         title: promotion.title || "",
-        date_start: promotion.date_start ? new Date(promotion.date_start) : new Date(),
-        date_end: promotion.date_end ? new Date(promotion.date_end) : new Date(),
+        date_start: promotion.date_start
+          ? parseISO(promotion.date_start)
+          : new Date(),
+        date_end: promotion.date_end
+          ? parseISO(promotion.date_end)
+          : new Date(),
         stock: promotion.stock || 0,
         precio: promotion.precio?.toString() || "",
         description: promotion.description || "",
         route: promotion.route || "",
-      })
+      });
 
       // Establecer la imagen de vista previa si existe
       if (promotion.route) {
-        setPreviewImage(promotion.route)
+        setPreviewImage(promotion.route);
       }
     }
-  }, [promotion, form])
+  }, [promotion, form]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
+    const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile)
-      const reader = new FileReader()
+      setFile(selectedFile);
+      const reader = new FileReader();
       reader.onload = () => {
-        setPreviewImage(reader.result as string)
-      }
-      reader.readAsDataURL(selectedFile)
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(selectedFile);
     }
-  }
+  };
 
   const onSubmit = async (data: PromotionFormValues) => {
     if (!promotion?.id) {
-      errorToast("No se pudo identificar la promoción a actualizar")
-      return
+      errorToast("No se pudo identificar la promoción a actualizar");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       // Convertir fechas a formato string para la API
       const formattedData = {
         ...data,
         date_start: format(data.date_start, "yyyy-MM-dd"),
         date_end: format(data.date_end, "yyyy-MM-dd"),
-      }
+      };
 
-      const formData = new FormData()
+      const formData = new FormData();
       Object.entries(formattedData).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
-          formData.append(key, value.toString())
+          formData.append(key, value.toString());
         }
-      })
+      });
 
       // Solo agregar el archivo si se seleccionó uno nuevo
       if (file) {
-        formData.append("file", file)
+        formData.append("file", file);
       }
 
-      await updatePromotion(promotion.id, formData)
-      successToast("Promoción actualizada exitosamente")
-      onClose()
+      await updatePromotion(promotion.id, formData);
+      successToast("Promoción actualizada exitosamente");
+      onClose();
     } catch (error) {
-      console.error("Error al actualizar la promoción:", error)
-      errorToast("Error al actualizar la promoción")
+      console.error("Error al actualizar la promoción:", error);
+      errorToast("Error al actualizar la promoción");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="bg-secondary p-5 rounded-md">
@@ -155,7 +181,9 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal font-poopins">Nombre</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Nombre
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -173,7 +201,9 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal font-poopins">Título</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Título
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
@@ -193,7 +223,9 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="date_start"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="text-sm font-normal font-poopins">Fecha Inicio</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Fecha Inicio
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -202,10 +234,10 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                               variant={"outline"}
                               className={cn(
                                 "w-full pl-3 text-left font-normal bg-secondary border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins",
-                                !field.value && "text-muted-foreground",
+                                !field.value && "text-muted-foreground"
                               )}
                               onClick={(e) => {
-                                e.stopPropagation()
+                                e.stopPropagation();
                               }}
                             >
                               {field.value ? (
@@ -230,7 +262,7 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                             selected={field.value}
                             onSelect={(date) => {
                               if (date) {
-                                field.onChange(date)
+                                field.onChange(date);
                               }
                             }}
                             initialFocus
@@ -247,7 +279,9 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="date_end"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel className="text-sm font-normal font-poopins">Fecha Fin</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Fecha Fin
+                      </FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -256,10 +290,10 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                               variant={"outline"}
                               className={cn(
                                 "w-full pl-3 text-left font-normal bg-secondary border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins",
-                                !field.value && "text-muted-foreground",
+                                !field.value && "text-muted-foreground"
                               )}
                               onClick={(e) => {
-                                e.stopPropagation()
+                                e.stopPropagation();
                               }}
                             >
                               {field.value ? (
@@ -284,7 +318,7 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                             selected={field.value}
                             onSelect={(date) => {
                               if (date) {
-                                field.onChange(date)
+                                field.onChange(date);
                               }
                             }}
                             initialFocus
@@ -303,9 +337,13 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="product_id"
                   render={({ field }) => (
                     <FormItem className="w-full md:w-1/3">
-                      <FormLabel className="text-sm font-normal font-poopins">Producto</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Producto
+                      </FormLabel>
                       <Select
-                        onValueChange={(value) => field.onChange(Number.parseInt(value))}
+                        onValueChange={(value) =>
+                          field.onChange(Number.parseInt(value))
+                        }
                         value={field.value ? field.value.toString() : ""}
                       >
                         <FormControl>
@@ -315,7 +353,10 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                         </FormControl>
                         <SelectContent>
                           {products.map((product) => (
-                            <SelectItem key={product.id} value={product.id.toString()}>
+                            <SelectItem
+                              key={product.id}
+                              value={product.id.toString()}
+                            >
                               {product.name}
                             </SelectItem>
                           ))}
@@ -331,9 +372,15 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="precio"
                   render={({ field }) => (
                     <FormItem className="w-full md:w-1/3">
-                      <FormLabel className="text-sm font-normal font-poopins">Precio</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Precio
+                      </FormLabel>
                       <FormControl>
-                        <Input className="border-[#9A7FFF] font-poopins" placeholder="S/ 0.00" {...field} />
+                        <Input
+                          className="border-[#9A7FFF] font-poopins"
+                          placeholder="S/ 0.00"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -345,15 +392,17 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="stock"
                   render={({ field }) => (
                     <FormItem className="w-full md:w-1/3">
-                      <FormLabel className="text-sm font-normal font-poopins">Stock</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Stock
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           className="border-[#9A7FFF] font-poopins"
                           {...field}
                           onChange={(e) => {
-                            const value = Number.parseInt(e.target.value)
-                            field.onChange(isNaN(value) ? 0 : value)
+                            const value = Number.parseInt(e.target.value);
+                            field.onChange(isNaN(value) ? 0 : value);
                           }}
                         />
                       </FormControl>
@@ -369,7 +418,9 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-normal font-poopins">Descripción</FormLabel>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Descripción
+                      </FormLabel>
                       <FormControl>
                         <Textarea
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins min-h-[100px]"
@@ -387,15 +438,21 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                   name="route"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium">Imagen</FormLabel>
+                      <FormLabel className="text-sm font-medium">
+                        Imagen
+                      </FormLabel>
                       <FormControl>
                         <div className="relative">
                           <div
                             className={cn(
                               "flex flex-col items-center justify-center border-2 border-dashed rounded-md p-6 h-[100px] cursor-pointer bg-pink-100 hover:bg-pink-200 transition-colors",
-                              previewImage ? "border-pink-300" : "border-pink-200",
+                              previewImage
+                                ? "border-pink-300"
+                                : "border-pink-200"
                             )}
-                            onClick={() => document.getElementById("image-upload")?.click()}
+                            onClick={() =>
+                              document.getElementById("image-upload")?.click()
+                            }
                           >
                             {previewImage ? (
                               <img
@@ -406,7 +463,9 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                             ) : (
                               <div className="flex flex-col items-center text-pink-400">
                                 <ImagePlus className="h-8 w-8 mb-2" />
-                                <span className="text-sm">Actualizar imagen</span>
+                                <span className="text-sm">
+                                  Actualizar imagen
+                                </span>
                               </div>
                             )}
                             <input
@@ -417,7 +476,11 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
                               onChange={handleImageChange}
                             />
                           </div>
-                          <input type="hidden" {...field} value={previewImage || ""} />
+                          <input
+                            type="hidden"
+                            {...field}
+                            value={previewImage || ""}
+                          />
                         </div>
                       </FormControl>
                       <FormMessage />
@@ -437,7 +500,11 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
               >
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-purple-500 hover:bg-purple-600" disabled={isLoading}>
+              <Button
+                type="submit"
+                className="bg-purple-500 hover:bg-purple-600"
+                disabled={isLoading}
+              >
                 {isLoading ? "Actualizando..." : "Actualizar"}
               </Button>
             </div>
@@ -445,5 +512,5 @@ export default function UpdatePromotion({ onClose, promotion }: UpdatePromotionP
         </Form>
       </div>
     </div>
-  )
+  );
 }

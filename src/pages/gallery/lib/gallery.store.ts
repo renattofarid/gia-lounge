@@ -2,13 +2,15 @@ import { create } from "zustand";
 import type { Links, Meta } from "@/lib/global.interface";
 import { GalleryCollection, GalleryItem } from "./gallery.interface";
 import { getGallery } from "./gallery.actions";
+import { PER_PAGE } from "@/lib/core.function";
 
 interface GalleryStore {
   gallery: GalleryItem[];
   links: Links;
   meta: Meta;
   loading: boolean;
-  loadGallerys: (page: number, company_id?: number) => Promise<void>}
+  loadGallerys: (page: number, company_id?: number) => Promise<void>;
+}
 
 export const useGalleryStore = create<GalleryStore>((set) => ({
   gallery: [],
@@ -30,13 +32,13 @@ export const useGalleryStore = create<GalleryStore>((set) => ({
   },
   loading: true,
 
-  loadGallerys: async (page: number, perPage?: number, company_id?:number) => {
+  loadGallerys: async (page: number, company_id?: number) => {
     set(() => ({ loading: true }));
     try {
       const response: GalleryCollection = await getGallery({
         page,
-        perPage: perPage,
-        company_id
+        perPage: PER_PAGE,
+        company_id,
       });
 
       set(() => ({

@@ -41,7 +41,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
-import { deleteGallery, getGallery } from "../lib/gallery.actions";
+import { deleteGallery } from "../lib/gallery.actions";
 import CreateGalleryPage from "./addGallery";
 import { Pagination } from "@/components/pagination";
 
@@ -55,7 +55,6 @@ export default function GalleryPage() {
   ];
 
   const filteredOptions = options;
-
   const canCreateGallery = true;
   const canUpdateGallery = true;
   const canDeleteGallery = true;
@@ -82,14 +81,17 @@ export default function GalleryPage() {
     Record<string, boolean>
   >({});
 
+  const stateSelectedCompany =
+    selectedCompanyId === "all" ? undefined : Number(selectedCompanyId);
+
   useEffect(() => {
     loadCompanies(1);
-    loadGallerys(1);
-  }, [loadCompanies, loadGallerys]);
+    loadGallerys(1, stateSelectedCompany);
+  }, []);
 
   const handleClose = () => {
     setIsAddDialogOpen(false);
-    loadGallerys(currentPage);
+    loadGallerys(currentPage, stateSelectedCompany);
   };
 
   const handleClickDelete = (id: number) => {
@@ -102,7 +104,7 @@ export default function GalleryPage() {
       await deleteGallery(idSelected);
       setIsDeleteDialogOpen(false);
       successToast("Imagen eliminada correctamente");
-      loadGallerys(currentPage);
+      loadGallerys(currentPage, stateSelectedCompany);
     } catch (error) {
       errorToast("Error al eliminar la imagen");
     }
@@ -115,27 +117,13 @@ export default function GalleryPage() {
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    if (selectedCompanyId === "all") {
-      loadGallerys(page);
-    } else {
-      handleCompanyChange(selectedCompanyId, page);
-    }
+    loadGallerys(page, stateSelectedCompany);
   };
 
   const handleCompanyChange = async (value: string, page: number = 1) => {
     setSelectedCompanyId(value);
     setCurrentPage(page);
-
-    if (value === "all") {
-      loadGallerys(page);
-    } else {
-      try {
-        const companyId = Number.parseInt(value);
-        await getGallery({ page, company_id: companyId });
-      } catch (error) {
-        errorToast("Error al cargar las imágenes de la compañía");
-      }
-    }
+    loadGallerys(page, value === "all" ? undefined : Number(value));
   };
 
   const handleImageClick = (imageUrl: string, gallery: GalleryItem) => {

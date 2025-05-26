@@ -30,7 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import DeleteDialog from "@/components/delete-dialog";
 import { errorToast, successToast } from "@/lib/core.function";
-import { format } from "date-fns";
+import { format, parse, parseISO, startOfDay } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Popover,
@@ -371,7 +371,7 @@ export default function PromocionesPage() {
                   <TableHead className="font-inter text-[15px] text-foreground p-2">
                     Fecha Fin
                   </TableHead>
-                  <TableHead className="font-inter text-[15px] text-foreground p-2">
+                  <TableHead className="font-inter text-center text-[15px] text-foreground p-2">
                     Stock
                   </TableHead>
                   <TableHead className="font-inter text-[15px] text-foreground p-2 text-center">
@@ -391,11 +391,9 @@ export default function PromocionesPage() {
                         <div className="flex gap-2 items-center">
                           <CalendarIcon className="w-4 h-4" />
                           {format(
-                            new Date(promotion.date_start),
+                            parseISO(promotion.date_start),
                             "dd 'de' MMMM 'del' yyyy",
-                            {
-                              locale: es,
-                            }
+                            { locale: es }
                           )}
                         </div>
                       </TableCell>
@@ -403,29 +401,35 @@ export default function PromocionesPage() {
                         <div className="flex gap-2 items-center">
                           <CalendarIcon className="w-4 h-4" />
                           {format(
-                            new Date(promotion.date_end),
+                            parseISO(promotion.date_end),
                             "dd 'de' MMMM 'del' yyyy",
-                            {
-                              locale: es,
-                            }
+                            { locale: es }
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="font-inter py-2 px-2 text-[13px]">
-                        {promotion.stock_restante}
+                      <TableCell className="font-inter py-2 px-2 text-[13px] text-center">
+                        <Badge>{promotion.stock_restante}</Badge>
                       </TableCell>
 
                       <TableCell className="font-inter py-2 px-2 text-[13px] text-center">
                         <Badge
                           className={`${
                             promotion.stock_restante > 0 &&
-                            new Date(promotion.date_end) > new Date()
+                            startOfDay(
+                              parse(
+                                promotion.date_end,
+                                "yyyy-MM-dd",
+                                new Date()
+                              )
+                            ) >= startOfDay(new Date())
                               ? "bg-green-100 text-green-800 hover:bg-green-200"
                               : "bg-red-100 text-red-800 hover:bg-red-200"
                           }`}
                         >
                           {promotion.stock_restante > 0 &&
-                          new Date(promotion.date_end) > new Date()
+                          startOfDay(
+                            parse(promotion.date_end, "yyyy-MM-dd", new Date())
+                          ) >= startOfDay(new Date())
                             ? "Activo"
                             : "Inactivo"}
                         </Badge>
