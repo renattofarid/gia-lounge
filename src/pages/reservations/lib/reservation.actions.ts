@@ -1,7 +1,7 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
 import { ReservationCollection } from "./reservation.interface";
-
+// import { PER_PAGE } from "@/lib/core.function";
 
 export interface getReservationProps {
   page: number;
@@ -17,15 +17,15 @@ export const getReservations = async ({
   const config: AxiosRequestConfig = {
     params: {
       page,
+      // per_page: PER_PAGE,
+
       name,
       event_id: eventId,
-
     },
   };
   const response = await api.get(`/reservation`, config);
   return response.data;
 };
-
 
 export const getReservation = async (id: number) => {
   const response = await api.get(`/reservation/${id}`);
@@ -46,5 +46,3 @@ export const deleteReservation = async (id: number) => {
   const response = await api.delete(`/reservation/${id}`);
   return response.data;
 };
-
-

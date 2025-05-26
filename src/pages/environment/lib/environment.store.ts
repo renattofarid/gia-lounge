@@ -12,7 +12,7 @@ interface Environmenttore {
   meta: Meta;
   loading: boolean;
   environmentId: number;
-  setEnvironmentId: (id: number) => void;
+  setEnvironmentId: (id?: number) => void;
   selectEnvironment: EnvironmentItem | null;
   setSelectEnvironment: (environment: EnvironmentItem | null) => void;
   loadEnvironments: (page: number, companyId?: number) => void;
@@ -38,7 +38,7 @@ export const useEnvironmentStore = create<Environmenttore>((set) => ({
   },
   loading: true,
   environmentId: 0,
-  setEnvironmentId: (id: number) => {
+  setEnvironmentId: (id?: number) => {
     set(() => ({ environmentId: id }));
   },
   selectEnvironment: null,

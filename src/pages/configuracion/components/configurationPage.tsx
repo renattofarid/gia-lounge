@@ -3,7 +3,7 @@
 import Layout from "@/components/layouts/layout";
 import { useEffect, useState } from "react";
 import { useSettingStore } from "../lib/configuration.store";
-import { Loader2, MoreVertical } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Pagination } from "@/components/pagination";
 import {
   Table,
@@ -13,12 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import type { Settings } from "../lib/configuration.interface";
 import { UpdateSettingModal } from "./updateDialog";
@@ -48,7 +42,13 @@ export default function ConfigurationPage() {
   const handleCloseModal = () => {
     setIsUpdateDialogOpen(false);
     setSelectedSetting(null); // Limpiar el setting seleccionado al cerrar el modal
-    loadSettings(1);
+    // loadSettings(1);
+  };
+
+  const handleUpdateSuccess = () => {
+    setIsUpdateDialogOpen(false);
+    setSelectedSetting(null);
+    loadSettings(1); // Solo recargar cuando se actualice exitosamente
   };
 
   return (
@@ -101,23 +101,15 @@ export default function ConfigurationPage() {
 
                     <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                       {canUpdateStation && (
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreVertical className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setSelectedSetting(item);
-                                setIsUpdateDialogOpen(true);
-                              }}
-                            >
-                              Editar
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        <Button
+                          variant={"ghost"}
+                          onClick={() => {
+                            setSelectedSetting(item);
+                            setIsUpdateDialogOpen(true);
+                          }}
+                        >
+                          Editar
+                        </Button>
                       )}
                     </TableCell>
                   </TableRow>
@@ -135,13 +127,12 @@ export default function ConfigurationPage() {
           </div>
 
           {/* Siempre renderizamos el modal, pero solo está abierto cuando isUpdateDialogOpen es true */}
-          {selectedSetting && (
-            <UpdateSettingModal
-              station={selectedSetting}
-              open={isUpdateDialogOpen}
-              onClose={handleCloseModal}
-            />
-          )}
+          <UpdateSettingModal
+            station={selectedSetting}
+            open={isUpdateDialogOpen && selectedSetting !== null}
+            onClose={handleCloseModal}
+            onUpdateSuccess={handleUpdateSuccess}
+          />
         </div>
       )}
     </Layout>

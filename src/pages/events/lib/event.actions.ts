@@ -1,11 +1,11 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
 import { EventCollection } from "./event.interface";
+import { PER_PAGE } from "@/lib/core.function";
 
 export interface getEventsProps {
   page: number;
   name?: string;
-  perPage?: number;
   companyId?: number;
   event_datetime?: string;
 }
@@ -13,7 +13,6 @@ export interface getEventsProps {
 export const getEvents = async ({
   page,
   name,
-  perPage = 3,
   companyId,
   event_datetime,
 }: getEventsProps): Promise<EventCollection> => {
@@ -21,7 +20,7 @@ export const getEvents = async ({
     params: {
       page,
       name,
-      per_page: perPage === 0 ? undefined : perPage,
+      per_page: PER_PAGE,
       company_id: companyId,
       event_datetime,
     },

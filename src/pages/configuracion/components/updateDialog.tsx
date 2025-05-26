@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SettingRequest } from "../lib/configuration.interface";
 import { updateSettingByType } from "../lib/configuration.service";
 import { errorToast, successToast } from "@/lib/core.function";
@@ -32,9 +32,10 @@ interface UpdateSettingProps {
     name: string;
     description: string;
     amount: string;
-  };
+  } | null;
   open: boolean;
   onClose: () => void;
+  onUpdateSuccess?: () => void;
 }
 
 const SettingSchema = z.object({
@@ -51,19 +52,22 @@ export function UpdateSettingModal({
   station,
   open,
   onClose,
+  onUpdateSuccess,
 }: UpdateSettingProps) {
   const [isSending, setIsSending] = useState(false);
 
   const form = useForm<z.infer<typeof SettingSchema>>({
     resolver: zodResolver(SettingSchema),
     defaultValues: {
-      name: station.name,
-      description: station.description,
-      amount: station.amount,
+      name: station?.name || "",
+      description: station?.description || "",
+      amount: station?.amount || "",
     },
   });
 
   const handleSubmit = async (data: z.infer<typeof SettingSchema>) => {
+    if (!station) return;
+
     try {
       setIsSending(true);
 
@@ -73,11 +77,15 @@ export function UpdateSettingModal({
         amount: data.amount.toString(),
       };
 
-      // Usar station.name (el nombre original) para determinar el tipo de configuración
       await updateSettingByType(station.name, settingPayload);
 
       successToast("Configuración actualizada correctamente");
-      onClose();
+
+      if (onUpdateSuccess) {
+        onUpdateSuccess();
+      } else {
+        onClose();
+      }
     } catch (error: any) {
       console.error("Error al actualizar configuración:", error);
       const errorMessage =
@@ -88,6 +96,27 @@ export function UpdateSettingModal({
       setIsSending(false);
     }
   };
+
+  const handleCancel = () => {
+    setIsSending(false); // Asegurar que el loader se resetee
+    form.reset(); // Resetear el formulario
+    onClose();
+  };
+
+  useEffect(() => {
+    if (open && station) {
+      form.reset({
+        name: station.name,
+        description: station.description,
+        amount: station.amount,
+      });
+      setIsSending(false);
+    }
+  }, [open, station, form]);
+
+  if (!station) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -165,22 +194,28 @@ export function UpdateSettingModal({
                     </FormItem>
                   )}
                 />
+                <div className="flex justify-end gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    onClick={handleCancel}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isSending}
+                    className="flex items-center gap-2"
+                  >
+                    {isSending ? "Guardando" : "Guardar"}
+                    {isSending && (
+                      <LoaderCircle className="animate-spin h-5 w-5" />
+                    )}
+                  </Button>
+                </div>
               </form>
             </Form>
           </div>
-        </div>
-        <div className="flex justify-end gap-2">
-          <Button type="button" variant="secondary" onClick={onClose}>
-            Cancelar
-          </Button>
-          <Button
-            type="submit"
-            disabled={isSending}
-            className="flex items-center gap-2"
-          >
-            {isSending ? "Guardando" : "Guardar"}
-            {isSending && <LoaderCircle className="animate-spin h-5 w-5" />}
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

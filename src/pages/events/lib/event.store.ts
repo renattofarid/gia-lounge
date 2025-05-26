@@ -43,7 +43,6 @@ export const useEventStore = create<EventStore>((set, get) => ({
     page: number,
     companyId?: number,
     date?: string,
-    perPage?: number
   ) => {
     set(() => ({ loading: true }));
     try {
@@ -53,7 +52,6 @@ export const useEventStore = create<EventStore>((set, get) => ({
         companyId,
         name: filter,
         event_datetime: date,
-        perPage: perPage,
       });
 
       set(() => ({

@@ -8,7 +8,7 @@ export interface getStationProps {
   environmentId?: number;
   date_reservation?: string;
   event_id?: string;
-  search?: string
+  search?: string;
 }
 
 export const getStation = async ({
@@ -23,7 +23,7 @@ export const getStation = async ({
       page,
       environment_id: environmentId,
       per_page: PER_PAGE,
-      date_reservation,
+      station_datetime: date_reservation,
       event_id,
       search,
     },

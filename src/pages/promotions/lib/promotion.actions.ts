@@ -7,8 +7,7 @@ export interface getPromotionProps {
   page: number;
   name?: string;
   perPage?: number;
-  dateStart?: string
-
+  dateStart?: string;
 }
 
 export const getPromotions = async ({
@@ -54,7 +53,7 @@ export const updatePromotion = async (id: number, data: FormData) => {
       "Content-Type": "multipart/form-data",
     },
   };
-  const response = await api.put(`/promotion/${id}`, data, config);
+  const response = await api.post(`/promotion/${id}`, data, config);
   return response.data;
 };
 
@@ -64,26 +63,22 @@ export const deletePromotion = async (id: number) => {
 };
 
 export const getProducts = async (): Promise<PromotionCollection> => {
-  const config: AxiosRequestConfig = {
-   
-  };
+  const config: AxiosRequestConfig = {};
   const response = await api.get(`/product`, config);
   return response.data;
 };
 
-
 export interface ProductCollection {
-  data:  Product[];
+  data: Product[];
   links: Links;
-  meta:  Meta;
+  meta: Meta;
 }
 
 export interface Product {
-  id:          number;
-  name:        string;
+  id: number;
+  name: string;
   description: string;
-  precio:      string;
-  status:      string;
-  route:       string;
+  precio: string;
+  status: string;
+  route: string;
 }
-
