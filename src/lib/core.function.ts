@@ -20,4 +20,4 @@ export const errorToast = (body: string = "Error", description: string = new Dat
     });
 }
 
-export const PER_PAGE = 4;
+export const PER_PAGE = 10;

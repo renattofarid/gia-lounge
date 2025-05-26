@@ -77,14 +77,6 @@ export default function ReservationsPage() {
     }
   };
 
-  // const filteredReservations = reservations.filter((station) =>
-  //   station.name.toLowerCase().includes(filter.toLowerCase())
-  // );
-
-  // useEffect(() => {
-  //   loadEvents(1, companyId, undefined, 0);
-  //   loadReservations(1, selectedEventId ? Number(selectedEventId) : undefined);
-  // }, [loadEvents, loadReservations, selectedEventId]);
 
   useEffect(() => {
     loadEvents(1, companyId, undefined, 0);

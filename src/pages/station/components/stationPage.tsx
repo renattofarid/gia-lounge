@@ -13,6 +13,7 @@ import { Pagination } from "@/components/pagination";
 import { ReservationDetails } from "./detailReserva";
 import CreateStation from "./addStation";
 import UpdateStation from "./updateStation";
+import { AutocompleteFilter } from "@/components/AutocompleteFilter";
 
 import {
   Dialog,
@@ -70,6 +71,8 @@ import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { es } from "date-fns/locale";
 import { useEventStore } from "@/pages/events/lib/event.store";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function StationPage() {
   const navigator = useNavigate();
@@ -77,6 +80,8 @@ export default function StationPage() {
     useEnvironmentStore();
   const { stations, loadStations, loading, links, meta } = useStationStore();
   const { events, loadEvents } = useEventStore();
+  const { companyId } = useComapanyStore();
+
   // const { permisos } = useAuthStore()
 
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
@@ -101,8 +106,6 @@ export default function StationPage() {
     undefined
   );
 
-  // const getValidEnvironmentId = () => environmentId === 0 ? undefined : environmentId
-
   // const canCreateStation = useHasPermission("Crear", "Mesa")
   // const canUpdateStation = useHasPermission("Actualizar", "Mesa")
   // const canDeleteStation = useHasPermission("Eliminar", "Mesa")
@@ -112,7 +115,7 @@ export default function StationPage() {
   const canDeleteStation = true;
 
   useEffect(() => {
-    loadEvents(1);
+    loadEvents(1, companyId, undefined, 0);
 
     if (environmentId) {
       loadStations(1, environmentId, dateSelected, selectedEventId);
@@ -330,19 +333,23 @@ export default function StationPage() {
           {/* Filtros */}
           <div className="w-full flex flex-row justify-end gap-2 mb-6">
             {/* Filtro de Evento */}
-            <Select onValueChange={handleEventChange} value={selectedEventId}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Nombre evento" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los eventos</SelectItem>
-                {events.map((event) => (
-                  <SelectItem key={event.id} value={event.id.toString()}>
-                    {event.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <AutocompleteFilter
+              list={events}
+              label="name"
+              handleSelect={handleEventChange}
+              id="id"
+              condition={!selectedEventId}
+              active={
+                selectedEventId
+                  ? events.find(
+                      (e) => e.id.toString() === selectedEventId.toString()
+                    )?.name || "Evento seleccionado"
+                  : "Todos los eventos"
+              }
+              placeholder="Buscar evento..."
+              width="w-[240px]"
+              widthPop="w-[240px]"
+            />
 
             {/* Filtro de Salón */}
             <Select
@@ -402,7 +409,7 @@ export default function StationPage() {
           </div>
 
           {/* Table */}
-          <div className="w-full flex flex-col rounded-lg pt-2">
+          <ScrollArea className="w-full flex flex-col rounded-lg pt-2 h-[calc(100%-50rem)]">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -440,7 +447,7 @@ export default function StationPage() {
                         <Badge>{station.type}</Badge>
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
-                        {station.date_reservation}
+                        {station.date_reservation ?? "No hay fecha de reserva"}
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                         <Badge className={getStatusClass(station.status)}>
@@ -448,7 +455,7 @@ export default function StationPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
-                        <div className="flex flex-col gap-2 items-center">
+                        <div className="flex flex-row gap-2 items-center justify-center">
                           <div className="flex items-center gap-2 font-inter text-[13px]">
                             <Badge
                               variant="outline"
@@ -535,14 +542,14 @@ export default function StationPage() {
                 )}
               </TableBody>
             </Table>
+          </ScrollArea>
 
-            <div className="mt-6">
-              <Pagination
-                links={links}
-                meta={meta}
-                onPageChange={handlePageChange}
-              />
-            </div>
+          <div className="mt-6">
+            <Pagination
+              links={links}
+              meta={meta}
+              onPageChange={handlePageChange}
+            />
           </div>
 
           {/* Update Dialog */}
