@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Search, Download, Loader2 } from "lucide-react";
+// import { Button } from "@/components/ui/button";
+import {  Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -11,18 +11,18 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
+// import { Input } from "@/components/ui/input";
 import Layout from "@/components/layouts/layout";
 import { useReservationStore } from "../lib/reservation.store";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { useEventStore } from "@/pages/events/lib/event.store";
 // import {
 //   DropdownMenu,
@@ -35,18 +35,19 @@ import { format } from "date-fns";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { AutocompleteFilter } from "@/components/AutocompleteFilter";
 
 export default function ReservationsPage() {
   const { eventId } = useParams<{ eventId: string }>();
   const { events, loadEvents } = useEventStore();
   const { companyId } = useComapanyStore();
 
-  // const [selectedEventId] = useState<string | undefined>(
+  // const [eventId] = useState<string | undefined>(
   //   eventId
   // );
 
   //STORE
-  const { reservations, loadReservations, filter, setFilter, stats, loading } =
+  const { reservations, loadReservations, stats, loading } =
     useReservationStore();
 
   const options = [
@@ -56,13 +57,13 @@ export default function ReservationsPage() {
 
   const navigate = useNavigate();
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilter(e.target.value);
-  };
+  // const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setFilter(e.target.value);
+  // };
 
-  const handleSearch = () => {
-    loadReservations(1, Number(eventId));
-  };
+  // const handleSearch = () => {
+  //   loadReservations(1, Number(eventId));
+  // };
 
   // const handleEventChange = (value: string) => {
   //   setSelectedEventId(value === "all" ? undefined : value);
@@ -77,12 +78,10 @@ export default function ReservationsPage() {
     }
   };
 
-
   useEffect(() => {
     loadEvents(1, companyId, undefined, 0);
     loadReservations(1, eventId ? Number(eventId) : undefined);
   }, [companyId, eventId, loadEvents, loadReservations]);
-  
 
   const statsData = [
     { label: "Total Reservas", value: stats.totalReservas },
@@ -132,9 +131,9 @@ export default function ReservationsPage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center justify-between gap-4 w-full">
+            <div className="flex flex-wrap items-center justify-end gap-4 w-full">
               {/* Input de búsqueda */}
-              <div className="flex items-center gap-2">
+              {/* <div className="flex items-center gap-2">
                 <Input
                   placeholder="Búsqueda..."
                   className="sm:w-[300px] font-poppins text-sm"
@@ -148,48 +147,35 @@ export default function ReservationsPage() {
                 >
                   <Search className="min-w-4 min-h-4 text-secondary" />
                 </Button>
-              </div>
+              </div> */}
 
               {/* Selects y botón de descarga */}
               <div className="flex items-center gap-2 ">
-                {/* <Select defaultValue="all">
-                  <SelectTrigger className="w-[120px]">
-                    <SelectValue placeholder="Estado" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    <SelectItem value="reservado">Reservado</SelectItem>
-                    <SelectItem value="cancelado">Cancelado</SelectItem>
-                    <SelectItem value="completado">Completado</SelectItem>
-                  </SelectContent>
-                </Select> */}
-
-                <Select
-                  onValueChange={handleEventChange}
-                  value={ eventId || "all"}
-                >
-                  <SelectTrigger className="w-[250px]">
-                    <SelectValue placeholder="Seleccionar evento" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todos</SelectItem>
-                    {events.map((env) => (
-                      <SelectItem key={env.id} value={env.id.toString()}>
-                        {env.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <AutocompleteFilter
+                  list={events}
+                  label="name"
+                  handleSelect={handleEventChange}
+                  id="id"
+                  condition={!eventId}
+                  active={
+                    eventId
+                      ? events.find(
+                          (e) => e.id.toString() === eventId.toString()
+                        )?.name || "Evento seleccionado"
+                      : "Seleccionar evento"
+                  }
+                  placeholder="Buscar evento..."
+                />
               </div>
             </div>
             <div className="flex items-center gap-2 justify-end">
-              <Button
+              {/* <Button
                 variant="default"
                 className="flex items-center gap-2 font-poppins"
               >
                 <Download className="h-4 w-4" />
                 Descargar
-              </Button>
+              </Button> */}
             </div>
           </div>
 
@@ -223,9 +209,9 @@ export default function ReservationsPage() {
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                   Estado
                 </TableHead>
-                <TableHead className="font-inter text-sm text-foreground p-2 text-center">
+                {/* <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                   Acciones
-                </TableHead>
+                </TableHead> */}
               </TableRow>
             </TableHeader>
             <TableBody className="text-center">
@@ -262,40 +248,22 @@ export default function ReservationsPage() {
                     {reservation.station.name}
                   </TableCell>
                   <TableCell className="font-inter py-2 px-2 text-sm">
-                    <Badge className="text-[#FC6C28] bg-[#FFC8AE8F] hover:bg-[#FFC8AE] rounded-full">
-                      {reservation.status}
-                    </Badge>
+                    {reservation.status === "Pagado" ? (
+                      <Badge className="text-green-700 bg-green-100 hover:bg-green-200 rounded-full dark:text-green-300 dark:bg-green-800 dark:hover:bg-green-700"> 
+                        Pagado
+                      </Badge>
+                    ) : reservation.status === "Caducado" ? (
+                      <Badge className="text-red-700 bg-red-100 hover:bg-red-200 rounded-full dark:text-red-300 dark:bg-red-800 dark:hover:bg-red-700">
+                        Caducado
+                      </Badge>
+                    ) : null}
                   </TableCell>
-                  <TableCell className="font-inter text-right py-2 px-2 text-sm">
+                  {/* <TableCell className="font-inter text-right py-2 px-2 tcxt-sm">
                     <div className="flex justify-end gap-2">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="bg-transparent hover:bg-gray-100"
-                      >
-                        <Download className="h-4 w-4" />
-                      </Button>
-                      {/* <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="bg-transparent hover:bg-gray-100"
-                        >
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
-                        <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
-                          <span className="font-inter">Editar</span>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
-                          <span className="font-inter">Eliminar</span>
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu> */}
-                    </div>
-                  </TableCell>
+                        classN}               </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>

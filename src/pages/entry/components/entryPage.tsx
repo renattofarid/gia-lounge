@@ -5,20 +5,20 @@ import { useEntryStore } from "../lib/entry.store";
 import { useEffect, useState } from "react";
 import Layout from "@/components/layouts/layout";
 import {
-  Search,
-  Download,
-  MoreVertical,
+  // Search,
+  // Download,
+  // MoreVertical,
   Loader2,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from "@/components/ui/dropdown-menu";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
@@ -39,14 +39,14 @@ export function EntryPage() {
   const {
     entries,
     loadEntries,
-    setFilter,
+    // setFilter,
     setStatusPay,
     links,
     meta,
     loading,
   } = useEntryStore();
   const [activeTab, setActiveTab] = useState("todas");
-  const [searchValue, setSearchValue] = useState("");
+  // const [searchValue, setSearchValue] = useState("");
   const [isTabLoading, setIsTabLoading] = useState(false);
 
   const options = [
@@ -62,18 +62,8 @@ export function EntryPage() {
     },
   ];
 
-  // const filteredOptions = options.filter((option) =>
-  //   permisos.some(
-  //     (p) =>
-  //       p.name === option.permission.name && p.type === option.permission.type
-  //   )
-  // );
 
   const filteredOptions = options;
-
-  // const canCreateEntry = useHasPermission("Crear", "Entrada");
-  // const canUpdateEntry = useHasPermission("Actualizar", "Entrada");
-  // const canDeleteEntry = useHasPermission("Eliminar", "Entrada");
 
   useEffect(() => {
     if (eventId) {
@@ -81,11 +71,11 @@ export function EntryPage() {
     }
   }, [eventId, loadEntries]);
 
-  const handleSearch = (value: string) => {
-    setSearchValue(value);
-    setFilter(value);
-    loadEntries(1, Number.parseInt(eventId || "0"));
-  };
+  // const handleSearch = (value: string) => {
+  //   setSearchValue(value);
+  //   setFilter(value);
+  //   loadEntries(1, Number.parseInt(eventId || "0"));
+  // };
 
   const handlePageChange = (page: number) => {
     loadEntries(page, Number.parseInt(eventId || "0"));
@@ -130,7 +120,7 @@ export function EntryPage() {
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              {/* <div className="flex gap-2">
                 <Input
                   placeholder="Búsqueda..."
                   value={searchValue}
@@ -143,7 +133,7 @@ export function EntryPage() {
                 >
                   <Search className="min-w-4 min-h-4" />
                 </Button>
-              </div>
+              </div> */}
             </div>
 
             <div className="flex sm:flex-col flex-row justify-between items-center gap-2 w-full">
@@ -248,7 +238,7 @@ export function EntryPage() {
                                         {entry.status_entry}
                                       </span>
                                     </TableCell>
-                                    <TableCell className="py-2 px-1">
+                                    {/* <TableCell className="py-2 px-1">
                                       <div className="flex items-center justify-end gap-2">
                                         <Button variant="ghost" size="icon">
                                           <Download className="h-4 w-4" />
@@ -269,7 +259,7 @@ export function EntryPage() {
                                           </DropdownMenuContent>
                                         </DropdownMenu>
                                       </div>
-                                    </TableCell>
+                                    </TableCell> */}
                                   </TableRow>
                                 ))
                               )}

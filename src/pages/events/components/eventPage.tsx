@@ -51,6 +51,7 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Pagination } from "@/components/pagination";
 import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { useHasPermission } from "@/hooks/useHasPermission";
 
@@ -186,6 +187,10 @@ export default function EventPage() {
     loadEvents(page, companyId, dateSelected);
   };
 
+  const filteredEvents = events.filter((event) =>
+    event.name.toLowerCase().includes(search.toLowerCase())
+  );
+
   useEffect(() => {
     if (companyId) loadEvents(1, companyId, dateSelected);
     else navigator("/empresas");
@@ -285,7 +290,7 @@ export default function EventPage() {
             </Popover>
             {date && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={handleClearDateFilter}
                 title="Limpiar filtro de fecha"
@@ -295,7 +300,7 @@ export default function EventPage() {
             )}
           </div>
 
-          <div className="w-full flex flex-col rounded-lg pt-2">
+          <ScrollArea className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
             <Table className="">
               <TableHeader>
                 <TableRow>
@@ -317,8 +322,8 @@ export default function EventPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {events.length > 0 ? (
-                  events.map((event) => (
+                {filteredEvents.length > 0 ? (
+                  filteredEvents.map((event) => (
                     <TableRow key={event.id}>
                       <TableCell className="text-center py-2 px-2 text-[13px] font-inter">
                         <div className="flex gap-2 justify-center items-center">
@@ -339,7 +344,7 @@ export default function EventPage() {
                         {event.comment}
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
-                        <div className="flex flex-col gap-2 items-center">
+                        <div className="flex flex-row gap-2 items-center justify-center">
                           <div className="flex items-center gap-2">
                             <Badge
                               variant="outline"
@@ -433,40 +438,49 @@ export default function EventPage() {
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center gap-2">
-                        <p className="text-muted-foreground">
-                          No hay eventos disponibles
-                          {date
+                      <p className="text-muted-foreground">
+                        {search
+                        ? `No se encontró evento con el nombre "${search}".`
+                        : (
+                          <>
+                            No hay eventos disponibles
+                            {date
                             ? ` para la fecha seleccionada (${format(
-                                date,
-                                "dd/MM/yyyy"
+                              date,
+                              "dd/MM/yyyy"
                               )})`
                             : ""}
-                          .
-                        </p>
-                        {date && (
-                          <Button
-                            variant="outline"
-                            onClick={handleClearDateFilter}
-                            className="mt-2"
-                          >
-                            <X className="h-4 w-4 mr-2" />
-                            Limpiar filtro y mostrar todos los eventos
-                          </Button>
-                        )}
+                            .
+                          </>
+                          )
+                        }
+                      </p>
+                      {date && !search && (
+                        <Button
+                        variant="outline"
+                        onClick={handleClearDateFilter}
+                        className="mt-2"
+                        >
+                        <X className="h-4 w-4 mr-2" />
+                        Limpiar filtro y mostrar todos los eventos
+                        </Button>
+                      )}
                       </div>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
-            <div className="mt-6">
-              <Pagination
-                links={links}
-                meta={meta}
-                onPageChange={handlePageChange}
-              />
-            </div>
+          </ScrollArea>
+
+          <div className="mt-4 justify-between w-full flex ">
+            <Pagination
+              links={links}
+              meta={meta}
+              onPageChange={handlePageChange}
+            />
           </div>
+
           <Dialog
             open={isUpdateDialogOpen}
             onOpenChange={setIsUpdateDialogOpen}

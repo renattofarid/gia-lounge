@@ -48,7 +48,13 @@ export default function ConfigurationPage() {
   const handleCloseModal = () => {
     setIsUpdateDialogOpen(false);
     setSelectedSetting(null); // Limpiar el setting seleccionado al cerrar el modal
-    loadSettings(1);
+    // loadSettings(1);
+  };
+
+  const handleUpdateSuccess = () => {
+    setIsUpdateDialogOpen(false);
+    setSelectedSetting(null);
+    loadSettings(1); // Solo recargar cuando se actualice exitosamente
   };
 
   return (
@@ -135,13 +141,12 @@ export default function ConfigurationPage() {
           </div>
 
           {/* Siempre renderizamos el modal, pero solo está abierto cuando isUpdateDialogOpen es true */}
-          {selectedSetting && (
-            <UpdateSettingModal
-              station={selectedSetting}
-              open={isUpdateDialogOpen}
-              onClose={handleCloseModal}
-            />
-          )}
+          <UpdateSettingModal
+            station={selectedSetting}
+            open={isUpdateDialogOpen && selectedSetting !== null}
+            onClose={handleCloseModal}
+            onUpdateSuccess={handleUpdateSuccess}
+          />
         </div>
       )}
     </Layout>

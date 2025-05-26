@@ -37,8 +37,8 @@ export const AutocompleteFilter = ({
   active,
   placeholder,
   disabled = false,
-  width = "w-[300px]",
-  widthPop = "w-[300px]",
+  width = "w-[280px]",
+  widthPop = "w-[280px]",
 }: AutocompleteProps<any>) => {
   return (
     <Popover>
@@ -52,7 +52,7 @@ export const AutocompleteFilter = ({
             condition && "text-foreground"
           )}
         >
-          <span className="overflow-hidden">{active} </span>
+          <span className="overflow-hidden font-normal">{active} </span>
           <ChevronsUpDown  className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>

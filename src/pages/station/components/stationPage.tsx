@@ -280,7 +280,7 @@ export default function StationPage() {
           <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
         </div>
       ) : (
-        <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
+        <div className="flex flex-col items-center w-full py-4 px-4 max-w-screen-2xl">
           {/* Header */}
           <div className="flex w-full justify-between items-center mb-6">
             <div>
@@ -344,11 +344,10 @@ export default function StationPage() {
                   ? events.find(
                       (e) => e.id.toString() === selectedEventId.toString()
                     )?.name || "Evento seleccionado"
-                  : "Todos los eventos"
+                  : "Seleccionar evento"
               }
               placeholder="Buscar evento..."
-              width="w-[240px]"
-              widthPop="w-[240px]"
+
             />
 
             {/* Filtro de Salón */}
@@ -356,7 +355,7 @@ export default function StationPage() {
               onValueChange={handleEnvironmentChange}
               value={environmentId ? environmentId.toString() : "all"}
             >
-              <SelectTrigger className="w-[240px]">
+              <SelectTrigger className="w-[260px]">
                 <SelectValue placeholder="Seleccionar salón" />
               </SelectTrigger>
               <SelectContent>
@@ -398,7 +397,7 @@ export default function StationPage() {
             </Popover>
             {date && (
               <Button
-                variant="outline"
+                variant="ghost"
                 size="icon"
                 onClick={handleClearDateFilter}
                 title="Limpiar filtro de fecha"
@@ -544,7 +543,7 @@ export default function StationPage() {
             </Table>
           </ScrollArea>
 
-          <div className="mt-4">
+          <div className="mt-4 justify-between w-full flex ">
             <Pagination
               links={links}
               meta={meta}
