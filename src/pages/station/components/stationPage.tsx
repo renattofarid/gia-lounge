@@ -409,7 +409,7 @@ export default function StationPage() {
           </div>
 
           {/* Table */}
-          <ScrollArea className="w-full flex flex-col rounded-lg pt-2 h-[calc(100%-50rem)]">
+          <ScrollArea className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -469,7 +469,7 @@ export default function StationPage() {
                               variant="outline"
                               className="bg-gray-50/50 text-gray-700 border-gray-200 hover:bg-gray-100/50 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800/50 dark:hover:bg-gray-900/30 font-normal py-0.5"
                             >
-                              Orden: {station.sort}
+                              Orden: {station.sort ?? 0}
                             </Badge>
                           </div>
                         </div>
@@ -544,7 +544,7 @@ export default function StationPage() {
             </Table>
           </ScrollArea>
 
-          <div className="mt-6">
+          <div className="mt-4">
             <Pagination
               links={links}
               meta={meta}
