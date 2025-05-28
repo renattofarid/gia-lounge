@@ -40,90 +40,54 @@ export default function Header() {
   //   // Add your search logic here
   // };
 
-  return (
-    <header className="">
-      <div className="flex justify-between p-4">
-        <img src="/logo.svg" alt="" className="h-10" />
-        <div className="flex justify-between gap-2 items-center">
-          <div className="relative">
-            {/* <form onSubmit={handleSearch} className="flex items-center">
-              <div
-                className={cn(
-                  "relative flex items-center transition-all duration-300 ease-in-out",
-                  isSearching ? "w-[200px]" : "w-10"
-                )}
-              >
-                <Input
-                  type="search"
-                  placeholder="Búsqueda..."
-                  name="search"
-                  className={cn(
-                    "rounded-full bg-gradient-to-r from-pink-400 to-pink-300 border-0 placeholder:text-white text-white focus-visible:ring-0 focus-visible:ring-offset-0 transition-all duration-300",
-                    !isSearching && "cursor-pointer",
-                    "h-10" // Match button height
-                  )}
-                  onClick={() => !isSearching && setIsSearching(true)}
-                  readOnly={!isSearching}
-                />
-                <div className="absolute right-2 flex items-center">
-                  {isSearching ? (
-                    <X
-                      className="h-5 w-5 text-white hover:scale-110 transition-transform cursor-pointer"
-                      onClick={() => setIsSearching(false)}
-                    />
-                  ) : (
-                    <Search
-                      className="h-5 w-5 text-white"
-                      onClick={() => setIsSearching(true)}
-                    />
-                  )}
-                </div>
-              </div>
-            </form> */}
-          </div>
+ return (
+  <header className="">
+    <div className="flex justify-end p-4 items-center gap-2">
+      {/* Botón de compañía: visible siempre */}
+      <Button
+        size="icon"
+        className="rounded-full bg-foreground hover:bg-foreground/80"
+      >
+        {selectCompany ? (
+          <Avatar>
+            <AvatarImage src={selectCompany.route} alt="Logo Empresa" />
+            <AvatarFallback className="bg-gray-200 text-gray-600 flex items-center justify-center w-full h-full rounded-full">
+              {selectCompany.business_name[0]?.toUpperCase() || "E"}
+            </AvatarFallback>
+          </Avatar>
+        ) : (
+          <IconWithTooltip icon={Store} label="Compañía" />
+        )}
+      </Button>
+
+      {/* Dropdown de usuario: visible siempre */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
           <Button
             size="icon"
-            className="rounded-full bg-foreground hover:bg-foreground/80"
+            className="rounded-full"
+            aria-label="User menu"
           >
-            {selectCompany ? (
-              <Avatar>
-                <AvatarImage src={selectCompany.route} alt="Logo Empresa" />
-                <AvatarFallback className="bg-gray-200 text-gray-600 flex items-center justify-center w-full h-full rounded-full">
-                  {selectCompany.business_name[0]?.toUpperCase() || "E"}
-                </AvatarFallback>
-              </Avatar>
-            ) : (
-              <IconWithTooltip icon={Store} label="Compañía" />
-            )}
+            <IconWithTooltip icon={User} label="Perfil" />
           </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuItem className="text-xs gap-2">
+            <User className="min-w-4 min-h-4" />
+            {user?.name}
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            onClick={handleLogout}
+            className="font-inter gap-2"
+          >
+            <LogOut className="min-w-4 min-h-4" />
+            Cerrar sesión
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  </header>
+);
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                size="icon"
-                className="rounded-full"
-                aria-label="User menu"
-              >
-                <IconWithTooltip icon={User} label="Perfil" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem className="text-xs gap-2">
-                <User className="min-w-4 min-h-4" />
-                {user?.name}
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className="font-inter gap-2"
-              >
-                <LogOut className="min-w-4 min-h-4" />
-                Cerrar sesión
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </header>
-  );
 }

@@ -205,74 +205,74 @@ export default function EnvironmentPage() {
           </div>
 
           {/* Lista de Salones */}
-          <div className="flex gap-6 justify-center items-center flex-wrap">
+            <div className="grid grid-cols-2  sm:grid-cols-3 gap-6 w-full max-w-4xl mx-auto">
             {environments.map((environment) => (
               <div
-                key={environment.id}
-                onClick={() => handleSelectEnvironment(environment.id)}
-                className={`relative flex flex-col items-center gap-3 cursor-pointer p-4 rounded-lg shadow-lg transition-transform duration-300 ${
-                  selectedEnvironment === environment.id
-                    ? "ring-4 ring-violet-500 scale-105 bg-gradient-to-br from-purple-500 to-purple-700"
-                    : "hover:ring-4 hover:ring-gray-300 bg-secondary"
-                }`}
+              key={environment.id}
+              onClick={() => handleSelectEnvironment(environment.id)}
+              className={`relative flex flex-col items-center gap-3 cursor-pointer p-4 rounded-lg shadow-lg transition-transform duration-300 ${
+                selectedEnvironment === environment.id
+                ? "ring-4 ring-violet-500 scale-105 bg-gradient-to-br from-purple-500 to-purple-700"
+                : "hover:ring-4 hover:ring-gray-300 bg-secondary"
+              }`}
               >
-                {/* Reemplazamos el Avatar por DynamicAvatar */}
-                <DynamicAvatar
-                  image={environment.route ?? ""}
-                  name={environment.name}
-                  className="w-24 h-24 rounded-full"
-                />
+              {/* Reemplazamos el Avatar por DynamicAvatar */}
+              <DynamicAvatar
+                image={environment.route ?? ""}
+                name={environment.name}
+                className="w-24 h-24 rounded-full"
+              />
 
-                <div className="flex justify-center items-center gap-2">
-                  {/* Nombre del salón */}
-                  <p
-                    className={`text-base font-medium uppercase text-center font-inter ${
-                      selectedEnvironment === environment.id
-                        ? "text-secondary"
-                        : "text-foreground/90"
-                    }`}
-                  >
-                    {environment.name}
-                  </p>
-                  {(canUpdateEnvironment || canDeleteEnvironment) && (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="w-48">
-                        {canUpdateEnvironment && (
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => handleClickUpdate(environment)}
-                          >
-                            <span className="font-inter">Editar</span>
-                          </DropdownMenuItem>
-                        )}
-
-                        {/* Eliminar opción */}
-                        {canDeleteEnvironment && (
-                          <DropdownMenuItem
-                            className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => handleClickDelete(environment.id)}
-                          >
-                            <span className="font-inter">Eliminar</span>
-                          </DropdownMenuItem>
-                        )}
-
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+              <div className="flex justify-center items-center gap-2">
+                {/* Nombre del salón */}
+                <p
+                className={`sm:text-base text-sm font-medium uppercase text-center font-inter ${
+                  selectedEnvironment === environment.id
+                  ? "text-secondary"
+                  : "text-foreground/90"
+                }`}
+                >
+                {environment.name}
+                </p>
+                {(canUpdateEnvironment || canDeleteEnvironment) && (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48">
+                  {canUpdateEnvironment && (
+                    <DropdownMenuItem
+                    className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleClickUpdate(environment)}
+                    >
+                    <span className="font-inter">Editar</span>
+                    </DropdownMenuItem>
                   )}
-                </div>
 
-                {/* Indicador de selección */}
-                {selectedEnvironment === environment.id && (
-                  <Check className="absolute top-2 right-2 w-6 h-6 bg-green-600  text-secondary rounded-full" />
+                  {/* Eliminar opción */}
+                  {canDeleteEnvironment && (
+                    <DropdownMenuItem
+                    className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                    onClick={() => handleClickDelete(environment.id)}
+                    >
+                    <span className="font-inter">Eliminar</span>
+                    </DropdownMenuItem>
+                  )}
+
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 )}
               </div>
+
+              {/* Indicador de selección */}
+              {selectedEnvironment === environment.id && (
+                <Check className="absolute top-2 right-2 w-6 h-6 bg-green-600  text-secondary rounded-full" />
+              )}
+              </div>
             ))}
-          </div>
+            </div>
 
           <Button
             onClick={handleConfirm}

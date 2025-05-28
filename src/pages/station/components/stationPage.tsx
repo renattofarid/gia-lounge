@@ -282,19 +282,19 @@ export default function StationPage() {
       ) : (
         <div className="flex flex-col items-center w-full py-4 px-4 max-w-screen-2xl">
           {/* Header */}
-          <div className="flex w-full justify-between items-center mb-6">
-            <div>
+          <div className="flex w-full justify-between items-center mb-6 flex-col sm:flex-row gap-4 sm:gap-0">
+            <div className="w-full sm:w-auto flex flex-col items-start">
               <h1 className="text-2xl font-bold font-inter">Mesas</h1>
               <p className="text-gray-500 text-base font-inter">
                 Gestione las mesas de la empresa seleccionada.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <div className="flex gap-2 w-full sm:w-auto">
                 <Input
                   placeholder="Buscar..."
-                  className="sm:w-[300px] font-poopins text-[13px]"
+                  className="w-full sm:w-[300px] font-poopins text-[13px]"
                   value={search}
                   onChange={handleFilterChange}
                 />
@@ -309,7 +309,7 @@ export default function StationPage() {
               {canCreateStation && (
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
+                    <Button className="bg-violet-500 hover:bg-violet-600 font-inter w-full sm:w-auto">
                       Agregar mesa
                     </Button>
                   </DialogTrigger>
@@ -331,84 +331,90 @@ export default function StationPage() {
           </div>
 
           {/* Filtros */}
-          <div className="w-full flex flex-row justify-end gap-2 mb-6">
+          <div className="w-full flex flex-col sm:flex-row justify-end gap-2 mb-6">
+            {" "}
             {/* Filtro de Evento */}
-            <AutocompleteFilter
-              list={events}
-              label="name"
-              handleSelect={handleEventChange}
-              id="id"
-              condition={!selectedEventId}
-              active={
-                selectedEventId
-                  ? events.find(
-                      (e) => e.id.toString() === selectedEventId.toString()
-                    )?.name || "Evento seleccionado"
-                  : "Seleccionar evento"
-              }
-              placeholder="Buscar evento..."
-
-            />
-
+            <div className="w-full sm:w-auto">
+              <AutocompleteFilter
+                list={events}
+                label="name"
+                handleSelect={handleEventChange}
+                id="id"
+                condition={!selectedEventId}
+                active={
+                  selectedEventId
+                    ? events.find(
+                        (e) => e.id.toString() === selectedEventId.toString()
+                      )?.name || "Evento seleccionado"
+                    : "Seleccionar evento"
+                }
+                placeholder="Buscar evento..."
+              />
+            </div>
             {/* Filtro de Salón */}
-            <Select
-              onValueChange={handleEnvironmentChange}
-              value={environmentId ? environmentId.toString() : "all"}
-            >
-              <SelectTrigger className="w-[260px]">
-                <SelectValue placeholder="Seleccionar salón" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Ver todos</SelectItem>
-                {environments.map((env) => (
-                  <SelectItem key={env.id} value={env.id.toString()}>
-                    {`${env.name} - ${env.company.business_name}`}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Filtro de Fecha */}
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant={"outline"}
-                  className={cn(
-                    "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
-                    !date && "text-muted-foreground"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? (
-                    format(date, "dd/MM/yyyy", { locale: es })
-                  ) : (
-                    <span>Seleccionar Fecha</span>
-                  )}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={(date) => handleSelectDate(date)}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-            {date && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleClearDateFilter}
-                title="Limpiar filtro de fecha"
+            <div className="w-full sm:w-auto">
+              <Select
+                onValueChange={handleEnvironmentChange}
+                value={environmentId ? environmentId.toString() : "all"}
               >
-                <X className="h-4 w-4" />
-              </Button>
-            )}
+                <SelectTrigger className="w-[260px]">
+                  <SelectValue placeholder="Seleccionar salón" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">Ver todos</SelectItem>
+                  {environments.map((env) => (
+                    <SelectItem key={env.id} value={env.id.toString()}>
+                      {`${env.name} - ${env.company.business_name}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="w-full sm:w-auto flex gap-2">
+              {/* Filtro de Fecha */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {date ? (
+                      format(date, "dd/MM/yyyy", { locale: es })
+                    ) : (
+                      <span>Seleccionar Fecha</span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={(date) => handleSelectDate(date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              {date && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleClearDateFilter}
+                  title="Limpiar filtro de fecha"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Table */}
           <ScrollArea className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
+                        <div className="w-full overflow-x-auto pb-2">
+
             <Table>
               <TableHeader>
                 <TableRow>
@@ -541,6 +547,7 @@ export default function StationPage() {
                 )}
               </TableBody>
             </Table>
+          </div>
           </ScrollArea>
 
           <div className="mt-4 justify-between w-full flex ">
