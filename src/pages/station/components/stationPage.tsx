@@ -72,7 +72,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { es } from "date-fns/locale";
 import { useEventStore } from "@/pages/events/lib/event.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
-import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function StationPage() {
   const navigator = useNavigate();
@@ -412,9 +411,7 @@ export default function StationPage() {
           </div>
 
           {/* Table */}
-          <ScrollArea className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
-                        <div className="w-full overflow-x-auto pb-2">
-
+          <div className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10% overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -441,7 +438,7 @@ export default function StationPage() {
               <TableBody>
                 {filteredStations.length > 0 ? (
                   filteredStations.map((station) => (
-                    <TableRow key={station.id}>
+                    <TableRow key={station.id} className="text-nowrap">
                       <TableCell className="font-inter text-center gap-2">
                         <div className="flex items-center">
                           <Hash className="w-3 h-3" />
@@ -548,7 +545,6 @@ export default function StationPage() {
               </TableBody>
             </Table>
           </div>
-          </ScrollArea>
 
           <div className="mt-4 justify-between w-full flex ">
             <Pagination

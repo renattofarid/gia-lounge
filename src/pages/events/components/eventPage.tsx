@@ -51,7 +51,6 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Pagination } from "@/components/pagination";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { useHasPermission } from "@/hooks/useHasPermission";
 
@@ -169,7 +168,7 @@ export default function EventPage() {
         successToast("Evento eliminado correctamente");
         loadEvents(1, companyId, dateSelected);
       });
-    } catch (error) {
+    } catch (error: any) {
       errorToast("Error al eliminar el evento");
     }
   };
@@ -300,8 +299,8 @@ export default function EventPage() {
             )}
           </div>
 
-          <ScrollArea className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
-            <Table className="">
+          <div className="overflow-auto w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
@@ -324,7 +323,7 @@ export default function EventPage() {
               <TableBody>
                 {filteredEvents.length > 0 ? (
                   filteredEvents.map((event) => (
-                    <TableRow key={event.id}>
+                    <TableRow key={event.id} className="text-nowrap">
                       <TableCell className="text-center py-2 px-2 text-[13px] font-inter">
                         <div className="flex gap-2 justify-center items-center">
                           <CalendarIcon className="w-5 h-5" />
@@ -438,40 +437,39 @@ export default function EventPage() {
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center gap-2">
-                      <p className="text-muted-foreground">
-                        {search
-                        ? `No se encontró evento con el nombre "${search}".`
-                        : (
-                          <>
-                            No hay eventos disponibles
-                            {date
-                            ? ` para la fecha seleccionada (${format(
-                              date,
-                              "dd/MM/yyyy"
-                              )})`
-                            : ""}
-                            .
-                          </>
-                          )
-                        }
-                      </p>
-                      {date && !search && (
-                        <Button
-                        variant="outline"
-                        onClick={handleClearDateFilter}
-                        className="mt-2"
-                        >
-                        <X className="h-4 w-4 mr-2" />
-                        Limpiar filtro y mostrar todos los eventos
-                        </Button>
-                      )}
+                        <p className="text-muted-foreground">
+                          {search ? (
+                            `No se encontró evento con el nombre "${search}".`
+                          ) : (
+                            <>
+                              No hay eventos disponibles
+                              {date
+                                ? ` para la fecha seleccionada (${format(
+                                    date,
+                                    "dd/MM/yyyy"
+                                  )})`
+                                : ""}
+                              .
+                            </>
+                          )}
+                        </p>
+                        {date && !search && (
+                          <Button
+                            variant="outline"
+                            onClick={handleClearDateFilter}
+                            className="mt-2"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Limpiar filtro y mostrar todos los eventos
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
-          </ScrollArea>
+          </div>
 
           <div className="mt-4 justify-between w-full flex ">
             <Pagination

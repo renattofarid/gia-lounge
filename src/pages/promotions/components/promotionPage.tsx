@@ -183,7 +183,7 @@ export default function PromocionesPage() {
           <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
         </div>
       ) : (
-        <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
+        <div className="flex flex-col items-center w-full py-6 md:px-4 max-w-screen-2xl">
           <div className="w-full mb-6 flex flex-col justify-center items-center">
             <h2 className="text-md font-medium text-center mb-4 font-poopins">
               Resumen de promociones de la semana
@@ -226,49 +226,51 @@ export default function PromocionesPage() {
               </div>
             </div>
           </div>
-          <div className="flex w-full justify-between items-center mb-6">
-            <div>
+          <div className="flex w-full flex-col gap-4 md:flex-row justify-between items-center mb-6">
+            <div className="w-full">
               <h1 className="text-2xl font-bold font-inter">Promociones</h1>
               <p className="text-gray-500 font-inter text-sm">
                 Gestionar todas las promociones de la semana
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Busqueda"
-                  className="sm:w-[300px] font-poopins text-[13px]"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      setFilter(searchInput);
-                      loadPromotions(1);
-                    }
+            <div className="flex flex-col sm:flex-row gap-4 w-full">
+              <div className="flex gap-2">
+                <div className="relative w-full">
+                  <Input
+                    type="text"
+                    placeholder="Busqueda"
+                    className="sm:w-[300px] w-full font-poopins text-[13px]"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        setFilter(searchInput);
+                        loadPromotions(1);
+                      }
+                    }}
+                  />
+                  {searchInput && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2"
+                      onClick={() => setSearchInput("")}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <Button
+                  size="icon"
+                  className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+                  onClick={() => {
+                    setFilter(searchInput);
+                    loadPromotions(1);
                   }}
-                />
-                {searchInput && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2"
-                    onClick={() => setSearchInput("")}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                )}
+                >
+                  <Search className="w-4 h-4" />
+                </Button>
               </div>
-              <Button
-                size="icon"
-                className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
-                onClick={() => {
-                  setFilter(searchInput);
-                  loadPromotions(1);
-                }}
-              >
-                <Search className="w-4 h-4" />
-              </Button>
 
               <Dialog
                 open={isAddDialogOpen}
@@ -301,7 +303,7 @@ export default function PromocionesPage() {
             </div>
           </div>
           <div className="w-full flex justify-end mb-4">
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full">
               <Select
                 value={statusFilter || "all"}
                 onValueChange={handleStatusChange}
@@ -312,7 +314,7 @@ export default function PromocionesPage() {
                     className="text-sm font-inter"
                   />
                 </SelectTrigger>
-                <SelectContent className="w-[180px] text-sidebar-accent-foreground">
+                <SelectContent className="md:w-[180px]  text-sidebar-accent-foreground">
                   <SelectItem value="all">Todos los estados</SelectItem>
                   <SelectItem value="active">Activo</SelectItem>
                   <SelectItem value="inactive">Inactivo</SelectItem>
@@ -324,7 +326,7 @@ export default function PromocionesPage() {
                   <Button
                     variant={"outline"}
                     className={cn(
-                      "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
+                      "md:w-[240px] w-full justify-start text-left font-normal text-sm bg-transparent",
                       !date && "text-muted-foreground"
                     )}
                   >
@@ -358,7 +360,7 @@ export default function PromocionesPage() {
             </div>
           </div>
 
-          <div className="w-full flex flex-col rounded-lg pt-2">
+          <div className="w-full flex flex-col rounded-lg pt-2 overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow className="">
@@ -383,7 +385,7 @@ export default function PromocionesPage() {
               <TableBody>
                 {promotions.length > 0 ? (
                   promotions.map((promotion) => (
-                    <TableRow key={promotion.id}>
+                    <TableRow key={promotion.id} className="text-nowrap">
                       <TableCell className="font-inter py-2 px-2 text-[13px]">
                         {promotion.name}
                       </TableCell>
