@@ -202,56 +202,56 @@ export default function GalleryPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
-          <div className="flex w-full justify-between items-center mb-6">
-            <div>
+            <div className="flex flex-col sm:flex-row w-full justify-between items-start sm:items-center mb-6 gap-4 sm:gap-0">
+            <div className="w-full sm:w-auto">
               <h1 className="text-2xl font-bold font-inter">Galería</h1>
               <p className="text-gray-500 font-inter text-sm">
-                Gestionar todas las imágenes de la galería
+              Gestionar todas las imágenes de la galería
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2 space-x-3">
+            <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:space-x-3">
               <Select
-                value={selectedCompanyId}
-                onValueChange={(value) => handleCompanyChange(value)}
+              value={selectedCompanyId}
+              onValueChange={(value) => handleCompanyChange(value)}
               >
-                <SelectTrigger className="w-[200px]">
-                  <SelectValue placeholder="Filtrar por compañía" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las compañías</SelectItem>
-                  {companies.map((company) => (
-                    <SelectItem key={company.id} value={company.id.toString()}>
-                      {company.business_name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+              <SelectTrigger className="w-full sm:w-[200px]">
+                <SelectValue placeholder="Filtrar por compañía" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas las compañías</SelectItem>
+                {companies.map((company) => (
+                <SelectItem key={company.id} value={company.id.toString()}>
+                  {company.business_name}
+                </SelectItem>
+                ))}
+              </SelectContent>
               </Select>
               {canCreateGallery && (
-                <Dialog
-                  open={isAddDialogOpen}
-                  onOpenChange={setIsAddDialogOpen}
-                >
-                  <DialogTrigger asChild>
-                    <Button className="bg-violet-500 hover:bg-violet-600 font-inter">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Agregar imágenes
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-xl p-6">
-                    <DialogHeader>
-                      <DialogTitle className="font-inter">
-                        Agregar Imágenes
-                      </DialogTitle>
-                      <DialogDescription>
-                        Sube nuevas imágenes a la galería
-                      </DialogDescription>
-                    </DialogHeader>
-                    <CreateGalleryPage onClose={handleClose} />
-                  </DialogContent>
-                </Dialog>
+              <Dialog
+                open={isAddDialogOpen}
+                onOpenChange={setIsAddDialogOpen}
+              >
+                <DialogTrigger asChild>
+                <Button className="bg-violet-500 hover:bg-violet-600 font-inter w-full sm:w-auto">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Agregar imágenes
+                </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-xl p-6">
+                <DialogHeader>
+                  <DialogTitle className="font-inter">
+                  Agregar Imágenes
+                  </DialogTitle>
+                  <DialogDescription>
+                  Sube nuevas imágenes a la galería
+                  </DialogDescription>
+                </DialogHeader>
+                <CreateGalleryPage onClose={handleClose} />
+                </DialogContent>
+              </Dialog>
               )}
             </div>
-          </div>
+            </div>
           {/* 
           <div className="w-full mb-4 justify-end flex"></div> */}
 
