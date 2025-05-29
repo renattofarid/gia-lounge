@@ -62,7 +62,6 @@ export function EntryPage() {
     },
   ];
 
-
   const filteredOptions = options;
 
   useEffect(() => {
@@ -98,6 +97,12 @@ export function EntryPage() {
     }
   };
 
+  const tabs = [
+    { value: "todas", label: "Todas las entradas" },
+    { value: "validas", label: "Validas entradas" },
+    { value: "reporte", label: "Reporte de entradas" },
+  ];
+
   // Filtrar entradas validadas (con estado de pago "Pendiente")
   const validatedEntries = entries.filter(
     (entry) => entry.status_pay === "Pendiente"
@@ -110,7 +115,7 @@ export function EntryPage() {
           <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
         </div>
       ) : (
-        <div className="flex flex-col items-center w-full py-4 px-4">
+        <div className="flex flex-col items-center w-full py-4 md:px-4">
           <div className="w-full max-w-screen-2xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
               <div className="space-y-1">
@@ -119,48 +124,24 @@ export function EntryPage() {
                   Listado de entradas por evento.
                 </p>
               </div>
-
-              {/* <div className="flex gap-2">
-                <Input
-                  placeholder="Búsqueda..."
-                  value={searchValue}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="sm:w-[300px] font-poopins text-[13px]"
-                />
-                <Button
-                  size="icon"
-                  className="bg-foreground hover:bg-foreground/90 text-background min-w-9 h-9"
-                >
-                  <Search className="min-w-4 min-h-4" />
-                </Button>
-              </div> */}
             </div>
 
-            <div className="flex sm:flex-col flex-row justify-between items-center gap-2 w-full">
+            <div className="flex flex-col justify-between items-center gap-2 w-full">
               <Tabs
                 value={activeTab}
                 onValueChange={handleTabChange}
                 className="w-full"
               >
-                <TabsList className="flex w-full bg-transparent border-b gap-1">
-                  <TabsTrigger
-                    value="todas"
-                    className="flex-1 font-inter text-sm rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    Todas las entradas
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="validas"
-                    className="flex-1 font-inter text-sm rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    Validas entradas
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="reporte"
-                    className="flex-1 font-inter text-sm rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                  >
-                    Reporte de entradas
-                  </TabsTrigger>
+                <TabsList className="flex w-full bg-transparent gap-1 overflow-x-auto transparentScroll overflow-y-hidden py-6 justify-start">
+                  {tabs.map((tab) => (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      className="flex-1 font-inter text-sm rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground py-1"
+                    >
+                      {tab.label}
+                    </TabsTrigger>
+                  ))}
                 </TabsList>
 
                 {isTabLoading ? (
@@ -170,11 +151,11 @@ export function EntryPage() {
                 ) : (
                   <>
                     <TabsContent value="todas">
-                      <div className="bg-card rounded-2xl shadow-sm p-6">
+                      <div className="bg-card rounded-2xl shadow-sm p-2 md:p-6">
                         <div className="flex flex-col gap-4 w-full">
                           <Table className="w-full">
                             <TableHeader>
-                              <TableRow>
+                              <TableRow className="text-nowrap">
                                 <TableHead className="font-inter text-[15px] text-center py-2 px-1">
                                   Nombre
                                 </TableHead>
@@ -192,7 +173,7 @@ export function EntryPage() {
                             </TableHeader>
                             <TableBody>
                               {entries.length === 0 ? (
-                                <TableRow>
+                                <TableRow className="text-nowrap">
                                   <TableCell
                                     colSpan={5}
                                     className="text-center py-6"
@@ -205,7 +186,10 @@ export function EntryPage() {
                                 </TableRow>
                               ) : (
                                 entries.map((entry) => (
-                                  <TableRow key={entry.id}>
+                                  <TableRow
+                                    key={entry.id}
+                                    className="text-nowrap"
+                                  >
                                     <TableCell className="py-2 px-1 font-inter text-[13px] text-center">
                                       {entry.person.names}
                                     </TableCell>
@@ -273,7 +257,7 @@ export function EntryPage() {
                       <div className="bg-card rounded-2xl shadow-sm p-6">
                         <Table className="w-full">
                           <TableHeader>
-                            <TableRow>
+                            <TableRow className="text-nowrap">
                               <TableHead className="font-inter text-[15px] text-center py-2 px-1">
                                 Nombre
                               </TableHead>
@@ -290,7 +274,7 @@ export function EntryPage() {
                           </TableHeader>
                           <TableBody>
                             {validatedEntries.length === 0 ? (
-                              <TableRow>
+                              <TableRow className="text-nowrap">
                                 <TableCell
                                   colSpan={4}
                                   className="text-center py-6"
@@ -303,7 +287,7 @@ export function EntryPage() {
                               </TableRow>
                             ) : (
                               validatedEntries.map((entry) => (
-                                <TableRow key={entry.id}>
+                                <TableRow key={entry.id} className="text-nowrap">
                                   <TableCell className="py-2 px-1 font-inter text-[13px] text-center">
                                     {entry.person.names}
                                   </TableCell>

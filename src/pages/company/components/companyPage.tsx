@@ -198,92 +198,90 @@ export default function CompanyPage() {
           </div>
 
           {/* Lista de Empresas */}
-          <div
-            className={`grid ${
-              companies.length <= 1
-                ? "grid-cols-1"
-                : companies.length === 2
-                ? "grid-cols-2"
-                : "grid-cols-4"
-            }  gap-6 justify-center items-center flex-wrap`}
-          >
+            <div
+            className={`grid 
+              grid-cols-2
+              sm:grid-cols-4
+              gap-6 justify-center items-center flex-wrap w-full sm:max-w-5xl
+            `}
+            >
             {loading ? (
               <div className="flex items-center justify-center w-full h-full">
-                <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
+              <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
               </div>
             ) : (
               companies.map((company) => (
+              <div
+                key={company.id}
+                onClick={() => handleSelectCompany(company)}
+                className="flex flex-col items-center gap-2 cursor-pointer"
+              >
+                {/* Contenedor del avatar con el anillo */}
                 <div
-                  key={company.id}
-                  onClick={() => handleSelectCompany(company)}
-                  className="flex flex-col items-center gap-2 cursor-pointer"
+                className={`p-1 rounded-full transition-transform duration-300 ${
+                  selectedCompany && selectedCompany.id === company.id
+                  ? "ring-4 ring-violet-500 scale-110"
+                  : "hover:ring-4 hover:ring-gray-300"
+                }`}
                 >
-                  {/* Contenedor del avatar con el anillo */}
-                  <div
-                    className={`p-1 rounded-full transition-transform duration-300 ${
-                      selectedCompany && selectedCompany.id === company.id
-                        ? "ring-4 ring-violet-500 scale-110"
-                        : "hover:ring-4 hover:ring-gray-300"
-                    }`}
-                  >
-                    <Avatar className="w-20 h-20">
-                      {company.route && (
-                        <AvatarImage
-                          src={company.route}
-                          alt={company.business_name}
-                          className="w-full h-auto object-contain rounded-full"
-                        />
-                      )}
-                      <AvatarFallback className="bg-gray-200 text-gray-600 flex items-center justify-center w-full h-full rounded-full">
-                        {company.business_name[0]?.toUpperCase() || "E"}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-
-                  {/* Nombre de la empresa */}
-                  <div className="flex justify-center items-center gap-2">
-                    <p
-                      className={`text-base font-medium uppercase font-inter ${
-                        selectedCompany && selectedCompany.id === company.id
-                          ? "text-violet-500"
-                          : "text-foreground/90"
-                      }`}
-                    >
-                      {company.business_name}
-                    </p>
-                    {(canUpdateCompany || canDeleteCompany) && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreVertical className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-48">
-                          {canUpdateCompany && (
-                            <DropdownMenuItem
-                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => handleClickUpdate(company)}
-                            >
-                              <span className="font-inter">Editar</span>
-                            </DropdownMenuItem>
-                          )}
-                          {/* Eliminar opción */}
-                          {canDeleteCompany && (
-                            <DropdownMenuItem
-                              className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                              onClick={() => handleClickDelete(company.id)}
-                            >
-                              <span>Eliminar</span>
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
-                  </div>
+                <Avatar className="w-20 h-20">
+                  {company.route && (
+                  <AvatarImage
+                    src={company.route}
+                    alt={company.business_name}
+                    className="w-full h-auto object-contain rounded-full"
+                  />
+                  )}
+                  <AvatarFallback className="bg-gray-200 text-gray-600 flex items-center justify-center w-full h-full rounded-full">
+                  {company.business_name[0]?.toUpperCase() || "E"}
+                  </AvatarFallback>
+                </Avatar>
                 </div>
+
+                {/* Nombre de la empresa */}
+                <div className="flex justify-center items-center gap-2">
+                <p
+                  className={`text-base font-medium uppercase font-inter ${
+                  selectedCompany && selectedCompany.id === company.id
+                    ? "text-violet-500"
+                    : "text-foreground/90"
+                  }`}
+                >
+                  {company.business_name}
+                </p>
+                {(canUpdateCompany || canDeleteCompany) && (
+                  <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" size="icon">
+                    <MoreVertical className="h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-48">
+                    {canUpdateCompany && (
+                    <DropdownMenuItem
+                      className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleClickUpdate(company)}
+                    >
+                      <span className="font-inter">Editar</span>
+                    </DropdownMenuItem>
+                    )}
+                    {/* Eliminar opción */}
+                    {canDeleteCompany && (
+                    <DropdownMenuItem
+                      className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => handleClickDelete(company.id)}
+                    >
+                      <span>Eliminar</span>
+                    </DropdownMenuItem>
+                    )}
+                  </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
+                </div>
+              </div>
               ))
             )}
-          </div>
+            </div>
 
           <Button
             onClick={handleConfirm}

@@ -200,7 +200,7 @@ export default function UserPage() {
               <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
             </div>
           ) : (
-            <div className="rounded-lg w-full flex flex-col h-full">
+            <div className="rounded-lg w-full flex flex-col h-full overflow-auto">
               <Table className="flex-grow">
                 <TableHeader>
                   <TableRow>
@@ -220,7 +220,7 @@ export default function UserPage() {
                 </TableHeader>
                 <TableBody>
                   {users.map((user) => (
-                    <TableRow key={user.id}>
+                    <TableRow key={user.id} className="text-nowrap">
                       <TableCell className="font-inter py-2 px-2 text-sm">
                         <strong>{user.name}</strong>
                         <p>{user.username}</p>

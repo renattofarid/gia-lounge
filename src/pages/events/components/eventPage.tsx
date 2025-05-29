@@ -51,7 +51,6 @@ import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
 import { Pagination } from "@/components/pagination";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { useHasPermission } from "@/hooks/useHasPermission";
 
@@ -169,7 +168,7 @@ export default function EventPage() {
         successToast("Evento eliminado correctamente");
         loadEvents(1, companyId, dateSelected);
       });
-    } catch (error) {
+    } catch (error: any) {
       errorToast("Error al eliminar el evento");
     }
   };
@@ -204,62 +203,62 @@ export default function EventPage() {
         </div>
       ) : (
         <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
-          <div className="flex w-full justify-between items-center mb-6">
-            <div>
+            <div className="flex w-full justify-between items-center mb-6 flex-col sm:flex-row gap-4 sm:gap-0">
+            <div className="w-full sm:w-auto flex flex-col items-start">
               <h1 className="text-2xl font-bold font-inter">Eventos</h1>
               <p className="text-gray-500 font-inter text-sm">
-                Gestionar todos los eventos del mes
+              Gestionar todos los eventos del mes
               </p>
             </div>
-            <div className="flex flex-col sm:flex-row gap-2">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Buscar..."
-                  className="sm:w-[300px] font-poopins text-[13px]"
-                  value={search}
-                  onChange={handleFilterChange}
-                />
-                <Button
-                  size="icon"
-                  className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+              <div className="flex gap-2 w-full sm:w-auto">
+              <Input
+                placeholder="Buscar..."
+                className="w-full sm:w-[300px] font-poopins text-[13px]"
+                value={search}
+                onChange={handleFilterChange}
+              />
+              <Button
+                size="icon"
+                className="bg-foreground hover:bg-gray-800 text-secondary min-w-9 h-9"
+              >
+                <Search className="w-4 h-4" />
+              </Button>
               </div>
 
               {canCreateEvent && (
-                <Dialog
-                  open={isAddDialogOpen}
-                  onOpenChange={setIsAddDialogOpen}
-                  modal={false}
+              <Dialog
+                open={isAddDialogOpen}
+                onOpenChange={setIsAddDialogOpen}
+                modal={false}
+              >
+                <DialogTrigger asChild>
+                <Button
+                  className="bg-violet-500 hover:bg-violet-600 font-inter w-full sm:w-auto"
+                  onClick={() => setIsAddDialogOpen(true)}
                 >
-                  <DialogTrigger asChild>
-                    <Button
-                      className="bg-violet-500 hover:bg-violet-600 font-inter"
-                      onClick={() => setIsAddDialogOpen(true)}
-                    >
-                      Agregar evento
-                    </Button>
-                  </DialogTrigger>
-                  <DialogPortal>
-                    <div className="fixed inset-0 z-40 bg-black/50 " />
-                    <DialogContent className="max-w-2xl p-6">
-                      <DialogHeader>
-                        <DialogTitle className="font-inter">
-                          Agregar Evento
-                        </DialogTitle>
-                      </DialogHeader>
-                      <CreateEvent
-                        onCloseModal={() => setIsAddDialogOpen(false)}
-                        onClose={handleClose}
-                        companyId={companyId}
-                      />
-                    </DialogContent>
-                  </DialogPortal>
-                </Dialog>
+                  Agregar evento
+                </Button>
+                </DialogTrigger>
+                <DialogPortal>
+                <div className="fixed inset-0 z-40 bg-black/50 " />
+                <DialogContent className="max-w-2xl p-6">
+                  <DialogHeader>
+                  <DialogTitle className="font-inter">
+                    Agregar Evento
+                  </DialogTitle>
+                  </DialogHeader>
+                  <CreateEvent
+                  onCloseModal={() => setIsAddDialogOpen(false)}
+                  onClose={handleClose}
+                  companyId={companyId}
+                  />
+                </DialogContent>
+                </DialogPortal>
+              </Dialog>
               )}
             </div>
-          </div>
+            </div>
 
           <div className="w-full mb-4 flex justify-end">
             <Popover>
@@ -300,8 +299,8 @@ export default function EventPage() {
             )}
           </div>
 
-          <ScrollArea className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
-            <Table className="">
+          <div className="overflow-auto w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10%">
+            <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
@@ -324,7 +323,7 @@ export default function EventPage() {
               <TableBody>
                 {filteredEvents.length > 0 ? (
                   filteredEvents.map((event) => (
-                    <TableRow key={event.id}>
+                    <TableRow key={event.id} className="text-nowrap">
                       <TableCell className="text-center py-2 px-2 text-[13px] font-inter">
                         <div className="flex gap-2 justify-center items-center">
                           <CalendarIcon className="w-5 h-5" />
@@ -438,40 +437,39 @@ export default function EventPage() {
                   <TableRow>
                     <TableCell colSpan={6} className="text-center py-8">
                       <div className="flex flex-col items-center justify-center gap-2">
-                      <p className="text-muted-foreground">
-                        {search
-                        ? `No se encontró evento con el nombre "${search}".`
-                        : (
-                          <>
-                            No hay eventos disponibles
-                            {date
-                            ? ` para la fecha seleccionada (${format(
-                              date,
-                              "dd/MM/yyyy"
-                              )})`
-                            : ""}
-                            .
-                          </>
-                          )
-                        }
-                      </p>
-                      {date && !search && (
-                        <Button
-                        variant="outline"
-                        onClick={handleClearDateFilter}
-                        className="mt-2"
-                        >
-                        <X className="h-4 w-4 mr-2" />
-                        Limpiar filtro y mostrar todos los eventos
-                        </Button>
-                      )}
+                        <p className="text-muted-foreground">
+                          {search ? (
+                            `No se encontró evento con el nombre "${search}".`
+                          ) : (
+                            <>
+                              No hay eventos disponibles
+                              {date
+                                ? ` para la fecha seleccionada (${format(
+                                    date,
+                                    "dd/MM/yyyy"
+                                  )})`
+                                : ""}
+                              .
+                            </>
+                          )}
+                        </p>
+                        {date && !search && (
+                          <Button
+                            variant="outline"
+                            onClick={handleClearDateFilter}
+                            className="mt-2"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Limpiar filtro y mostrar todos los eventos
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
-          </ScrollArea>
+          </div>
 
           <div className="mt-4 justify-between w-full flex ">
             <Pagination

@@ -1,7 +1,7 @@
 "use client";
 
 // import { Button } from "@/components/ui/button";
-import {  Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -97,19 +97,19 @@ export default function ReservationsPage() {
           <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
         </div>
       ) : (
-        <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
-          <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 max-w-screen-xl">
+        <div className="flex flex-col items-center w-full py-6 md:px-4 max-w-screen-2xl">
+          <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-1 md:gap-4 mb-8 max-w-screen-xl">
             {statsData.map((stat, index) => (
-              <Card key={index} className="p-4 bg-card rounded-3xl ">
+              <Card key={index} className="p-2 md:p-4 bg-card rounded-xl mdm:rounded-3xl">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+                  <div className="size-6 md:size-12 bg-pink-100 rounded-full flex items-center justify-center">
                     <img src="/icono.png" className="w-6 h-6 object-contain" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base font-inter text-foreground">
+                    <span className="text-sm md:text-base font-inter text-foreground">
                       {stat.label}
                     </span>
-                    <span className="text-xl font-inter font-bold">
+                    <span className="text-base md:text-xl font-inter font-bold">
                       {stat.value}
                     </span>
                   </div>
@@ -181,20 +181,20 @@ export default function ReservationsPage() {
 
           {/* Reservations Table */}
           <Table>
-            <TableHeader className="">
+            <TableHeader className="text-nowrap">
               <TableRow>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                  Cod.
+                  Código
                 </TableHead>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                   Nombre
                 </TableHead>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                  Fecha y hora <br />
+                  Fecha y Hora <br className="hidden md:block" />
                   de reserva
                 </TableHead>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                  N° <br />
+                  N° <br className="hidden md:block" />
                   personas
                 </TableHead>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
@@ -204,7 +204,7 @@ export default function ReservationsPage() {
                   Box
                 </TableHead>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                  N° mesa <br />o box
+                  N° mesa <br className="hidden md:block" />o box
                 </TableHead>
                 <TableHead className="font-inter text-sm text-foreground p-2 text-center">
                   Estado
@@ -216,7 +216,7 @@ export default function ReservationsPage() {
             </TableHeader>
             <TableBody className="text-center">
               {reservations.map((reservation) => (
-                <TableRow key={reservation.id}>
+                <TableRow key={reservation.id} className="text-nowrap">
                   <TableCell className="font-inter py-2 px-2 text-sm">
                     {reservation.correlative}
                   </TableCell>
@@ -249,7 +249,7 @@ export default function ReservationsPage() {
                   </TableCell>
                   <TableCell className="font-inter py-2 px-2 text-sm">
                     {reservation.status === "Pagado" ? (
-                      <Badge className="text-green-700 bg-green-100 hover:bg-green-200 rounded-full dark:text-green-300 dark:bg-green-800 dark:hover:bg-green-700"> 
+                      <Badge className="text-green-700 bg-green-100 hover:bg-green-200 rounded-full dark:text-green-300 dark:bg-green-800 dark:hover:bg-green-700">
                         Pagado
                       </Badge>
                     ) : reservation.status === "Caducado" ? (
@@ -258,12 +258,6 @@ export default function ReservationsPage() {
                       </Badge>
                     ) : null}
                   </TableCell>
-                  {/* <TableCell className="font-inter text-right py-2 px-2 tcxt-sm">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        classN}               </TableCell> */}
                 </TableRow>
               ))}
             </TableBody>
