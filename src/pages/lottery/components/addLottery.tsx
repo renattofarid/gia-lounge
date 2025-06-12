@@ -18,7 +18,14 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 import {
   Select,
@@ -30,6 +37,8 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { useEventStore } from "@/pages/events/lib/event.store";
 import { DateTimePickerInline } from "@/components/DateTimePickerInline";
+import RichTextEditor from "@/components/RichTextEditor";
+import { Label } from "@/components/ui/label";
 
 const LotterySchema = z.object({
   lottery_name: z.string().nonempty("El nombre de la lotería es obligatorio"),
@@ -72,7 +81,9 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
       number_of_prizes: "",
       prize_images: [],
     },
+    mode: "onChange",
   });
+  const [open, setOpen] = useState(false);
 
   const { events, loadEvents } = useEventStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,8 +182,43 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
                 )}
               />
 
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <div className="flex flex-col items-center w-1/2 gap-3">
+                    <Label className="text-sm font-normal font-poopins w-full">
+                      Descripción
+                    </Label>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="bg-transparent w-full justify-start text-gray-500 font-normal border-primary"
+                    >
+                      Editar Descripción
+                    </Button>
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="max-w-4xl">
+                  <DialogHeader>
+                    <DialogTitle>Editar contenido</DialogTitle>
+                  </DialogHeader>
+                  <FormField
+                    control={form.control}
+                    name="lottery_description"
+                    render={({ field }) => (
+                      <RichTextEditor
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <div className="flex justify-end mt-4">
+                    <Button onClick={() => setOpen(false)}>Cerrar</Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+
               {/* Descripción */}
-              <FormField
+              {/* <FormField
                 control={form.control}
                 name="lottery_description"
                 render={({ field }) => (
@@ -190,7 +236,7 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
             </div>
 
             {/* Fecha, Precio */}
@@ -327,6 +373,8 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
                 </FormItem>
               )}
             />
+
+            <pre>{JSON.stringify(form.getValues(), null, 2)}</pre>
 
             {/* Botones */}
             <DialogFooter className="mt-4">
