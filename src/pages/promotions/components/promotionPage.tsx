@@ -392,11 +392,11 @@ export default function PromocionesPage() {
                       <TableCell className="py-2 px-2 text-[13px] font-inter">
                         <div className="flex gap-2 items-center">
                           <CalendarIcon className="w-4 h-4" />
-                          {format(
+                            {format(
                             parseISO(promotion.date_start),
-                            "dd 'de' MMMM 'del' yyyy",
+                            "dd/MM/yy  HH:mm",
                             { locale: es }
-                          )}
+                            )}
                         </div>
                       </TableCell>
                       <TableCell className="py-2 px-2 text-[13px] font-inter">
@@ -404,7 +404,7 @@ export default function PromocionesPage() {
                           <CalendarIcon className="w-4 h-4" />
                           {format(
                             parseISO(promotion.date_end),
-                            "dd 'de' MMMM 'del' yyyy",
+                            "dd/MM/yy  HH:mm",
                             { locale: es }
                           )}
                         </div>

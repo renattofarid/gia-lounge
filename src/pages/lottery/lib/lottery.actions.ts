@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import { LotteryCollection } from "./lottery.interface";
+import { LotteryCollection, ParticipantesCollection } from "./lottery.interface";
 import { api } from "@/lib/config";
 
 export interface getLotteryProps {
@@ -24,3 +24,22 @@ export const getRaffles = async ({
   const response = await api.get(`/lottery`, config);
   return response.data;
 };
+
+export const createRaffle = async (data: FormData): Promise<LotteryCollection> => {
+  const response = await api.post(`/lottery`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
+};
+
+
+// API para obtener los participantes del sorteo
+export const getRaffleParticipants = async (
+  raffleId: number
+): Promise<ParticipantesCollection> => {
+  const response = await api.get(`/lottery/${raffleId}/participants`);
+  return response.data;
+};
+

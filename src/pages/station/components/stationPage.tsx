@@ -457,16 +457,39 @@ export default function StationPage() {
                         </Badge>
                       </TableCell>
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
-                        <div className="flex flex-row gap-2 items-center justify-center">
-                          <div className="flex items-center gap-2 font-inter text-[13px]">
+                        {station.type === "BOX" ? (
+                          <div className="flex flex-col gap-1 items-center">
+                            {/* Línea 1: Precio unitario x cantidad = total */}
+                            <div className="flex flex-wrap gap-2 justify-center font-medium">
+                              <Badge
+                                variant="outline"
+                                className="bg-blue-50/50 text-blue-700 border-blue-200 hover:bg-blue-100/50 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50 dark:hover:bg-blue-900/30 font-normal py-0.5 text-center"
+                              >
+                                P. Unit. S/ {station.price_unitario ?? 0}{" "}
+                               x {Number(station.quantity_people ?? 0)} pers. = S/{" "}
+                                {station.price}
+                              </Badge>
+                            </div>
+
+                            {/* Línea 2: Orden */}
+                            <div className="flex flex-wrap gap-2 justify-center">
+                              <Badge
+                                variant="outline"
+                                className="bg-gray-50/50 text-gray-700 border-gray-200 hover:bg-gray-100/50 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800/50 dark:hover:bg-gray-900/30 font-normal py-0.5"
+                              >
+                                Orden: {station.sort ?? 0}
+                              </Badge>
+                            </div>
+                          </div>
+                        ) : (
+                          // MESA: Precio y orden juntos
+                          <div className="flex flex-wrap gap-2 justify-center">
                             <Badge
                               variant="outline"
                               className="bg-violet-50/50 text-violet-700 border-violet-200 hover:bg-violet-100/50 dark:bg-violet-900/20 dark:text-violet-300 dark:border-violet-800/50 dark:hover:bg-violet-900/30 font-normal py-0.5"
                             >
                               Precio S/ {station.price}
                             </Badge>
-                          </div>
-                          <div className="flex items-center gap-2">
                             <Badge
                               variant="outline"
                               className="bg-gray-50/50 text-gray-700 border-gray-200 hover:bg-gray-100/50 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800/50 dark:hover:bg-gray-900/30 font-normal py-0.5"
@@ -474,8 +497,9 @@ export default function StationPage() {
                               Orden: {station.sort ?? 0}
                             </Badge>
                           </div>
-                        </div>
+                        )}
                       </TableCell>
+
                       <TableCell className="text-center">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>

@@ -23,11 +23,11 @@ export default function RichTextEditor({
       licenseKey="60c8xtr6d3xijq6tkx1kv0zjzba7aalbpeniidz0221gtl84"
       onEditorChange={onChange}
       init={{
-        height: 300,
+        height: 180,
         menubar: false,
         plugins: "lists link image preview",
         toolbar:
-          "undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link image",
+          "undo redo | bold italic underline | alignleft aligncenter alignright | bullist numlist outdent indent | link",
         branding: false,
       }}
     />
