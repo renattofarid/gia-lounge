@@ -71,27 +71,20 @@ export default function ReservationsPage() {
     }
   };
 
-  const handleDownloadQR = async (reservation: ReservationItem) => {
+  const handleDownloadQR = (reservation: ReservationItem) => {
     if (!reservation.code?.qrcode_path) {
       errorToast("No hay código QR disponible para esta reserva");
       return;
     }
 
-    // const toastId = successToast("Descargando código QR...");
+    const link = document.createElement("a");
+    link.href = reservation.code.qrcode_path;
+    link.setAttribute("download", ""); // Fuerza descarga sin importar el nombre
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 
-    try {
-      const link = document.createElement("a");
-      link.href = reservation.code.qrcode_path;
-      link.download = `QR-${reservation.code.qrcode_path.split("/").pop()}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      successToast("QR descargado correctamente");
-    } catch (error) {
-      console.error("Error al descargar QR:", error);
-      errorToast("Ocurrió un error al descargar el QR");
-    }
+    successToast("QR descargado correctamente");
   };
 
   // Función para aplicar filtros
