@@ -57,14 +57,15 @@ export interface ParticipantesCollection {
 }
 
 export interface ParticipantesItem {
-  id: number;
-  name: string;
-  username: string;
   person_id: number;
   isFlagData: number;
   textFlagData: string;
-  rol_id: number;
+
+  id: number;
+  username: string;
   person: Person;
+  ticket_count: number;
+  tickets: Ticket[];
 }
 
 export interface Person {
@@ -82,4 +83,23 @@ export interface Person {
   email: string;
   occupation: null;
   status: string;
+}
+
+export interface Ticket {
+    id_ticket: number;
+    code:      Code;
+}
+
+export interface Code {
+    id:                number;
+    description:       string;
+    barcode_path:      string;
+    qrcode_path:       null;
+    reservation_id:    null;
+    lottery_ticket_id: number;
+    entry_id:          null;
+    created_at:        Date;
+    total_scans:       number;
+    first_ok_scan:     null;
+    last_scan_attempt: null;
 }

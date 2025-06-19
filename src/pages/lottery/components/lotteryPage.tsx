@@ -13,8 +13,8 @@ import { format } from "date-fns"
 import CreateLotteryForm from "./addLottery"
 import { useLotteryStore } from "../lib/lottery.store"
 import type { Prize } from "../lib/lottery.interface"
-import ModalParticipantes from "./ModalParticipants"
 import ModalPremios from "./modalPrizes"
+import ModalParticipantes from "./ModalParticipants"
 
 export default function LotteryPage() {
   const options = [
