@@ -2,7 +2,7 @@
 
 import { Dialog, DialogClose, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Download, X } from "lucide-react";
+import { Download} from "lucide-react";
 import type { ParticipantesItem } from "../lib/lottery.interface";
 
 interface ModalTicketsProps {

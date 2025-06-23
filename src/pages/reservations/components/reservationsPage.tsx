@@ -77,13 +77,13 @@ export default function ReservationsPage() {
       return;
     }
 
-    const link = document.createElement("a");
-    link.href = reservation.code.qrcode_path;
-    link.setAttribute("download", ""); // Fuerza descarga sin importar el nombre
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
+    // const link = document.createElement("a");
+    // link.href = reservation.code.qrcode_path;
+    // link.setAttribute("download", ""); // Fuerza descarga sin importar el nombre
+    // document.body.appendChild(link);
+    // link.click();
+    // document.body.removeChild(link);
+    window.open(reservation.code.qrcode_path, "_blank");
     successToast("QR descargado correctamente");
   };
 
@@ -157,17 +157,17 @@ export default function ReservationsPage() {
                 className="p-2 md:p-4 bg-card rounded-xl md:rounded-3xl"
               >
                 <div className="flex items-center gap-2 md:gap-3">
-                  <div className="size-6 md:size-12 bg-pink-100 rounded-full flex items-center justify-center">
+                  <div className="size-8 md:size-12 bg-pink-100 rounded-full flex items-center justify-center">
                     <img
                       src="/icono.png"
-                      className="w-4 h-4 md:w-6 md:h-6 object-contain"
+                      className="w-6 h-6 md:w-7 md:h-7 object-contain"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-xs md:text-sm font-inter text-foreground">
+                    <span className="text-[13px] md:text-sm font-poopins text-foreground">
                       {stat.label}
                     </span>
-                    <span className="text-sm md:text-xl font-inter font-bold">
+                    <span className="text-[13px] md:text-xl font-inter font-bold">
                       {stat.value}
                     </span>
                   </div>
@@ -204,8 +204,8 @@ export default function ReservationsPage() {
                 />
               </div>
 
-              {/* Filtros agrupados */}
-              <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full md:w-auto">
+              {/* Filtros de la derecha */}
+              <div className="flex flex-col sm:flex-row flex-wrap items-center gap-2 w-full md:w-auto md:justify-end">
                 {/* Filtro por estado */}
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
                   <SelectTrigger className="w-full sm:w-[140px] font-poppins text-sm">
@@ -223,9 +223,9 @@ export default function ReservationsPage() {
                 <Popover>
                   <PopoverTrigger asChild>
                     <Button
-                      variant="outline"
+                      variant={"outline"}
                       className={cn(
-                        "w-full sm:w-[180px] justify-start text-left font-normal text-sm font-poppins",
+                        "w-[240px] justify-start text-left font-normal text-sm bg-transparent",
                         !dateFilter && "text-muted-foreground"
                       )}
                     >
@@ -248,7 +248,7 @@ export default function ReservationsPage() {
                 </Popover>
 
                 {/* Evento */}
-                <div className="w-full sm:w-[200px]">
+                <div className="w-full sm:w-auto">
                   <AutocompleteFilter
                     list={events}
                     label="name"
@@ -397,19 +397,22 @@ export default function ReservationsPage() {
           {/* Reservations Cards - Mobile */}
           <div className="md:hidden w-full space-y-4">
             {filteredReservations.map((reservation) => (
-              <Card key={reservation.id} className="p-4">
+              <Card
+                key={reservation.id}
+                className="p-4 bg-primary/10 shadow-md rounded-lg"
+              >
                 <div className="flex flex-col space-y-3">
                   {/* Header */}
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="font-semibold text-sm">
+                      <h3 className="font-semibold text-base font-poopins">
                         {reservation.name}
                       </h3>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-sm font-inter text-gray-500">
                         #{reservation.correlative}
                       </p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 font-inter">
                       {reservation.status === "Pagado" ? (
                         <Badge className="text-green-700 bg-green-100 rounded-full text-xs">
                           Pagado
@@ -438,8 +441,10 @@ export default function ReservationsPage() {
                   {/* Details */}
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <span className="text-gray-500">Fecha:</span>
-                      <p className="font-medium">
+                      <span className="text-gray-500 font-inter text-sm">
+                        Fecha:
+                      </span>
+                      <p className="font-medium font-inter">
                         {format(
                           new Date(reservation.reservation_datetime),
                           "dd-MM-yyy"
@@ -447,8 +452,10 @@ export default function ReservationsPage() {
                       </p>
                     </div>
                     <div>
-                      <span className="text-gray-500">Hora:</span>
-                      <p className="font-medium">
+                      <span className="text-gray-500 font-inter text-sm">
+                        Hora:
+                      </span>
+                      <p className="font-medium font-inter">
                         {format(
                           new Date(reservation.reservation_datetime),
                           "HH:mm"
@@ -456,16 +463,28 @@ export default function ReservationsPage() {
                       </p>
                     </div>
                     <div>
-                      <span className="text-gray-500">Personas:</span>
-                      <p className="font-medium">{reservation.nroPeople}</p>
+                      <span className="text-gray-500 font-inter text-sm">
+                        Personas:
+                      </span>
+                      <p className="font-medium font-inter">
+                        {reservation.nroPeople}
+                      </p>
                     </div>
                     <div>
-                      <span className="text-gray-500">Tipo:</span>
-                      <p className="font-medium">{reservation.station.type}</p>
+                      <span className="text-gray-500 font-inter text-sm">
+                        Tipo:
+                      </span>
+                      <p className="font-medium font-inter">
+                        {reservation.station.type}
+                      </p>
                     </div>
                     <div className="col-span-2">
-                      <span className="text-gray-500">Mesa/Box:</span>
-                      <p className="font-medium">{reservation.station.name}</p>
+                      <span className="text-gray-500 font-inter text-sm">
+                        Mesa/Box:
+                      </span>
+                      <p className="font-medium font-inter">
+                        {reservation.station.name}
+                      </p>
                     </div>
                   </div>
                 </div>

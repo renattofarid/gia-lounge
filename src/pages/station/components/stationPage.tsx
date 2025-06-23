@@ -252,6 +252,7 @@ export default function StationPage() {
         link: "/empresas/mesas",
       },
     },
+
     {
       name: "Eventos",
       link: "/empresas/eventos",
@@ -261,6 +262,16 @@ export default function StationPage() {
         link: "/empresas/eventos",
       },
     },
+    {
+      name: "Sorteos",
+      link: "/empresas/sorteos",
+      permission: {
+        name: "Leer",
+        type: "Lotería",
+        link: "/empresas/sorteos",
+      },
+    }
+    
   ];
 
   // const filteredOptions = options.filter((option) =>

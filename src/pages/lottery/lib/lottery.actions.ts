@@ -6,18 +6,21 @@ export interface getLotteryProps {
   page: number;
   name?: string;
   eventId?: number;
+  companyId?: number; 
 }
 
 export const getRaffles = async ({
   page,
   name,
   eventId,
+  companyId 
 }: getLotteryProps): Promise<LotteryCollection> => {
   const config: AxiosRequestConfig = {
     params: {
       page,
       name,
       event_id: eventId,
+      company_id: companyId
 
     },
   };
@@ -40,6 +43,12 @@ export const getRaffleParticipants = async (
   raffleId: number
 ): Promise<ParticipantesCollection> => {
   const response = await api.get(`/lottery/${raffleId}/participants`);
+  return response.data;
+};
+
+// API para eliminar un sorteo
+export const deleteLottery = async (id: number) => {
+  const response = await api.delete(`/lottery/${id}`);
   return response.data;
 };
 

@@ -90,6 +90,15 @@ export default function EnvironmentPage() {
         link: "/empresas/eventos",
       },
     },
+    {
+      name: "Sorteos",
+      link: "/empresas/sorteos",
+      permission: {
+        name: "Leer",
+        type: "Lotería",
+        link: "/empresas/sorteos",
+      },
+    }
   ];
   // const { permisos } = useAuthStore();
 

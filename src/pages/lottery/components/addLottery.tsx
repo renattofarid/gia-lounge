@@ -1,7 +1,7 @@
 "use client";
 
 import type React from "react";
-import {  z } from "zod";
+import { z } from "zod";
 import { format } from "date-fns";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -26,6 +26,7 @@ import {
   // DialogTitle,
   // DialogTrigger,
 } from "@/components/ui/dialog";
+import { useComapanyStore } from "@/pages/company/lib/company.store";
 
 import {
   Select,
@@ -48,6 +49,7 @@ const PrizeSchema = z.object({
 });
 
 const LotterySchema = z.object({
+  company_id: z.number(),
   lottery_name: z.string().nonempty("El nombre de la lotería es obligatorio"),
   lottery_description: z.string().nonempty("La descripción es obligatoria"),
   lottery_date: z.date({ required_error: "La fecha es obligatoria" }),
@@ -75,9 +77,13 @@ const LotterySchema = z.object({
 
 interface CreateLotteryProps {
   onClose: () => void;
+  companyId: number;
 }
 
-export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
+export default function CreateLotteryForm({
+  onClose,
+  companyId,
+}: CreateLotteryProps) {
   const form = useForm<z.infer<typeof LotterySchema>>({
     resolver: zodResolver(LotterySchema),
     defaultValues: {
@@ -90,18 +96,28 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
       number_of_prizes: "",
       main_image: null,
       prizes: [],
+      company_id: companyId,
     },
     mode: "onChange",
   });
   // const [open, setOpen] = useState(false);
 
-  const { events, loadEvents } = useEventStore();
+  const { companies, loadCompanies } = useComapanyStore();
+
+  const { events } = useEventStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<number>(
+    companyId || 0
+  );
+
+  // useEffect(() => {
+  //   loadEvents(1, undefined, undefined, selectedCompanyId);
+  // }, [loadEvents, selectedCompanyId]);
 
   useEffect(() => {
-    loadEvents(1, undefined, undefined, 0);
-  }, [loadEvents]);
+    loadCompanies(1);
+  }, []);
 
   const handleMainImageChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -121,6 +137,7 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
     try {
       const formattedDate = format(data.lottery_date, "yyyy-MM-dd HH:mm");
       const formData = new FormData();
+      formData.append("company_id", data.company_id.toString());
       formData.append("lottery_name", data.lottery_name);
       formData.append("lottery_description", data.lottery_description);
       formData.append("lottery_date", formattedDate);
@@ -140,6 +157,7 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
           }
         });
       }
+      formData.append("company_id", selectedCompanyId.toString());
 
       setIsSubmitting(true);
       // Llama a la API createRaffle
@@ -163,36 +181,75 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary  rounded-lg p-6">
             <div className="flex flex-col gap-3 ">
               <div className=" grid grid-cols-2 justify-between gap-3">
-                {/* Evento */}
+                {/* Selector de Compañía */}
+                <div className="col-span-2">
+                  <Label className="text-sm font-normal font-poopins">
+                    Compañía
+                  </Label>
+                  <Select
+                    value={selectedCompanyId.toString()}
+                    onValueChange={(value) => {
+                      const companyId = Number(value);
+                      setSelectedCompanyId(companyId);
+                      // Reset event selection when company changes
+                      form.setValue("event_id", 0);
+                    }}
+                  >
+                    <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                      <SelectValue placeholder="Seleccionar compañía" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0" className="hidden">
+                        Seleccionar compañía
+                      </SelectItem>
+                      {companies.map((company) => (
+                        <SelectItem
+                          key={company.id}
+                          value={company.id.toString()}
+                        >
+                          {company.business_name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <FormField
                   control={form.control}
                   name="event_id"
                   render={({ field }) => (
-                    <FormItem className="">
+                    <FormItem>
                       <FormLabel className="text-sm font-normal font-poopins">
                         Evento
                       </FormLabel>
                       <Select
+                        value={field.value?.toString() || "0"}
                         onValueChange={(value) => {
-                          field.onChange(Number(value));
+                          const eventId = Number(value);
+                          field.onChange(eventId);
                         }}
-                        value={field.value.toString()}
+                        disabled={selectedCompanyId === 0}
                       >
                         <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                          <SelectValue placeholder="Seleccionar evento" />
+                          <SelectValue
+                            placeholder={
+                              selectedCompanyId === 0
+                                ? "Primero selecciona una compañía"
+                                : "Seleccionar evento"
+                            }
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="0" className="hidden">
                             Seleccionar evento
                           </SelectItem>
-                          {events.map((event) => (
-                            <SelectItem
-                              key={event.id}
-                              value={event.id.toString()}
-                            >
-                              {event.name}
-                            </SelectItem>
-                          ))}
+                          {events
+                            .filter((event) => event.company_id === selectedCompanyId)
+                            .map((event) => (
+                              <SelectItem key={event.id} value={event.id.toString()}>
+                                {event.name}
+                              </SelectItem>
+                            ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -249,7 +306,7 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
                         {mainImagePreview ? (
                           <div className="flex relative w-full h-20 rounded-md overflow-hidden border border-dashed bg-white/40  justify-center items-center p-2">
                             <img
-                              src={mainImagePreview}
+                              src={mainImagePreview || "/placeholder.svg"}
                               alt="Preview"
                               className="w-auto h-full object-cover rounded-md"
                             />
@@ -283,7 +340,6 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
                   </FormItem>
                 )}
               />
-               
             </div>
             <div className="">
               <div className=" grid grid-cols-2 justify-between gap-4">
@@ -372,98 +428,103 @@ export default function CreateLotteryForm({ onClose }: CreateLotteryProps) {
                   (_, index) => (
                     <div key={index} className="flex items-end gap-4 mb-4">
                       <FormField
-                      control={form.control}
-                      name={`prizes.${index}.name`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                        <FormLabel className="text-sm font-normal font-poopins">
-                          Nombre del premio {index + 1}
-                        </FormLabel>                         
-                        <FormControl>
-                          <Input
-                          placeholder={`Nombre del premio ${index + 1}`}
-                          {...field}
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                        </FormItem>
-                      )}
+                        control={form.control}
+                        name={`prizes.${index}.name`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel className="text-sm font-normal font-poopins">
+                              Nombre del premio {index + 1}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={`Nombre del premio ${index + 1}`}
+                                {...field}
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                       {/* Descripción */}
                       <FormField
-                      control={form.control}
-                      name={`prizes.${index}.description`}
-                      render={({ field }) => (
-                        <FormItem className="flex-1">
-                          <FormLabel className="text-sm font-normal font-poopins">
-                            Descripción del premio {index + 1}
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder={`Descripción del premio ${index + 1}`}
-                              {...field}
-                              className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                        control={form.control}
+                        name={`prizes.${index}.description`}
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormLabel className="text-sm font-normal font-poopins">
+                              Descripción del premio {index + 1}
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder={`Descripción del premio ${
+                                  index + 1
+                                }`}
+                                {...field}
+                                className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
                       />
                       {/* Ruta */}
                       <FormField
-                      control={form.control}
-                      name={`prizes.${index}.route`}
-                      render={({ field }) => {
-                        const file = field.value as File | undefined;
-                        const [preview, setPreview] = useState<string | null>(null);
+                        control={form.control}
+                        name={`prizes.${index}.route`}
+                        render={({ field }) => {
+                          const file = field.value as File | undefined;
+                          const [preview, setPreview] = useState<string | null>(
+                            null
+                          );
 
-                        useEffect(() => {
-                        if (file) {
-                          const reader = new FileReader();
-                          reader.onload = (e) => setPreview(e.target?.result as string);
-                          reader.readAsDataURL(file);
-                        } else {
-                          setPreview(null);
-                        }
-                        }, [file]);
+                          useEffect(() => {
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (e) =>
+                                setPreview(e.target?.result as string);
+                              reader.readAsDataURL(file);
+                            } else {
+                              setPreview(null);
+                            }
+                          }, [file]);
 
-                        return (
-                        <FormItem className="aspect-square">
-                          <FormLabel className="text-sm font-normal font-poopins">
-                          Imagen
-                          </FormLabel>
-                          <FormControl>
-                          <label className="flex flex-col items-center justify-center h-10 rounded-md border border-dashed bg-pink-200   cursor-pointer transition-colors relative">
-                            <Camera className="h-4 w-4 text-pink-400" />
-                            <input
-                            type="file"
-                            accept="image/*"
-                            className="hidden"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                              field.onChange(file);
-                              }
-                            }}
-                            />
-                            {preview ? (
-                            <img
-                              src={preview}
-                              alt="Preview"
-                              className="absolute top-0 left-0 w-full h-full object-cover rounded-md opacity-80"
-                            />
-                            ) : file ? (
-                            <span className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-xs text-green-700 font-semibold bg-green-100/80 rounded-md">
-                              Imagen subida
-                            </span>
-                            ) : null}
-                          </label>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                        );
-                      }}
+                          return (
+                            <FormItem className="aspect-square">
+                              <FormLabel className="text-sm font-normal font-poopins">
+                                Imagen
+                              </FormLabel>
+                              <FormControl>
+                                <label className="flex flex-col items-center justify-center h-10 rounded-md border border-dashed bg-pink-200   cursor-pointer transition-colors relative">
+                                  <Camera className="h-4 w-4 text-pink-400" />
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={(e) => {
+                                      const file = e.target.files?.[0];
+                                      if (file) {
+                                        field.onChange(file);
+                                      }
+                                    }}
+                                  />
+                                  {preview ? (
+                                    <img
+                                      src={preview || "/placeholder.svg"}
+                                      alt="Preview"
+                                      className="absolute top-0 left-0 w-full h-full object-cover rounded-md opacity-80"
+                                    />
+                                  ) : file ? (
+                                    <span className="absolute top-0 left-0 w-full h-full flex items-center justify-center text-xs text-green-700 font-semibold bg-green-100/80 rounded-md">
+                                      Imagen subida
+                                    </span>
+                                  ) : null}
+                                </label>
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          );
+                        }}
                       />
                     </div>
                   )

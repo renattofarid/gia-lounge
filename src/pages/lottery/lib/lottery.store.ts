@@ -8,7 +8,12 @@ interface LotteryStore {
   links: Links;
   meta: Meta;
   loading: boolean;
-  loadRaffles: (page: number, name?: string, eventId?: number) => void;
+  loadRaffles: (
+    page: number,
+    companyId?: number,
+    name?: string,
+    eventId?: number
+  ) => void;
 }
 
 export const useLotteryStore = create<LotteryStore>((set) => ({
@@ -30,12 +35,19 @@ export const useLotteryStore = create<LotteryStore>((set) => ({
     total: 0,
   },
   loading: true,
-  loadRaffles: async (page: number, name?: string, eventId?: number) => {
+  loadRaffles: async (
+    page: number,
+    companyId?: number,
+
+    name?: string,
+    eventId?: number
+  ) => {
     set(() => ({ loading: true }));
     const response: LotteryCollection = await getRaffles({
       page,
-      name,
       eventId,
+      name,
+      companyId,
     });
     set(() => ({
       raffles: response.data,

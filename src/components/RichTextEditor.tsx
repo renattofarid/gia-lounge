@@ -1,6 +1,6 @@
 // components/RichTextEditor.tsx
 import { Editor } from "@tinymce/tinymce-react";
-import { useRef } from "react";
+// import { useRef } from "react";
 
 interface Props {
   value: string;
@@ -13,7 +13,7 @@ export default function RichTextEditor({
   onChange,
   id = "rich-editor",
 }: Props) {
-  const editorRef = useRef(null);
+  // const editorRef = useRef(null);
 
   return (
     <Editor
