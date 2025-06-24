@@ -15,7 +15,6 @@ import CreateLotteryForm from "./addLottery"
 import { useLotteryStore } from "../lib/lottery.store"
 import type { Prize, LotteryItem } from "../lib/lottery.interface"
 import ModalPremios from "./modalPrizes"
-import ModalParticipantes from "./modalParticipants"
 import { useComapanyStore } from "@/pages/company/lib/company.store"
 import { Card } from "@/components/ui/card"
 import DeleteDialog from "@/components/delete-dialog"
@@ -23,6 +22,7 @@ import { errorToast, successToast } from "@/lib/core.function"
 import { deleteLottery } from "../lib/lottery.actions"
 import { Pagination } from "@/components/pagination"
 import ModalWinners from "./modalWinners"
+import ModalParticipantes from "./ModalParticipants"
 
 export default function LotteryPage() {
   const navigate = useNavigate()
