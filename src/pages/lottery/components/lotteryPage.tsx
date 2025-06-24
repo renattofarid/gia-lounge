@@ -22,7 +22,7 @@ import { errorToast, successToast } from "@/lib/core.function"
 import { deleteLottery } from "../lib/lottery.actions"
 import { Pagination } from "@/components/pagination"
 import ModalWinners from "./modalWinners"
-import ModalParticipantes from "./ModalParticipants"
+import ModalParticipants from "./ModalParticipants"
 
 export default function LotteryPage() {
   const navigate = useNavigate()
@@ -338,7 +338,7 @@ export default function LotteryPage() {
             onCancel={() => setIsDeleteDialogOpen(false)}
           />
 
-          <ModalParticipantes
+          <ModalParticipants
             isOpen={isParticipantsOpen}
             onClose={handleCloseParticipants}
             raffleId={selectedRaffleId}
