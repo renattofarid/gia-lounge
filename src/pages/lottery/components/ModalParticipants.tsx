@@ -23,7 +23,7 @@ interface ModalParticipantesProps {
   raffleName: string;
 }
 
-export default function ModalParticipantes({
+export default function ModalParticipants({
   isOpen,
   onClose,
   raffleId,
