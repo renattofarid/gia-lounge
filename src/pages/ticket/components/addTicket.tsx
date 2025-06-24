@@ -20,7 +20,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Loader2 } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -68,40 +67,40 @@ export default function CreateTicketForm({
   }, [loadUsers]);
 
   const handleFormSubmit = async (data: z.infer<typeof TicketSchema>) => {
-  try {
-    setIsSubmitting(true);
-    const ticketData = {
-      lottery_id: lottery.id,
-      user_owner_id: data.user_owner_id,
-      quantity: data.quantity,
-    };
+    try {
+      setIsSubmitting(true);
+      const ticketData = {
+        lottery_id: lottery.id,
+        user_owner_id: data.user_owner_id,
+        quantity: data.quantity,
+      };
 
-    const response = await createTicket(ticketData);
+      const response = await createTicket(ticketData);
 
-    // Detectar si es arreglo
-    const tickets = Array.isArray(response) ? response : [response];
+      // Detectar si es arreglo
+      const tickets = Array.isArray(response) ? response : [response];
 
-    successToast(
-      `Se crearon ${tickets.length} ticket${tickets.length > 1 ? "s" : ""} exitosamente`
-    );
+      successToast(
+        `Se crearon ${tickets.length} ticket${
+          tickets.length > 1 ? "s" : ""
+        } exitosamente`
+      );
 
-    onClose();
-  } catch (error: any) {
-    console.error("Error:", error);
-    const message =
-      error?.response?.data?.message || "Ocurrió un error al crear el ticket";
-    errorToast(message);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+      onClose();
+    } catch (error: any) {
+      console.error("Error:", error);
+      const message =
+        error?.response?.data?.message || "Ocurrió un error al crear el ticket";
+      errorToast(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   if (loadingUsers) {
     return (
-      <div className="flex flex-col gap-6 p-6 bg-secondary">
-        <Skeleton className="w-full h-4" />
-        <Skeleton className="w-full h-4" />
-        <Skeleton className="w-full h-4" />
+      <div className="flex justify-center items-center h-full w-full">
+        <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
       </div>
     );
   }

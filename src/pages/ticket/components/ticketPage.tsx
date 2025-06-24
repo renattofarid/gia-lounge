@@ -18,7 +18,6 @@ import {
   Loader2,
   QrCode,
   BarChart3,
-  User,
   Search,
   ChevronLeft,
 } from "lucide-react";
@@ -187,18 +186,18 @@ export default function TicketsPage() {
 
   // const lotteryInfo = currentLottery || (tickets.length > 0 ? tickets[0] : null)
 
-  const ticketStats = [
-    {
-      name: "Total Tickets",
-      count: tickets.length,
-      status: "TOTAL CREADOS",
-    },
-    {
-      name: "Con Usuario",
-      count: tickets.filter((t) => t.user_owner_id !== null).length,
-      status: "ASIGNADOS",
-    },
-  ];
+  // const ticketStats = [
+  //   {
+  //     name: "Total Tickets",
+  //     count: tickets.length,
+  //     status: "TOTAL CREADOS",
+  //   },
+  //   {
+  //     name: "Con Usuario",
+  //     count: tickets.filter((t) => t.user_owner_id !== null).length,
+  //     status: "ASIGNADOS",
+  //   },
+  // ];
 
   const canCreateTicket = true;
 
@@ -209,7 +208,7 @@ export default function TicketsPage() {
           <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
         </div>
       ) : (
-        <div className="flex flex-col items-center w-full py-6 px-4 max-w-screen-2xl">
+        <div className="flex flex-col gap-4 w-full justify-between items-center px-4 max-w-screen-2xl h-full">
           {/* Header con botón de regreso */}
           <div className="w-full flex items-center gap-3 mb-6">
             <Button
@@ -224,6 +223,7 @@ export default function TicketsPage() {
               <h1 className="text-xl font-bold font-poppins">
                 Lista de Tickets del sorteo:{" "}
                 {currentLottery?.lottery_name || `#${isNaN(id) ? "N/A" : id}`}
+                { " - " + currentLottery?.event_name}
               </h1>
               <p className="text-gray-500 text-base font-inter">
                 Gestionar los tickets del sorteo seleccionado.
@@ -259,42 +259,22 @@ export default function TicketsPage() {
 
           {/* Cards de estadísticas */}
           <div className="w-full flex justify-center mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              {ticketStats.map((stat, index) => (
-                <Card
-                  key={index}
-                  className="p-4 bg-white rounded-3xl shadow-sm max-w-md"
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`w-16 h-16 ${
-                        index === 0 ? "bg-[#DCFAF8]" : "bg-[#E8F4FD]"
-                      } rounded-full flex items-center justify-center`}
-                    >
-                      {index === 0 ? (
-                        <BarChart3 className="w-8 h-8 text-[#25877F]" />
-                      ) : (
-                        <User className="w-8 h-8 text-[#2563EB]" />
-                      )}
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-base font-poppins text-foreground font-bold">
-                        {stat.name}
-                      </span>
-                      <span className="text-2xl font-poppins font-bold text-violet-600">
-                        {stat.count}
-                      </span>
-                      <span
-                        className={`text-xs font-inter ${
-                          index === 0 ? "text-[#25877F]" : "text-[#2563EB]"
-                        }`}
-                      >
-                        {stat.status}
-                      </span>
-                    </div>
+            <div className="max-w-md w-full">
+              <Card className="p-4 bg-primary-foreground rounded-3xl shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-16 h-16 bg-[#DCFAF8] rounded-full flex items-center justify-center">
+                    <BarChart3 className="w-8 h-8 text-[#25877F]" />
                   </div>
-                </Card>
-              ))}
+                  <div className="flex flex-col">
+                    <span className="text-base font-poppins text-foreground font-semibold">
+                      TOTAL DE TICKETS CREADOS
+                    </span>
+                    <span className="text-2xl font-poppins font-bold text-violet-600">
+                      {tickets.length}
+                    </span>
+                  </div>
+                </div>
+              </Card>
             </div>
           </div>
 
@@ -332,7 +312,7 @@ export default function TicketsPage() {
           </div>
 
           {/* Tabla de tickets */}
-          <div className="w-full flex relative flex-col rounded-lg pt-2 h-[39vh] bg-gradient-to-t from-muted via-transparent via-10% overflow-auto">
+          <div className="rounded-lg w-full flex flex-col h-full overflow-auto">
             <Table>
               <TableHeader>
                 <TableRow>

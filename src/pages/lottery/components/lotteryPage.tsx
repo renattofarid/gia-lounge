@@ -1,128 +1,125 @@
-"use client";
+"use client"
 
-import Layout from "@/components/layouts/layout";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-// import { Card } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Gift, Loader2, MoreVertical } from "lucide-react";
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import Layout from "@/components/layouts/layout"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Gift, Loader2, MoreVertical } from "lucide-react"
+import { useEffect, useState } from "react"
+import { format } from "date-fns"
+import { useNavigate } from "react-router-dom"
 
-import CreateLotteryForm from "./addLottery";
-import { useLotteryStore } from "../lib/lottery.store";
-import type { Prize } from "../lib/lottery.interface";
-import ModalPremios from "./modalPrizes";
-import ModalParticipantes from "./modalParticipants";
-import { useComapanyStore } from "@/pages/company/lib/company.store";
-import { Card } from "@/components/ui/card";
-import DeleteDialog from "@/components/delete-dialog";
-import { errorToast, successToast } from "@/lib/core.function";
-import { deleteLottery } from "../lib/lottery.actions";
-import { Pagination } from "@/components/pagination";
+import CreateLotteryForm from "./addLottery"
+import { useLotteryStore } from "../lib/lottery.store"
+import type { Prize, LotteryItem } from "../lib/lottery.interface"
+import ModalPremios from "./modalPrizes"
+import ModalParticipantes from "./modalParticipants"
+import { useComapanyStore } from "@/pages/company/lib/company.store"
+import { Card } from "@/components/ui/card"
+import DeleteDialog from "@/components/delete-dialog"
+import { errorToast, successToast } from "@/lib/core.function"
+import { deleteLottery } from "../lib/lottery.actions"
+import { Pagination } from "@/components/pagination"
+import ModalWinners from "./modalWinners"
 
 export default function LotteryPage() {
-  const navigate = useNavigate();
-  const { companyId } = useComapanyStore();
+  const navigate = useNavigate()
+  const { companyId } = useComapanyStore()
 
-  const { raffles, loadRaffles, loading, meta, links } = useLotteryStore();
+  const { raffles, loadRaffles, loading, meta, links } = useLotteryStore()
 
-  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
-  const [isPrizesOpen, setIsPrizesOpen] = useState(false);
-  const [selectedRaffleId, setSelectedRaffleId] = useState<number>(0);
-  const [selectedRaffleName, setSelectedRaffleName] = useState<string>("");
-  const [selectedPrizes, setSelectedPrizes] = useState<Prize[]>([]);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [idSelected, setIdSelected] = useState(0);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
+  const [isParticipantsOpen, setIsParticipantsOpen] = useState(false)
+  const [isPrizesOpen, setIsPrizesOpen] = useState(false)
+  const [isWinnersOpen, setIsWinnersOpen] = useState(false)
+  const [selectedRaffleId, setSelectedRaffleId] = useState<number>(0)
+  const [selectedRaffleName, setSelectedRaffleName] = useState<string>("")
+  const [selectedPrizes, setSelectedPrizes] = useState<Prize[]>([])
+  const [selectedLottery, setSelectedLottery] = useState<LotteryItem | null>(null)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
+  const [idSelected, setIdSelected] = useState(0)
 
   useEffect(() => {
     if (!companyId || companyId === 0) {
-      navigate("/empresas");
+      navigate("/empresas")
     } else {
-      loadRaffles(companyId);
+      loadRaffles(companyId)
     }
-  }, [companyId, loadRaffles, navigate]);
+  }, [companyId, loadRaffles, navigate])
 
   const handlePageChange = (page: number) => {
-    loadRaffles(companyId, page);
-  };
+    loadRaffles(companyId, page)
+  }
 
   const handleClose = () => {
-    setIsAddDialogOpen(false);
-    loadRaffles(companyId);
-  };
+    setIsAddDialogOpen(false)
+    loadRaffles(companyId)
+  }
 
   const handleViewParticipants = (raffleId: number, raffleName: string) => {
-    setSelectedRaffleId(raffleId);
-    setSelectedRaffleName(raffleName);
-    setIsParticipantsOpen(true);
-  };
+    setSelectedRaffleId(raffleId)
+    setSelectedRaffleName(raffleName)
+    setIsParticipantsOpen(true)
+  }
 
   const handleViewPrizes = (prizes: Prize[], raffleName: string) => {
-    setSelectedPrizes(prizes);
-    setSelectedRaffleName(raffleName);
-    setIsPrizesOpen(true);
-  };
+    setSelectedPrizes(prizes)
+    setSelectedRaffleName(raffleName)
+    setIsPrizesOpen(true)
+  }
+
+  const handleViewWinners = (lottery: LotteryItem) => {
+    setSelectedLottery(lottery)
+    setSelectedRaffleName(lottery.lottery_name)
+    setIsWinnersOpen(true)
+  }
 
   const handleCloseParticipants = () => {
-    setIsParticipantsOpen(false);
-    setSelectedRaffleId(0);
-    setSelectedRaffleName("");
-  };
+    setIsParticipantsOpen(false)
+    setSelectedRaffleId(0)
+    setSelectedRaffleName("")
+  }
 
   const handleClosePrizes = () => {
-    setIsPrizesOpen(false);
-    setSelectedPrizes([]);
-    setSelectedRaffleName("");
-  };
+    setIsPrizesOpen(false)
+    setSelectedPrizes([])
+    setSelectedRaffleName("")
+  }
+
+  const handleCloseWinners = () => {
+    setIsWinnersOpen(false)
+    setSelectedLottery(null)
+    setSelectedRaffleName("")
+    // Reload raffles to get updated winner information
+    loadRaffles(companyId)
+  }
 
   const handleClickDelete = (id: number) => {
-    setIsDeleteDialogOpen(true);
-    setIdSelected(id);
-  };
+    setIsDeleteDialogOpen(true)
+    setIdSelected(id)
+  }
 
   const handleDelete = async () => {
     try {
       await deleteLottery(idSelected).then(() => {
-        setIsDeleteDialogOpen(false);
-        successToast("Sorteo eliminado correctamente");
-        loadRaffles(companyId);
-      });
+        setIsDeleteDialogOpen(false)
+        successToast("Sorteo eliminado correctamente")
+        loadRaffles(companyId)
+      })
     } catch (error: any) {
-      errorToast("Error al eliminar el sorteo");
+      errorToast("Error al eliminar el sorteo")
     }
-  };
+  }
 
   const stripHtmlTags = (html: string) => {
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return doc.body.textContent || "";
-  };
+    const doc = new DOMParser().parseFromString(html, "text/html")
+    return doc.body.textContent || ""
+  }
 
-  const canCreateLottery = true;
-  // const canUpdateLottery = true;
-  const canDeleteLottery = true;
+  const canCreateLottery = true
+  const canDeleteLottery = true
 
   const activeLotteries = [
     {
@@ -135,7 +132,7 @@ export default function LotteryPage() {
       date: "30-12-2024",
       status: "SORTEO PRÓXIMO",
     },
-  ];
+  ]
 
   const options = [
     {
@@ -165,13 +162,12 @@ export default function LotteryPage() {
         link: "/empresas/mesas",
       },
     },
-
     {
-      name: "Lotteryos",
+      name: "Eventos",
       link: "/empresas/eventos",
       permission: {
         name: "Leer",
-        type: "Lotteryo",
+        type: "Evento",
         link: "/empresas/eventos",
       },
     },
@@ -184,7 +180,7 @@ export default function LotteryPage() {
         link: "/empresas/sorteos",
       },
     },
-  ];
+  ]
 
   return (
     <Layout options={options}>
@@ -197,34 +193,19 @@ export default function LotteryPage() {
           <div className="w-full flex justify-center mb-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
               {activeLotteries.map((lottery, index) => (
-                <Card
-                  key={index}
-                  className="p-4 bg-white rounded-3xl shadow-sm max-w-md"
-                >
+                <Card key={index} className="p-4 bg-white rounded-3xl shadow-sm max-w-md">
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-16 h-16 ${
                         index === 0 ? "bg-[#DCFAF8]" : "bg-[#DCFAF8]"
                       } rounded-full flex items-center justify-center`}
                     >
-                      <img
-                        src="/money-icono.png"
-                        className="w-8 h-8 object-contain"
-                        alt="Lottery icon"
-                      />
+                      <img src="/money-icono.png" className="w-8 h-8 object-contain" alt="Lottery icon" />
                     </div>
                     <div className="flex flex-col">
-                      <span className="text-base font-poopins text-foreground font-bold">
-                        {lottery.name}
-                      </span>
-                      <span className="text-sm font-poopins font-medium">
-                        {lottery.date}
-                      </span>
-                      <span
-                        className={`text-xs font-inter ${
-                          index === 0 ? "text-[#E84747]" : "text-[#25877F]"
-                        }`}
-                      >
+                      <span className="text-base font-poopins text-foreground font-bold">{lottery.name}</span>
+                      <span className="text-sm font-poopins font-medium">{lottery.date}</span>
+                      <span className={`text-xs font-inter ${index === 0 ? "text-[#E84747]" : "text-[#25877F]"}`}>
                         {lottery.status}
                       </span>
                     </div>
@@ -237,9 +218,7 @@ export default function LotteryPage() {
           <div className="w-full flex justify-between items-center mb-6">
             <div>
               <h1 className="text-2xl font-bold font-inter">Sorteos</h1>
-              <p className="text-gray-500 text-base font-inter">
-                Gestionar los sorteos de la empresa seleccionada.
-              </p>
+              <p className="text-gray-500 text-base font-inter">Gestionar los sorteos de la empresa seleccionada.</p>
             </div>
             {canCreateLottery && (
               <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
@@ -253,14 +232,9 @@ export default function LotteryPage() {
                 </DialogTrigger>
                 <DialogContent className="p-6 max-w-screen-xl">
                   <DialogHeader>
-                    <DialogTitle className="font-inter">
-                      Crear Sorteo
-                    </DialogTitle>
+                    <DialogTitle className="font-inter">Crear Sorteo</DialogTitle>
                   </DialogHeader>
-                  <CreateLotteryForm
-                    onClose={handleClose}
-                    companyId={companyId}
-                  />
+                  <CreateLotteryForm onClose={handleClose} companyId={companyId} />
                 </DialogContent>
               </Dialog>
             )}
@@ -270,27 +244,13 @@ export default function LotteryPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Código
-                  </TableHead>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Nombre
-                  </TableHead>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Fecha
-                  </TableHead>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Descripción
-                  </TableHead>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Premios
-                  </TableHead>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Lotteryo
-                  </TableHead>
-                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">
-                    Estado
-                  </TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Código</TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Nombre</TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Fecha</TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Descripción</TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Premios</TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Evento</TableHead>
+                  <TableHead className="font-inter text-sm text-foreground p-2 text-center">Estado</TableHead>
                   <TableHead className="font-inter text-sm text-foreground p-2 text-center"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -298,25 +258,13 @@ export default function LotteryPage() {
                 {raffles.length > 0 ? (
                   raffles.map((lottery) => (
                     <TableRow key={lottery.id}>
+                      <TableCell className="text-center">{lottery.code_serie}</TableCell>
+                      <TableCell className="text-center">{lottery.lottery_name}</TableCell>
                       <TableCell className="text-center">
-                        {lottery.code_serie}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {lottery.lottery_name}
-                      </TableCell>
-                      <TableCell className="text-center">
-                        {lottery.lottery_date
-                          ? format(
-                              new Date(lottery.lottery_date),
-                              "dd/MM/yyyy HH:mm"
-                            )
-                          : ""}
+                        {lottery.lottery_date ? format(new Date(lottery.lottery_date), "dd/MM/yyyy HH:mm") : ""}
                       </TableCell>
                       <TableCell className="text-center max-w-xs">
-                        <div
-                          className="truncate"
-                          title={stripHtmlTags(lottery.lottery_description)}
-                        >
+                        <div className="truncate" title={stripHtmlTags(lottery.lottery_description)}>
                           {stripHtmlTags(lottery.lottery_description)}
                         </div>
                       </TableCell>
@@ -324,20 +272,13 @@ export default function LotteryPage() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() =>
-                            handleViewPrizes(
-                              lottery.prizes,
-                              lottery.lottery_name
-                            )
-                          }
+                          onClick={() => handleViewPrizes(lottery.prizes, lottery.lottery_name)}
                           className="hover:bg-primary/10 hover:text-primary"
                         >
                           <Gift className="h-5 w-5 text-primary" />
                         </Button>
                       </TableCell>
-                      <TableCell className="text-center">
-                        {lottery.event_name}
-                      </TableCell>
+                      <TableCell className="text-center">{lottery.event_name}</TableCell>
                       <TableCell className="text-center">
                         <Badge
                           className={`${
@@ -358,28 +299,17 @@ export default function LotteryPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
                             <DropdownMenuItem>Editar</DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleViewParticipants(
-                                  lottery.id,
-                                  lottery.lottery_name
-                                )
-                              }
-                            >
+                            <DropdownMenuItem onClick={() => handleViewParticipants(lottery.id, lottery.lottery_name)}>
                               Participantes
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() =>
-                                navigate(`/sorteos/${lottery.id}/tickets`)
-                              }
-                            >
+                            <DropdownMenuItem onClick={() => navigate(`/sorteos/${lottery.id}/tickets`)}>
                               Ver tickets
                             </DropdownMenuItem>
-                            <DropdownMenuItem>Ganadores</DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => handleViewWinners(lottery)}>
+                              Ganadores
+                            </DropdownMenuItem>
                             {canDeleteLottery && (
-                              <DropdownMenuItem
-                                onClick={() => handleClickDelete(lottery.id)}
-                              >
+                              <DropdownMenuItem onClick={() => handleClickDelete(lottery.id)}>
                                 Eliminar
                               </DropdownMenuItem>
                             )}
@@ -399,11 +329,7 @@ export default function LotteryPage() {
             </Table>
           </div>
           <div className="mt-4 justify-between w-full flex ">
-            <Pagination
-              links={links}
-              meta={meta}
-              onPageChange={handlePageChange}
-            />
+            <Pagination links={links} meta={meta} onPageChange={handlePageChange} />
           </div>
 
           <DeleteDialog
@@ -425,8 +351,19 @@ export default function LotteryPage() {
             prizes={selectedPrizes}
             raffleName={selectedRaffleName}
           />
+
+          {selectedLottery && (
+            <ModalWinners
+              isOpen={isWinnersOpen}
+              onClose={handleCloseWinners}
+              prizes={selectedLottery.prizes}
+              prizesWinners={selectedLottery.prizes_winners} // Pasamos los ganadores existentes
+              raffleName={selectedRaffleName}
+              raffleId={selectedLottery.id}
+            />
+          )}
         </div>
       )}
     </Layout>
-  );
+  )
 }

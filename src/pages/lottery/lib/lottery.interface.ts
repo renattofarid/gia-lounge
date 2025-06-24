@@ -64,9 +64,9 @@ export interface ParticipantesCollection {
 }
 
 export interface ParticipantesItem {
-  person_id: number;
-  isFlagData: number;
-  textFlagData: string;
+  // person_id: number;
+  // isFlagData: number;
+  // textFlagData: string;
 
   id: number;
   username: string;
@@ -93,8 +93,9 @@ export interface Person {
 }
 
 export interface Ticket {
-    id_ticket: number;
-    code:      Code;
+    id_ticket:               number;
+    ticket_code_correlative: string;
+    code:                    Code;
 }
 
 export interface Code {

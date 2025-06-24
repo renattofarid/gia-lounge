@@ -27,7 +27,7 @@ export default function ModalTickets({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md rounded-2xl p-0 bg-[#DCDAE6]">
+      <DialogContent className="max-w-lg  rounded-2xl p-0 bg-[#DCDAE6]">
         <div className="relative">
           {/* Header */}
           <div className="p-6 pb-4 text-center relative">
@@ -43,7 +43,7 @@ export default function ModalTickets({
           </div>
 
           {/* Tickets List */}
-          <div className="px-6 pb-6 space-y-4 max-h-96 overflow-y-auto">
+          <div className="px-6 pb-6 space-y-4 max-h-[60vh] overflow-y-auto hiddenScroll">
             {participant.tickets.map((ticket, index) => (
               <div
                 key={ticket.id_ticket}
