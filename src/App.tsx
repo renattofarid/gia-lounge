@@ -19,6 +19,7 @@ import ConfigurationPage from "./pages/configuracion/components/configurationPag
 import GalleryPage from "./pages/gallery/components/galleryPage";
 import LotteryPage from "./pages/lottery/components/lotteryPage";
 import TicketsPage from "./pages/ticket/components/ticketPage";
+import ProductPage from "./pages/products/components/productoPage";
 // import LotteryPage from "./pages/lottery/components/lotteryPage";
 
 // const isAuthenticated = () => {
@@ -188,6 +189,17 @@ export default function App() {
             }
           />
           <Route path="/promociones" element={<PromocionesPage />} />
+          <Route
+            path="/productos"
+            element={
+              <ProtectedRoute
+                requiredPermission="Leer"
+                requiredType="Productos"
+              >
+                <ProductPage />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="/configuracion" element={<ConfigurationPage />} />
 

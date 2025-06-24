@@ -77,6 +77,11 @@ export default function PromocionesPage() {
     //   permission: { name: "Leer", type: "Evento" },
     // },
     { name: "Promociones", link: "/promociones" },
+    {
+      name: "Productos",
+      link: "/productos",
+      permission: { name: "Leer", type: "Productos" },
+    },
   ];
 
   const {
@@ -392,11 +397,11 @@ export default function PromocionesPage() {
                       <TableCell className="py-2 px-2 text-[13px] font-inter">
                         <div className="flex gap-2 items-center">
                           <CalendarIcon className="w-4 h-4" />
-                            {format(
+                          {format(
                             parseISO(promotion.date_start),
                             "dd/MM/yy  HH:mm",
                             { locale: es }
-                            )}
+                          )}
                         </div>
                       </TableCell>
                       <TableCell className="py-2 px-2 text-[13px] font-inter">
