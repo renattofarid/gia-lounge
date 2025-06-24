@@ -1,23 +1,36 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card } from "@/components/ui/card"
-import { Search, Loader2, Save, SaveAll } from "lucide-react"
-import type { Prize, ParticipantesItem, PrizesWinner } from "../lib/lottery.interface"
-import { assignWinners, getRaffleParticipants, type WinnerAssignmentData } from "../lib/lottery.actions"
-import { errorToast, successToast } from "@/lib/core.function"
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
+import { Search, Loader2, SaveAll } from "lucide-react";
+import type {
+  Prize,
+  ParticipantesItem,
+  PrizesWinner,
+} from "../lib/lottery.interface";
+import {
+  assignWinners,
+  getRaffleParticipants,
+  type WinnerAssignmentData,
+} from "../lib/lottery.actions";
+import { errorToast, successToast } from "@/lib/core.function";
 
 interface ModalWinnersProps {
-  isOpen: boolean
-  onClose: () => void
-  prizes: Prize[]
-  prizesWinners: PrizesWinner[]
-  raffleName: string
-  raffleId: number
+  isOpen: boolean;
+  onClose: () => void;
+  prizes: Prize[];
+  prizesWinners: PrizesWinner[];
+  raffleName: string;
+  raffleId: number;
 }
 
 export default function ModalWinners({
@@ -28,205 +41,240 @@ export default function ModalWinners({
   raffleName,
   raffleId,
 }: ModalWinnersProps) {
-  const [winners, setWinners] = useState<WinnerAssignmentData[]>([])
-  const [participants, setParticipants] = useState<ParticipantesItem[]>([])
-  const [loading, setLoading] = useState(false)
-  const [loadingParticipants, setLoadingParticipants] = useState(false)
-  const [savingIndividual, setSavingIndividual] = useState<number | null>(null)
+  const [winners, setWinners] = useState<WinnerAssignmentData[]>([]);
+  const [participants, setParticipants] = useState<ParticipantesItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingParticipants, setLoadingParticipants] = useState(false);
+  const [savingIndividual, setSavingIndividual] = useState<number | null>(null);
 
   useEffect(() => {
     if (prizes.length > 0) {
       const initialWinners = prizes.map((prize) => {
-        const existingWinner = prizesWinners.find((winner) => winner.prize_name === prize.name)
+        const existingWinner = prizesWinners.find(
+          (winner) => winner.prize_name === prize.name
+        );
         return {
           prizeId: prize.id,
           ticketCode: existingWinner?.code_correlative || "",
           winnerName: existingWinner?.winner_name || "",
-          participantId: undefined,
-        }
-      })
-      setWinners(initialWinners)
+          ticketId: undefined,
+        };
+      });
+      setWinners(initialWinners);
     }
-  }, [prizes, prizesWinners])
+  }, [prizes, prizesWinners]);
 
   useEffect(() => {
     if (isOpen && raffleId) {
-      loadParticipants()
+      loadParticipants();
     }
-  }, [isOpen, raffleId])
+  }, [isOpen, raffleId]);
 
   const loadParticipants = async () => {
-    setLoadingParticipants(true)
+    setLoadingParticipants(true);
     try {
-      const response = await getRaffleParticipants(raffleId)
-      setParticipants(response.data)
+      const response = await getRaffleParticipants(raffleId);
+      setParticipants(response.data);
     } catch (error) {
-      console.error("Error loading participants:", error)
-      errorToast("Error al cargar los participantes")
+      console.error("Error loading participants:", error);
+      errorToast("Error al cargar los participantes");
     } finally {
-      setLoadingParticipants(false)
+      setLoadingParticipants(false);
     }
-  }
-
-  const findParticipantByTicketCode = (ticketCode: string): ParticipantesItem | null => {
-    const inputCode = ticketCode.trim().toLowerCase()
-    if (!inputCode) return null
-
-    return (
-      participants.find((participant) =>
-        participant.tickets.some((ticket) => ticket.ticket_code_correlative.trim().toLowerCase() === inputCode),
-      ) || null
-    )
-  }
+  };
 
   const handleTicketCodeChange = (prizeIndex: number, ticketCode: string) => {
-    const updatedWinners = [...winners]
-    updatedWinners[prizeIndex].ticketCode = ticketCode
+    const updatedWinners = [...winners];
+    updatedWinners[prizeIndex].ticketCode = ticketCode;
 
-    const participant = findParticipantByTicketCode(ticketCode)
-    if (participant) {
-      const fullName =
-        `${participant.person.names} ${participant.person.father_surname} ${participant.person.mother_surname}`.trim()
-      updatedWinners[prizeIndex].winnerName = fullName
-      updatedWinners[prizeIndex].participantId = participant.id
-    } else {
-      if (!updatedWinners[prizeIndex].winnerName) {
-        updatedWinners[prizeIndex].winnerName = ""
+    const inputCode = ticketCode.trim().toLowerCase();
+    let foundParticipant: ParticipantesItem | null = null;
+    let foundTicketId: number | undefined = undefined;
+
+    for (const participant of participants) {
+      const matchingTicket = participant.tickets.find(
+        (ticket) =>
+          ticket.ticket_code_correlative.trim().toLowerCase() === inputCode
+      );
+      if (matchingTicket) {
+        foundParticipant = participant;
+        foundTicketId = matchingTicket.id_ticket;
+        break;
       }
-      updatedWinners[prizeIndex].participantId = undefined
     }
 
-    setWinners(updatedWinners)
-  }
+    if (foundParticipant && foundTicketId) {
+      const fullName =
+        `${foundParticipant.person.names} ${foundParticipant.person.father_surname} ${foundParticipant.person.mother_surname}`.trim();
+      updatedWinners[prizeIndex].winnerName = fullName;
+      updatedWinners[prizeIndex].ticketId = foundTicketId;
+    } else {
+      if (!hasExistingWinner(prizes[prizeIndex].name)) {
+        updatedWinners[prizeIndex].winnerName = "";
+      }
+      updatedWinners[prizeIndex].ticketId = undefined;
+    }
+
+    setWinners(updatedWinners);
+  };
 
   const handleNameChange = (prizeIndex: number, name: string) => {
-    const updatedWinners = [...winners]
-    updatedWinners[prizeIndex].winnerName = name
-    setWinners(updatedWinners)
-  }
+    const updatedWinners = [...winners];
+    updatedWinners[prizeIndex].winnerName = name;
+    setWinners(updatedWinners);
+  };
 
   const hasExistingWinner = (prizeName: string): boolean => {
-    return prizesWinners.some((winner) => winner.prize_name === prizeName && winner.winner_name)
-  }
+    return prizesWinners.some(
+      (winner) => winner.prize_name === prizeName && winner.winner_name
+    );
+  };
 
-  const isWinnerValid = (winner: WinnerAssignmentData | undefined): boolean => {
-    if (!winner) return false
-    return winner.ticketCode.trim() !== "" && winner.winnerName.trim() !== ""
-  }
+  const isWinnerValid = (winner: WinnerAssignmentData): boolean => {
+    return (
+      winner.ticketCode.trim() !== "" &&
+      winner.winnerName.trim() !== "" &&
+      winner.ticketId !== undefined
+    );
+  };
 
   const isFormValid = () => {
-    return winners.every((winner) => isWinnerValid(winner))
-  }
+    return winners.every((winner) => isWinnerValid(winner));
+  };
 
   const hasDuplicateTickets = () => {
-    const ticketCodes = winners.map((w) => w.ticketCode.trim()).filter((code) => code !== "")
-    return ticketCodes.length !== new Set(ticketCodes).size
-  }
+    const ticketCodes = winners
+      .map((w) => w.ticketCode.trim())
+      .filter((code) => code !== "");
+    return ticketCodes.length !== new Set(ticketCodes).size;
+  };
 
   const isDuplicateTicketForWinner = (winnerIndex: number): boolean => {
-    const currentWinner = winners[winnerIndex]
-    const currentTicket = currentWinner?.ticketCode?.trim()
-    if (!currentTicket) return false
+    const currentWinner = winners[winnerIndex];
+    const currentTicket = currentWinner?.ticketCode?.trim();
+    if (!currentTicket) return false;
 
-    return winners.some((w, i) => i !== winnerIndex && w?.ticketCode?.trim() === currentTicket)
-  }
+    return winners.some(
+      (w, i) => i !== winnerIndex && w?.ticketCode?.trim() === currentTicket
+    );
+  };
 
   const handleSaveIndividualWinner = async (prizeIndex: number) => {
-    const winner = winners[prizeIndex]
+    const winner = winners[prizeIndex];
 
     if (!isWinnerValid(winner)) {
-      errorToast("Por favor, complete todos los campos requeridos para este premio.")
-      return
+      errorToast(
+        "Por favor, ingrese un código de ticket válido que exista en el sistema."
+      );
+      return;
     }
 
     if (isDuplicateTicketForWinner(prizeIndex)) {
-      errorToast("Este código de ticket ya está asignado a otro premio.")
-      return
+      errorToast("Este código de ticket ya está asignado a otro premio.");
+      return;
     }
 
-    setSavingIndividual(prizeIndex)
+    setSavingIndividual(prizeIndex);
     try {
-      const response = await assignWinners(raffleId, [winner])
+      const response = await assignWinners(raffleId, [winner]);
 
-      if (response.success) {
-        successToast(`Ganador del premio "${prizes[prizeIndex].name}" guardado correctamente`)
-        // Actualizar el estado local para reflejar que este ganador ya existe
-        const updatedPrizesWinners = [...prizesWinners]
-        const existingIndex = updatedPrizesWinners.findIndex((pw) => pw.prize_name === prizes[prizeIndex].name)
-
-        if (existingIndex >= 0) {
-          updatedPrizesWinners[existingIndex] = {
-            ...updatedPrizesWinners[existingIndex],
-            code_correlative: winner.ticketCode,
-            winner_name: winner.winnerName,
-          }
-        } else {
-          updatedPrizesWinners.push({
-            prize_name: prizes[prizeIndex].name,
-            code_correlative: winner.ticketCode,
-            winner_name: winner.winnerName,
-          })
-        }
+      if (Array.isArray(response.data)) {
+        successToast(
+          `Ganador del premio "${prizes[prizeIndex].name}" guardado correctamente`
+        );
+        setWinners([...winners]);
       } else {
-        errorToast(response.message || "Error al asignar ganador")
+        errorToast("Error al asignar ganador");
       }
     } catch (error: any) {
-      console.error("Error saving individual winner:", error)
-      const errorMessage = error.response?.data?.message || "Error al asignar ganador"
-      errorToast(errorMessage)
+      console.error("Error saving individual winner:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al asignar ganador";
+      errorToast(errorMessage);
     } finally {
-      setSavingIndividual(null)
+      setSavingIndividual(null);
     }
-  }
+  };
 
   const handleSaveAllWinners = async () => {
     if (!isFormValid()) {
-      errorToast("Por favor, complete todos los campos requeridos.")
-      return
+      errorToast(
+        "Por favor, complete todos los campos con códigos de ticket válidos."
+      );
+      return;
     }
 
     if (hasDuplicateTickets()) {
-      errorToast("No se pueden asignar códigos de ticket duplicados.")
-      return
+      errorToast("No se pueden asignar códigos de ticket duplicados.");
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await assignWinners(raffleId, winners)
+      const validWinners = winners.filter((winner) => isWinnerValid(winner));
 
-      if (response.success) {
-        successToast("Todos los ganadores asignados correctamente")
-        onClose()
+      if (validWinners.length === 0) {
+        errorToast("No hay ganadores válidos para guardar.");
+        return;
+      }
+
+      const response = await assignWinners(raffleId, validWinners);
+
+      if (Array.isArray(response.data)) {
+        successToast("Todos los ganadores asignados correctamente");
+        onClose();
       } else {
-        errorToast(response.message || "Error al asignar ganadores")
+        errorToast("Error al asignar ganadores");
       }
     } catch (error: any) {
-      console.error("Error saving winners:", error)
-      const errorMessage = error.response?.data?.message || "Error al asignar ganadores"
-      errorToast(errorMessage)
+      console.error("Error saving winners:", error);
+      const errorMessage =
+        error.response?.data?.message || "Error al asignar ganadores";
+      errorToast(errorMessage);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleClose = () => {
-    setWinners([])
-    setParticipants([])
-    onClose()
-  }
+    setWinners([]);
+    setParticipants([]);
+    onClose();
+  };
 
   const getUnsavedWinnersCount = () => {
     return winners.filter((winner, index) => {
-      if (!winner || index >= prizes.length) return false
-      return isWinnerValid(winner) && !hasExistingWinner(prizes[index].name)
-    }).length
-  }
+      if (!winner || index >= prizes.length) return false;
+      const hasExistingWinner = prizesWinners.some(
+        (pw) => pw.prize_name === prizes[index].name && pw.winner_name
+      );
+      return isWinnerValid(winner) && !hasExistingWinner;
+    }).length;
+  };
+
+  const getParticipantByTicketCode = (
+    ticketCode: string
+  ): ParticipantesItem | null => {
+    const inputCode = ticketCode.trim().toLowerCase();
+    if (!inputCode) return null;
+
+    return (
+      participants.find((participant) =>
+        participant.tickets.some(
+          (ticket) =>
+            ticket.ticket_code_correlative.trim().toLowerCase() === inputCode
+        )
+      ) || null
+    );
+  };
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto hiddenScroll">
         <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle className="text-xl font-bold font-poppins">Ganadores - {raffleName}</DialogTitle>
+          <DialogTitle className="text-xl font-bold font-poppins">
+            Ganadores - {raffleName}
+          </DialogTitle>
         </DialogHeader>
 
         {loadingParticipants ? (
@@ -236,17 +284,28 @@ export default function ModalWinners({
         ) : (
           <div className="space-y-6 py-4">
             {prizes.map((prize, index) => {
-              const winner = winners[index] // Puede ser undefined
-              const participant = winner?.participantId ? participants.find((p) => p.id === winner.participantId) : null
-              const hasWinner = hasExistingWinner(prize.name)
-              const isDuplicateTicket = isDuplicateTicketForWinner(index)
-              const canSaveIndividual = winner && isWinnerValid(winner) && !isDuplicateTicket && !hasWinner
+              const winner = winners[index];
+              const participant = getParticipantByTicketCode(
+                winner?.ticketCode || ""
+              );
+              const hasWinner = hasExistingWinner(prize.name);
+              const isDuplicateTicket = isDuplicateTicketForWinner(index);
+              const canSaveIndividual =
+                winner &&
+                isWinnerValid(winner) &&
+                !isDuplicateTicket &&
+                !hasWinner;
 
               return (
-                <Card key={prize.id} className="bg-secondary p-4 rounded-xl shadow-sm">
+                <Card
+                  key={prize.id}
+                  className="bg-secondary p-4 rounded-xl shadow-sm"
+                >
                   <div className="flex items-start justify-between mb-4">
                     <div className="space-y-1">
-                      <h4 className="text-base font-semibold font-poppins">{prize.name}</h4>
+                      <h4 className="text-base font-semibold font-poppins">
+                        {prize.name}
+                      </h4>
                       {hasWinner && (
                         <p className="text-sm text-green-700 font-poopins flex items-center gap-1">
                           ✓ Sorteo realizado
@@ -271,9 +330,7 @@ export default function ModalWinners({
                               Guardando...
                             </>
                           ) : (
-                            <>
-                              Guardar
-                            </>
+                            <>Guardar</>
                           )}
                         </Button>
                       )}
@@ -282,7 +339,10 @@ export default function ModalWinners({
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor={`ticket-${prize.id}`} className="text-sm font-poopins">
+                      <Label
+                        htmlFor={`ticket-${prize.id}`}
+                        className="text-sm font-poopins"
+                      >
                         Código ticket ganador
                       </Label>
                       <div className="relative">
@@ -292,37 +352,61 @@ export default function ModalWinners({
                           disabled={hasWinner}
                           placeholder="Ingrese código del ticket"
                           value={winner?.ticketCode || ""}
-                          onChange={(e) => handleTicketCodeChange(index, e.target.value)}
+                          onChange={(e) =>
+                            handleTicketCodeChange(index, e.target.value)
+                          }
                           className={`pr-10 font-inter ${
                             isDuplicateTicket
                               ? "border-red-500 bg-red-50"
                               : participant
-                                ? "border-green-500 bg-green-50"
-                                : ""
+                              ? "border-green-500 bg-green-50"
+                              : winner?.ticketCode && !participant
+                              ? "border-orange-500 bg-orange-50"
+                              : ""
                           }`}
                         />
                         <Search className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
                       </div>
-                      {isDuplicateTicket && <p className="text-xs text-red-700 font-inter">⚠ Código duplicado</p>}
-                      {participant && <p className="text-xs text-green-600 font-inter">✓ Participante encontrado</p>}
-                      {winner?.ticketCode && !participant && !isDuplicateTicket && !hasWinner && (
-                        <p className="text-xs text-orange-600 font-inter">⚠ Participante no encontrado</p>
+                      {isDuplicateTicket && (
+                        <p className="text-xs text-red-700 font-inter">
+                          ⚠ Código duplicado
+                        </p>
                       )}
+                      {participant && (
+                        <p className="text-xs text-green-600 font-inter">
+                          ✓ Participante encontrado
+                        </p>
+                      )}
+                      {winner?.ticketCode &&
+                        !participant &&
+                        !isDuplicateTicket &&
+                        !hasWinner && (
+                          <p className="text-xs text-orange-600 font-inter">
+                            ⚠ Código de ticket no válido
+                          </p>
+                        )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor={`name-${prize.id}`} className="text-sm font-poopins">
+                      <Label
+                        htmlFor={`name-${prize.id}`}
+                        className="text-sm font-poopins"
+                      >
                         Nombre del ganador
                       </Label>
                       <Input
                         id={`name-${prize.id}`}
                         type="text"
-                        disabled={hasWinner}
+                        disabled={hasWinner || !!participant}
                         placeholder="Nombre completo"
                         value={winner?.winnerName || ""}
-                        onChange={(e) => handleNameChange(index, e.target.value)}
+                        onChange={(e) =>
+                          handleNameChange(index, e.target.value)
+                        }
                         className={`font-inter text-sm ${
-                          participant || hasWinner ? "bg-green-50 border-green-200" : ""
+                          participant || hasWinner
+                            ? "bg-green-50 border-green-200"
+                            : ""
                         }`}
                       />
                       {participant && (
@@ -333,14 +417,16 @@ export default function ModalWinners({
                     </div>
                   </div>
                 </Card>
-              )
+              );
             })}
           </div>
         )}
 
         <div className="flex justify-between items-center pt-3 font-poopins text-sm border-t">
           <div className="text-sm text-gray-600">
-            {getUnsavedWinnersCount() > 0 && <span>{getUnsavedWinnersCount()} ganador(es) sin guardar</span>}
+            {getUnsavedWinnersCount() > 0 && (
+              <span>{getUnsavedWinnersCount()} ganador(es) sin guardar</span>
+            )}
           </div>
           <div className="flex gap-3">
             <Button
@@ -355,7 +441,11 @@ export default function ModalWinners({
               <Button
                 onClick={handleSaveAllWinners}
                 disabled={
-                  !isFormValid() || loading || hasDuplicateTickets() || loadingParticipants || savingIndividual !== null
+                  !isFormValid() ||
+                  loading ||
+                  hasDuplicateTickets() ||
+                  loadingParticipants ||
+                  savingIndividual !== null
                 }
                 className="bg-green-600 hover:bg-green-700"
               >
@@ -376,5 +466,5 @@ export default function ModalWinners({
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

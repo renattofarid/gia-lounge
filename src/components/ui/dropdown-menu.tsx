@@ -87,7 +87,7 @@ const DropdownMenuItem = React.forwardRef<
 
     // Ejecutar el onClick con un pequeño defer
     setTimeout(() => {
-      onClick?.(event);
+      onClick?.(event as React.MouseEvent<HTMLDivElement, MouseEvent>);
     }, 0);
   };
 

@@ -9,7 +9,12 @@ export interface getLotteryProps {
   companyId?: number
 }
 
-export const getRaffles = async ({ page, name, eventId, companyId }: getLotteryProps): Promise<LotteryCollection> => {
+export const getRaffles = async ({
+  page,
+  name,
+  eventId,
+  companyId,
+}: getLotteryProps): Promise<LotteryCollection> => {
   const config: AxiosRequestConfig = {
     params: {
       page,
@@ -31,28 +36,33 @@ export const createRaffle = async (data: FormData): Promise<LotteryCollection> =
   return response.data
 }
 
-// API para obtener los participantes del sorteo
-export const getRaffleParticipants = async (raffleId: number): Promise<ParticipantesCollection> => {
+export const getRaffleParticipants = async (
+  raffleId: number
+): Promise<ParticipantesCollection> => {
   const response = await api.get(`/lottery/${raffleId}/participants`)
   return response.data
 }
 
-// API para eliminar un sorteo
 export const deleteLottery = async (id: number) => {
   const response = await api.delete(`/lottery/${id}`)
   return response.data
 }
 
-// Interfaz para los datos de ganadores
+// Interfaz actualizada para incluir el ID real del ticket
 export interface WinnerAssignmentData {
   prizeId: number
   ticketCode: string
   winnerName: string
-  participantId?: number
+  ticketId?: number
 }
 
-export interface AssignWinnersRequest {
-  winners: WinnerAssignmentData[]
+export interface Assignment {
+  prize_id: number
+  lottery_ticket_id: number
+}
+
+export interface AssignmentsRequest {
+  assignments: Assignment[]
 }
 
 export interface AssignWinnersResponse {
@@ -61,19 +71,22 @@ export interface AssignWinnersResponse {
   data?: any
 }
 
-// API para asignar ganadores al sorteo
 export const assignWinners = async (
   lotteryId: number,
-  winnersData: WinnerAssignmentData[],
+  winnersData: WinnerAssignmentData[]
 ): Promise<AssignWinnersResponse> => {
-  const requestData: AssignWinnersRequest = {
-    winners: winnersData,
-  }
+  const assignments: Assignment[] = winnersData
+    .filter((w) => w.ticketId !== undefined)
+    .map((w) => ({
+      prize_id: w.prizeId,
+      lottery_ticket_id: w.ticketId!,
+    }))
 
-  const response = await api.post(`/lottery/${lotteryId}/assignWinners`, requestData, {
+  const response = await api.post(`/lottery/${lotteryId}/assignWinners`, { assignments }, {
     headers: {
       "Content-Type": "application/json",
     },
   })
+
   return response.data
 }
