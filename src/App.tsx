@@ -17,6 +17,8 @@ import HomePage from "./pages/home/components/Homepage";
 import PromocionesPage from "./pages/promotions/components/promotionPage";
 import ConfigurationPage from "./pages/configuracion/components/configurationPage";
 import GalleryPage from "./pages/gallery/components/galleryPage";
+import LotteryPage from "./pages/lottery/components/lotteryPage";
+import TicketsPage from "./pages/ticket/components/ticketPage";
 // import LotteryPage from "./pages/lottery/components/lotteryPage";
 
 // const isAuthenticated = () => {
@@ -137,14 +139,22 @@ export default function App() {
               </ProtectedRoute>
             }
           />
-          {/* <Route
-            path="/empresas/sorteos"
+          <Route
+            path="empresas/sorteos"
             element={
               <ProtectedRoute requiredPermission="Leer" requiredType="Sorteos">
                 <LotteryPage />
               </ProtectedRoute>
             }
-          /> */}
+          />
+          <Route
+            path="/sorteos/:lotteryId/tickets"
+            element={
+              <ProtectedRoute requiredPermission="Leer" requiredType="Tickets">
+                <TicketsPage />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/empresas/eventos/:companyId"
             element={

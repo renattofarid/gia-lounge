@@ -41,6 +41,7 @@ const EventSchema = z.object({
   company_id: z.number(),
   pricebox: z.string().optional(),
   pricetable: z.string().optional(),
+  entryprice: z.string().optional(),
 });
 
 interface AddEventProps {
@@ -63,12 +64,12 @@ export default function CreateEvent({
       company_id: companyId,
       pricebox: "",
       pricetable: "",
+      entryprice: "",
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { loading } = useEventStore();
-
 
   const { companies, loadCompanies } = useComapanyStore();
 
@@ -205,55 +206,76 @@ export default function CreateEvent({
                   )}
                 />
 
-                <div className="flex flex-col  justify-between sm:flex-row gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
                   <FormField
-                    control={form.control}
-                    name="pricebox"
-                    render={({ field }) => (
-                      <FormItem className="w-1/2">
-                        <FormLabel className="text-sm font-normal font-poopins">
-                          Precio del Box
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Precio del Box"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  control={form.control}
+                  name="pricebox"
+                  render={({ field }) => (
+                    <FormItem className="w-full sm:w-1/2">
+                    <FormLabel className="text-sm font-normal font-poopins">
+                      Precio del Box
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                      type="number"
+                      className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                      placeholder="Precio del Box"
+                      {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                  )}
                   />
 
                   <FormField
-                    control={form.control}
-                    name="pricetable"
-                    render={({ field }) => (
-                      <FormItem className="w-1/2">
-                        <FormLabel className="text-sm font-normal font-poopins">
-                          Precio de la Mesa
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Precio de la Mesa"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                  control={form.control}
+                  name="pricetable"
+                  render={({ field }) => (
+                    <FormItem className="w-full sm:w-1/2">
+                    <FormLabel className="text-sm font-normal font-poopins">
+                      Precio de la Mesa
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                      type="number"
+                      className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                      placeholder="Precio de la Mesa"
+                      {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                  )}
+                  />
+
+                  <FormField
+                  control={form.control}
+                  name="entryprice"
+                  render={({ field }) => (
+                    <FormItem className="w-full sm:w-1/2">
+                    <FormLabel className="text-sm font-normal font-poopins">
+                      Precio de Entrada
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                      type="number"
+                      className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                      placeholder="Precio de Entrada"
+                      {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                    </FormItem>
+                  )}
                   />
                 </div>
               </div>
             </div>
 
             {/* Botones en la parte inferior */}
-            <div className="mt-6 flex justify-end gap-2">
-              <DialogFooter>
+            <div className="mt-6 flex flex-row justify-end gap-2 flex-wrap">
+              <DialogFooter className="flex flex-row gap-2 w-full justify-end">
                 <Button
                   variant="outline"
                   type="button"

@@ -17,7 +17,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { errorToast, successToast } from "@/lib/core.function";
-import { Calendar, ImagePlus } from "lucide-react";
+import { ImagePlus } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -27,16 +27,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+// import { es } from "date-fns/locale";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
+// import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { createPromotion } from "../lib/promotion.actions";
 import { useProductStore } from "../lib/prodcut.store";
+import { DateTimePickerInline } from "@/components/DateTimePickerInline";
 
 const PromotionSchema = z.object({
   product_id: z.coerce.number().min(1, "Selecciona un producto"),
@@ -79,6 +80,8 @@ export default function CreatePromotion({ onClose }: AddPromotionProps) {
       title: "",
       stock: 0,
       precio: "",
+      date_start: new Date(),
+      date_end: new Date(),
       // status: "Activo",
       description: "",
       route: "",
@@ -100,10 +103,12 @@ export default function CreatePromotion({ onClose }: AddPromotionProps) {
   const onSubmit = async (data: PromotionFormValues) => {
     try {
       // Convertir fechas a formato string para la API
-      const formattedData = {
+      const formattedDate = format(data.date_start, "yyyy-MM-dd HH:mm:ss");
+      const formattedEndDate = format(data.date_end, "yyyy-MM-dd HH:mm:ss");
+      const payload = {
         ...data,
-        date_start: format(data.date_start, "yyyy-MM-dd"),
-        date_end: format(data.date_end, "yyyy-MM-dd"),
+        date_start: formattedDate,
+        date_end: formattedEndDate,
       };
 
       // Si hay un archivo, se podría subir aquí y obtener la URL
@@ -113,7 +118,7 @@ export default function CreatePromotion({ onClose }: AddPromotionProps) {
       }
 
       const formData = new FormData();
-      Object.entries(formattedData).forEach(([key, value]) => {
+      Object.entries(payload).forEach(([key, value]) => {
         if (value !== undefined && value !== null) {
           formData.append(key, value.toString());
         }
@@ -187,51 +192,12 @@ export default function CreatePromotion({ onClose }: AddPromotionProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-sm font-normal font-poopins">
-                        Fecha Inicio
+                        Seleccionar fecha de inicio y hora
                       </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              type="button" // Importante: tipo button para evitar envío del formulario
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal bg-secondary border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins",
-                                !field.value && "text-muted-foreground"
-                              )}
-                              onClick={(e) => {
-                                e.stopPropagation(); // Detener propagación
-                              }}
-                            >
-                              {field.value ? (
-                                format(field.value, "dd/MM/yyyy", {
-                                  locale: es,
-                                })
-                              ) : (
-                                <span>Seleccionar fecha</span>
-                              )}
-                              <Calendar className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto p-0"
-                          align="start"
-                          onOpenAutoFocus={(e) => e.preventDefault()} // Prevenir el enfoque automático
-                          onClick={(e) => e.stopPropagation()} // Detener propagación
-                        >
-                          <CalendarComponent
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                field.onChange(date);
-                              }
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <DateTimePickerInline
+                        value={field.value}
+                        onChange={(date) => form.setValue("date_start", date)}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}
@@ -243,51 +209,12 @@ export default function CreatePromotion({ onClose }: AddPromotionProps) {
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel className="text-sm font-normal font-poopins">
-                        Fecha Fin
+                        Seleccionar fecha de inicio y hora
                       </FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              type="button" // Importante: tipo button para evitar envío del formulario
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal bg-secondary border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins",
-                                !field.value && "text-muted-foreground"
-                              )}
-                              onClick={(e) => {
-                                e.stopPropagation(); // Detener propagación
-                              }}
-                            >
-                              {field.value ? (
-                                format(field.value, "dd/MM/yyyy", {
-                                  locale: es,
-                                })
-                              ) : (
-                                <span>Seleccionar fecha</span>
-                              )}
-                              <Calendar className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto p-0"
-                          align="start"
-                          onOpenAutoFocus={(e) => e.preventDefault()} // Prevenir el enfoque automático
-                          onClick={(e) => e.stopPropagation()} // Detener propagación
-                        >
-                          <CalendarComponent
-                            mode="single"
-                            selected={field.value}
-                            onSelect={(date) => {
-                              if (date) {
-                                field.onChange(date);
-                              }
-                            }}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                      <DateTimePickerInline
+                        value={field.value}
+                        onChange={(date) => form.setValue("date_end", date)}
+                      />
                       <FormMessage />
                     </FormItem>
                   )}

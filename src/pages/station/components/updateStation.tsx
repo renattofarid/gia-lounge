@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2, LoaderCircle } from "lucide-react";
+import { Loader2, LoaderCircle } from 'lucide-react';
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 
@@ -36,7 +36,9 @@ const StationSchema = z.object({
   status: z.string().nonempty(),
   route: z.string().optional(),
   price: z.string().optional(),
-  sort: z.number()
+  sort: z.number(),
+  price_unitario: z.string().optional(),
+  quantity_people: z.number().optional(),
 });
 
 interface UpdateStationProps {
@@ -64,8 +66,23 @@ export default function UpdateStation({
       environment_id: station.environment_id,
       price: station.price,
       sort: station.sort ?? 0,
+      price_unitario: station.price_unitario ?? "",
+      quantity_people: station.quantity_people ?? 0,
     },
   });
+
+  const watchType = form.watch("type");
+  const watchUnit = form.watch("price_unitario");
+  const watchQty = form.watch("quantity_people");
+
+  useEffect(() => {
+    if (watchType === "BOX") {
+      const unit = parseFloat(watchUnit || "0");
+      const qty = watchQty || 0;
+      const total = (unit * qty).toFixed(2);
+      form.setValue("price", total);
+    }
+  }, [watchUnit, watchQty, watchType, form]);
 
   // const handleFileChange = useCallback(
   //   (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,6 +116,8 @@ export default function UpdateStation({
         environment_id: Number(data.environment_id),
         price: data.price ?? "0",
         sort: data.sort,
+        price_unitario: data.price_unitario ?? "0",
+        quantity_people: data.quantity_people ?? 0,
         // route: file ?? undefined,
       };
       await updateStation(station.id, stantionData);
@@ -246,6 +265,54 @@ export default function UpdateStation({
                 )}
               />
 
+              {watchType === "BOX" && (
+                <div className="flex flex-row gap-4">
+                  <FormField
+                    control={form.control}
+                    name="price_unitario"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">
+                          Precio unitario
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Precio unitario"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="quantity_people"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-sm font-medium">
+                          Cantidad de personas
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={1}
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Cantidad"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              )}
+
               <FormField
                 control={form.control}
                 name="status"
@@ -339,7 +406,7 @@ export default function UpdateStation({
                       {previewImage && (
                         <div className="relative w-full flex justify-center items-center overflow-hidden rounded-full">
                           <img
-                            src={previewImage}
+                            src={previewImage || "/placeholder.svg"}
                             alt="Preview"
                             className="object-cover size-24 flex justify-center items-center rounded-full"
                           />

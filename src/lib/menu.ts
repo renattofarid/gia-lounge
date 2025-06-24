@@ -7,6 +7,7 @@ import {
   Drama,
   Calendar,
   Gift,
+  Percent,
 } from "lucide-react";
 
 export interface MenuItem {
@@ -25,7 +26,8 @@ export const iconComponents: Record<string, any> = {
   Drama,
   Calendar,
   Gift,
-  Settings2 
+  Settings2,
+  Percent
 };
 
 export const menuItems: MenuItem[] = [
@@ -47,16 +49,8 @@ export const menuItems: MenuItem[] = [
     icon: "User",
     link: "/usuarios",
     permissions: [
-      {
-        name: "Leer",
-        type: "Usuarios",
-        link: "/usuarios",
-      },
-      {
-        name: "Leer Roles",
-        type: "Roles",
-        link: "/usuarios/roles",
-      },
+      { name: "Leer", type: "Usuarios", link: "/usuarios" },
+      { name: "Leer Roles", type: "Roles", link: "/usuarios/roles" },
     ],
   },
   {
@@ -73,22 +67,22 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 6,
-    name: "Reservas",
-    icon: "Calendar",
-    link: "/",
+    name: "Sorteos",
+    icon: "Gift",
+    link: "/empresas/sorteos",
   },
   {
     id: 7,
-    name: "Sorteos",
-    icon: "Gift",
+    name: "Promociones",
+    icon: "Percent", 
     link: "/promociones",
   },
   {
-    id:8,
-    name: "Configuracion",
+    id: 8,
+    name: "Configuración",
     icon: "Settings2",
     link: "/configuracion",
-  }
+  },
 ];
 
 export const USER_TYPE = "Usuarios";

@@ -93,6 +93,16 @@ export default function EventPage() {
         link: "/empresas/eventos",
       },
     },
+    {
+      name: "Sorteos",
+      link: "/empresas/sorteos",
+      permission: {
+        name: "Leer",
+        type: "Lotería",
+        link: "/empresas/sorteos",
+      },
+    }
+    
   ];
 
   const { companyId } = useComapanyStore();
