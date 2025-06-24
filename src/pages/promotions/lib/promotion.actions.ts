@@ -1,7 +1,6 @@
 import { api } from "@/lib/config";
 import { AxiosRequestConfig } from "axios";
 import { PromotionCollection } from "./promotions.interface";
-import { Links, Meta } from "@/lib/global.interface";
 
 export interface getPromotionProps {
   page: number;
@@ -62,23 +61,23 @@ export const deletePromotion = async (id: number) => {
   return response.data;
 };
 
-export const getProducts = async (): Promise<PromotionCollection> => {
-  const config: AxiosRequestConfig = {};
-  const response = await api.get(`/product`, config);
-  return response.data;
-};
+// export const getProducts = async (): Promise<PromotionCollection> => {
+//   const config: AxiosRequestConfig = {};
+//   const response = await api.get(`/product`, config);
+//   return response.data;
+// };
 
-export interface ProductCollection {
-  data: Product[];
-  links: Links;
-  meta: Meta;
-}
+// export interface ProductCollection {
+//   data: Product[];
+//   links: Links;
+//   meta: Meta;
+// }
 
-export interface Product {
-  id: number;
-  name: string;
-  description: string;
-  precio: string;
-  status: string;
-  route: string;
-}
+// export interface Product {
+//   id: number;
+//   name: string;
+//   description: string;
+//   precio: string;
+//   status: string;
+//   route: string;
+// }

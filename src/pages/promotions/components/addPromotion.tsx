@@ -36,8 +36,8 @@ import { format } from "date-fns";
 // import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { createPromotion } from "../lib/promotion.actions";
-import { useProductStore } from "../lib/prodcut.store";
 import { DateTimePickerInline } from "@/components/DateTimePickerInline";
+import { useProductStore } from "@/pages/products/lib/prodcut.store";
 
 const PromotionSchema = z.object({
   product_id: z.coerce.number().min(1, "Selecciona un producto"),
