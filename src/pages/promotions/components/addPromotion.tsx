@@ -52,7 +52,8 @@ const PromotionSchema = z.object({
   stock: z.coerce.number().min(0, "El stock debe ser mayor o igual a 0"),
   precio: z.string().nonempty("El precio es requerido"),
   // status: z.string().nonempty("El estado es requerido"),
-  description: z.string().nonempty("La descripción es requerida"),
+  // description: z.string().nonempty("La descripción es requerida"),
+  description: z.string().optional(),
   route: z.string().optional(),
 });
 

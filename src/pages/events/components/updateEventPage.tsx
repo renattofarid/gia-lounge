@@ -42,6 +42,7 @@ const EventSchema = z.object({
   company_id: z.number(),
   pricebox: z.string().optional(),
   pricetable: z.string().optional(),
+  price_entry: z.string().optional(),
 });
 
 interface UpdateEventProps {
@@ -64,6 +65,7 @@ export default function UpdateEvent({
       company_id: event.company_id,
       pricebox: event.pricebox || "",
       pricetable: event.pricetable || "",
+      price_entry: event.price_entry || "",
     },
   });
 
@@ -241,6 +243,27 @@ export default function UpdateEvent({
                             type="number"
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Precio de la Mesa"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="price_entry"
+                    render={({ field }) => (
+                      <FormItem className="w-full sm:w-1/2">
+                        <FormLabel className="text-sm font-normal font-poopins">
+                          Precio de Entrada
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Precio de Entrada"
                             {...field}
                           />
                         </FormControl>

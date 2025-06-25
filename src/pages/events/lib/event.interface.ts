@@ -20,5 +20,5 @@ export interface EventItem {
   company: CompanyItem;
   pricebox?:  string;
   pricetable?: string;
-  entryprice?: string;
+  price_entry?: string;
 }
