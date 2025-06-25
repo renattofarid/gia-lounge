@@ -44,13 +44,13 @@ import { usePromotionStore } from "../lib/promotions.store";
 import type { PromotionItem } from "../lib/promotions.interface";
 import { deletePromotion } from "../lib/promotion.actions";
 import CreatePromotion from "./addPromotion";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import UpdatePromotion from "./updatePromotion";
 
@@ -76,12 +76,13 @@ export default function PromocionesPage() {
     //   link: "/empresas/eventos",
     //   permission: { name: "Leer", type: "Evento" },
     // },
-    { name: "Promociones", link: "/promociones" },
     {
       name: "Productos",
       link: "/productos",
       permission: { name: "Leer", type: "Productos" },
     },
+    { name: "Promociones", link: "/promociones" },
+    
   ];
 
   const {
@@ -140,10 +141,10 @@ export default function PromocionesPage() {
     loadPromotions(1);
   };
 
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value === "all" ? undefined : value);
-    loadPromotions(1);
-  };
+  // const handleStatusChange = (value: string) => {
+  //   setStatusFilter(value === "all" ? undefined : value);
+  //   loadPromotions(1);
+  // };
 
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
@@ -195,39 +196,39 @@ export default function PromocionesPage() {
             </h2>
             <div className="w-full max-w-4xl mx-auto mb-2 relative">
               <div className="pb-4 overflow-x-scroll transparentScroll">
-                <div className="flex gap-4 px-2">
-                  {promotionsWeek.length > 0 ? (
-                    promotionsWeek.map((promotion) => (
-                      <div
-                        key={promotion.id}
-                        className="bg-white rounded-lg overflow-hidden shadow-sm transition-transform hover:shadow-md hover:scale-[1.02] flex-shrink-0 w-40 h-48"
-                      >
-                        <div className="relative">
-                          <img
-                            src={promotion.route || "/placeholder.svg"}
-                            alt={promotion.name}
-                            className="w-full h-24 object-cover"
-                          />
-                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-                            s/.{promotion.precio}
-                          </div>
-                        </div>
-                        <div className="p-3">
-                          <p className="font-medium text-sm truncate">
-                            {promotion.name}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            {promotion.status}
-                          </p>
-                        </div>
-                      </div>
-                    ))
-                  ) : (
-                    <div className="w-full text-center py-4 text-gray-500">
-                      No hay promociones para esta semana
+              <div className="flex gap-4 px-2">
+                {promotionsWeek.length > 0 ? (
+                promotionsWeek.slice(0, 5).map((promotion) => (
+                  <div
+                  key={promotion.id}
+                  className="bg-white rounded-lg overflow-hidden shadow-sm transition-transform hover:shadow-md hover:scale-[1.02] flex-shrink-0 w-40 h-48"
+                  >
+                  <div className="relative">
+                    <img
+                    src={promotion.route || "/placeholder.svg"}
+                    alt={promotion.name}
+                    className="w-full h-24 object-cover"
+                    />
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+                    s/.{promotion.precio}
                     </div>
-                  )}
+                  </div>
+                  <div className="p-3">
+                    <p className="font-medium text-sm truncate">
+                    {promotion.name}
+                    </p>
+                    <p className="text-xs text-gray-500">
+                    {promotion.status}
+                    </p>
+                  </div>
+                  </div>
+                ))
+                ) : (
+                <div className="w-full text-center py-4 text-gray-500">
+                  No hay promociones para esta semana
                 </div>
+                )}
+              </div>
               </div>
             </div>
           </div>
@@ -309,7 +310,7 @@ export default function PromocionesPage() {
           </div>
           <div className="w-full flex justify-end mb-4">
             <div className="flex gap-2 w-full">
-              <Select
+              {/* <Select
                 value={statusFilter || "all"}
                 onValueChange={handleStatusChange}
               >
@@ -321,10 +322,10 @@ export default function PromocionesPage() {
                 </SelectTrigger>
                 <SelectContent className="md:w-[180px]  text-sidebar-accent-foreground">
                   <SelectItem value="all">Todos los estados</SelectItem>
-                  <SelectItem value="active">Activo</SelectItem>
+                  <SelectItem value="Activo">Activo</SelectItem>
                   <SelectItem value="inactive">Inactivo</SelectItem>
                 </SelectContent>
-              </Select>
+              </Select> */}
 
               <Popover>
                 <PopoverTrigger asChild>

@@ -85,7 +85,7 @@ export default function ProductPage() {
   const handleUpdateClose = () => {
     setIsUpdateDialogOpen(false);
     loadProducts(1);
-  }
+  };
   const handleDelete = async () => {
     try {
       await deleteProduct(idDeleteSelected);
@@ -103,12 +103,12 @@ export default function ProductPage() {
   };
 
   const options = [
-    { name: "Promociones", link: "/promociones" },
     {
       name: "Productos",
       link: "/productos",
       permission: { name: "Leer", type: "Productos" },
     },
+    { name: "Promociones", link: "/promociones" },
   ];
 
   return (

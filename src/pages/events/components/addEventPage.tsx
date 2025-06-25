@@ -41,7 +41,7 @@ const EventSchema = z.object({
   company_id: z.number(),
   pricebox: z.string().optional(),
   pricetable: z.string().optional(),
-  entryprice: z.string().optional(),
+  price_entry: z.string().optional(),
 });
 
 interface AddEventProps {
@@ -64,7 +64,7 @@ export default function CreateEvent({
       company_id: companyId,
       pricebox: "",
       pricetable: "",
-      entryprice: "",
+      price_entry: "",
     },
   });
 
@@ -251,7 +251,7 @@ export default function CreateEvent({
 
                   <FormField
                   control={form.control}
-                  name="entryprice"
+                  name="price_entry"
                   render={({ field }) => (
                     <FormItem className="w-full sm:w-1/2">
                     <FormLabel className="text-sm font-normal font-poopins">
