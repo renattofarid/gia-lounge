@@ -46,7 +46,7 @@ export interface PrizesWinner {
 
 export interface LotteryByEvent {
   id: number;
-  price_factor_consumo: string;
+  price_factor_consumo?: string;
   lottery_id: number;
   event_id: number;
 }

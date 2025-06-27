@@ -30,7 +30,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import DeleteDialog from "@/components/delete-dialog";
 import { errorToast, successToast } from "@/lib/core.function";
-import { format, parse, parseISO, startOfDay } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import {
   Popover,
@@ -82,7 +82,6 @@ export default function PromocionesPage() {
       permission: { name: "Leer", type: "Productos" },
     },
     { name: "Promociones", link: "/promociones" },
-    
   ];
 
   const {
@@ -196,39 +195,39 @@ export default function PromocionesPage() {
             </h2>
             <div className="w-full max-w-4xl mx-auto mb-2 relative">
               <div className="pb-4 overflow-x-scroll transparentScroll">
-              <div className="flex gap-4 px-2">
-                {promotionsWeek.length > 0 ? (
-                promotionsWeek.slice(0, 5).map((promotion) => (
-                  <div
-                  key={promotion.id}
-                  className="bg-white rounded-lg overflow-hidden shadow-sm transition-transform hover:shadow-md hover:scale-[1.02] flex-shrink-0 w-40 h-48"
-                  >
-                  <div className="relative">
-                    <img
-                    src={promotion.route || "/placeholder.svg"}
-                    alt={promotion.name}
-                    className="w-full h-24 object-cover"
-                    />
-                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
-                    s/.{promotion.precio}
+                <div className="flex gap-4 px-2">
+                  {promotionsWeek.length > 0 ? (
+                    promotionsWeek.slice(0, 5).map((promotion) => (
+                      <div
+                        key={promotion.id}
+                        className="bg-white rounded-lg overflow-hidden shadow-sm transition-transform hover:shadow-md hover:scale-[1.02] flex-shrink-0 w-40 h-48"
+                      >
+                        <div className="relative">
+                          <img
+                            src={promotion.route || "/placeholder.svg"}
+                            alt={promotion.name}
+                            className="w-full h-24 object-cover"
+                          />
+                          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+                            s/.{promotion.precio}
+                          </div>
+                        </div>
+                        <div className="p-3">
+                          <p className="font-medium text-sm truncate">
+                            {promotion.name}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {promotion.status}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="w-full text-center py-4 text-gray-500">
+                      No hay promociones para esta semana
                     </div>
-                  </div>
-                  <div className="p-3">
-                    <p className="font-medium text-sm truncate">
-                    {promotion.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                    {promotion.status}
-                    </p>
-                  </div>
-                  </div>
-                ))
-                ) : (
-                <div className="w-full text-center py-4 text-gray-500">
-                  No hay promociones para esta semana
+                  )}
                 </div>
-                )}
-              </div>
               </div>
             </div>
           </div>
@@ -420,7 +419,8 @@ export default function PromocionesPage() {
                       </TableCell>
 
                       <TableCell className="font-inter py-2 px-2 text-[13px] text-center">
-                        <Badge
+                        {promotion.status}
+                        {/* <Badge
                           className={`${
                             promotion.stock_restante > 0 &&
                             startOfDay(
@@ -440,7 +440,7 @@ export default function PromocionesPage() {
                           ) >= startOfDay(new Date())
                             ? "Activo"
                             : "Inactivo"}
-                        </Badge>
+                        </Badge> */}
                       </TableCell>
                       <TableCell className="font-inter py-2 px-2 text-sm">
                         <DropdownMenu>

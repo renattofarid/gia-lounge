@@ -63,9 +63,13 @@ const LotterySchema = z.object({
     }),
   price_factor_consumo: z
     .string()
-    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-      message: "El factor de consumo debe ser un número mayor a 0",
-    }),
+    .optional()
+    .refine(
+      (val) => val === undefined || val === "" || (!isNaN(Number(val)) && Number(val) > 0),
+      {
+        message: "El factor de consumo debe ser un número mayor a 0",
+      }
+    ),
   number_of_prizes: z
     .string()
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
@@ -104,7 +108,7 @@ export default function CreateLotteryForm({
 
   const { companies, loadCompanies } = useComapanyStore();
 
-  const { events } = useEventStore();
+  const { events, loadEvents } = useEventStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
   const [selectedCompanyId, setSelectedCompanyId] = useState<number>(
@@ -117,6 +121,7 @@ export default function CreateLotteryForm({
 
   useEffect(() => {
     loadCompanies(1);
+    loadEvents(1, undefined, undefined, selectedCompanyId);
   }, []);
 
   const handleMainImageChange = (
@@ -143,7 +148,9 @@ export default function CreateLotteryForm({
       formData.append("lottery_date", formattedDate);
       formData.append("event_id", data.event_id.toString());
       formData.append("lottery_price", data.lottery_price);
-      formData.append("price_factor_consumo", data.price_factor_consumo);
+      if (data.price_factor_consumo) {
+        formData.append("price_factor_consumo", data.price_factor_consumo);
+      }
       formData.append("number_of_prizes", data.number_of_prizes);
       if (data.main_image) {
         formData.append("main_image", data.main_image);
@@ -244,9 +251,14 @@ export default function CreateLotteryForm({
                             Seleccionar evento
                           </SelectItem>
                           {events
-                            .filter((event) => event.company_id === selectedCompanyId)
+                            .filter(
+                              (event) => event.company_id === selectedCompanyId
+                            )
                             .map((event) => (
-                              <SelectItem key={event.id} value={event.id.toString()}>
+                              <SelectItem
+                                key={event.id}
+                                value={event.id.toString()}
+                              >
                                 {event.name}
                               </SelectItem>
                             ))}

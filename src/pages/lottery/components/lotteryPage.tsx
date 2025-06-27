@@ -298,7 +298,7 @@ export default function LotteryPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent>
-                            <DropdownMenuItem>Editar</DropdownMenuItem>
+                            {/* <DropdownMenuItem>Editar</DropdownMenuItem> */}
                             <DropdownMenuItem onClick={() => handleViewParticipants(lottery.id, lottery.lottery_name)}>
                               Participantes
                             </DropdownMenuItem>

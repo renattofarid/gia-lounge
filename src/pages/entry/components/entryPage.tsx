@@ -10,6 +10,7 @@ import {
   // MoreVertical,
   Loader2,
   AlertCircle,
+  QrCode,
 } from "lucide-react";
 // import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
@@ -29,6 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Pagination } from "@/components/pagination";
+import { Button } from "@/components/ui/button";
+import { useEventStore } from "@/pages/events/lib/event.store";
 // import { useAuthStore } from "@/pages/auth/lib/auth.store";
 // import { useHasPermission } from "@/hooks/useHasPermission";
 
@@ -45,9 +48,12 @@ export function EntryPage() {
     meta,
     loading,
   } = useEntryStore();
+  const { events } = useEventStore();
   const [activeTab, setActiveTab] = useState("todas");
   // const [searchValue, setSearchValue] = useState("");
   const [isTabLoading, setIsTabLoading] = useState(false);
+
+  // Obtener el nombre del evento desde las entradas o mostrar vacío si no hay entradas
 
   const options = [
     {
@@ -61,6 +67,14 @@ export function EntryPage() {
       permission: { name: "Leer", type: "Entrada" },
     },
   ];
+
+  const handleDownloadQR = (qrcodePath: string) => {
+    if (!qrcodePath) {
+      alert("No hay código QR disponible para esta entrada");
+      return;
+    }
+    window.open(qrcodePath, "_blank");
+  };
 
   const filteredOptions = options;
 
@@ -100,7 +114,7 @@ export function EntryPage() {
   const tabs = [
     { value: "todas", label: "Todas las entradas" },
     { value: "validas", label: "Validas entradas" },
-    { value: "reporte", label: "Reporte de entradas" },
+    // { value: "reporte", label: "Reporte de entradas" },
   ];
 
   // Filtrar entradas validadas (con estado de pago "Pendiente")
@@ -119,9 +133,26 @@ export function EntryPage() {
           <div className="w-full max-w-screen-2xl mx-auto space-y-6">
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4">
               <div className="space-y-1">
+                {/* <div className="flex items-center gap-3 mb-2">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleGoBack}
+                    className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Regresar
+                  </Button>
+                </div> */}
                 <h1 className="text-2xl font-bold font-inter">Entradas</h1>
-                <p className="text-[13px] text-muted-foreground font-inter">
+                <p className="text-base text-muted-foreground font-inter">
                   Listado de entradas por evento.
+                </p>
+                <p className="text-base text-primary font-inter">
+                  {(Array.isArray(events) &&
+                    events.find((event) => event.id === Number(eventId))
+                      ?.name) ||
+                    "Evento no encontrado"}
                 </p>
               </div>
             </div>
@@ -167,6 +198,9 @@ export function EntryPage() {
                                 </TableHead>
                                 <TableHead className="font-inter text-[15px] text-center py-2 px-1">
                                   Estado de ingreso
+                                </TableHead>
+                                <TableHead className="font-inter text-[15px] text-center py-2 px-1">
+                                  Código QR
                                 </TableHead>
                                 <TableHead className="py-2 px-1 w-[100px]"></TableHead>
                               </TableRow>
@@ -222,28 +256,44 @@ export function EntryPage() {
                                         {entry.status_entry}
                                       </span>
                                     </TableCell>
-                                    {/* <TableCell className="py-2 px-1">
-                                      <div className="flex items-center justify-end gap-2">
-                                        <Button variant="ghost" size="icon">
-                                          <Download className="h-4 w-4" />
-                                        </Button>
-                                        <DropdownMenu>
-                                          <DropdownMenuTrigger asChild>
-                                            <Button variant="ghost" size="icon">
-                                              <MoreVertical className="h-4 w-4" />
+                                    <TableCell className="py-2 px-1 text-center">
+                                      <div className="flex items-center justify-center gap-2">
+                                        {entry.code?.qrcode_path ? (
+                                          <>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() =>
+                                                handleDownloadQR(
+                                                  entry.code.qrcode_path
+                                                )
+                                              }
+                                              className="flex items-center gap-1"
+                                            >
+                                              <QrCode className="h-7 w-7" />
                                             </Button>
-                                          </DropdownMenuTrigger>
-                                          <DropdownMenuContent align="end">
-                                            <DropdownMenuItem>
-                                              Ver detalles
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem>
+                                            {/* <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              onClick={() =>
+                                                handleDownloadQR(
+                                                  entry.code.qrcode_path,
+                                                  entry.person.names
+                                                )
+                                              }
+                                              className="flex items-center gap-1"
+                                            >
+                                              <Download className="h-4 w-4" />
                                               Descargar
-                                            </DropdownMenuItem>
-                                          </DropdownMenuContent>
-                                        </DropdownMenu>
+                                            </Button> */}
+                                          </>
+                                        ) : (
+                                          <span className="text-muted-foreground text-xs">
+                                            No disponible
+                                          </span>
+                                        )}
                                       </div>
-                                    </TableCell> */}
+                                    </TableCell>
                                   </TableRow>
                                 ))
                               )}
@@ -270,6 +320,9 @@ export function EntryPage() {
                               <TableHead className="font-inter text-[15px] text-center py-2 px-1">
                                 Estado de ingreso
                               </TableHead>
+                              <TableHead className="font-inter text-[15px] text-center py-2 px-1">
+                                Código QR
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -287,7 +340,10 @@ export function EntryPage() {
                               </TableRow>
                             ) : (
                               validatedEntries.map((entry) => (
-                                <TableRow key={entry.id} className="text-nowrap">
+                                <TableRow
+                                  key={entry.id}
+                                  className="text-nowrap"
+                                >
                                   <TableCell className="py-2 px-1 font-inter text-[13px] text-center">
                                     {entry.person.names}
                                   </TableCell>
@@ -317,6 +373,44 @@ export function EntryPage() {
                                     >
                                       {entry.status_entry}
                                     </span>
+                                  </TableCell>
+                                  <TableCell className="py-2 px-1 text-center">
+                                    <div className="flex items-center justify-center gap-2">
+                                      {entry.code?.qrcode_path ? (
+                                        <>
+                                          <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            onClick={() =>
+                                              handleDownloadQR(
+                                                entry.code.qrcode_path
+                                              )
+                                            }
+                                            className="flex items-center gap-1"
+                                          >
+                                            <QrCode className="h-8 w-8" />
+                                          </Button>
+                                          {/* <Button
+                                            variant="ghost"
+                                            size="sm"
+                                            onClick={() =>
+                                              handleDownloadQR(
+                                                entry.code.qrcode_path,
+                                                entry.person.names
+                                              )
+                                            }
+                                            className="flex items-center gap-1"
+                                          >
+                                            <Download className="h-4 w-4" />
+                                            Descargar
+                                          </Button> */}
+                                        </>
+                                      ) : (
+                                        <span className="text-muted-foreground text-xs">
+                                          No disponible
+                                        </span>
+                                      )}
+                                    </div>
                                   </TableCell>
                                 </TableRow>
                               ))
