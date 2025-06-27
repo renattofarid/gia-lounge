@@ -21,6 +21,25 @@ export interface EntryItem {
     person:         Person;
     event_id:       number;
     event:          EventItem;
+    code:           Code;
+}
+
+export interface Code {
+    id:                number;
+    description:       string;
+    barcode_path:      null;
+    qrcode_path:       string;
+    reservation_id:    null;
+    lottery_ticket_id: null;
+    entry_id:          number;
+    created_at:        Date;
+    total_scans:       number;
+    first_ok_scan:     FirstOkScan | null;
+    last_scan_attempt: FirstOkScan | null;
+}
+
+export interface FirstOkScan {
+    created_at: string;
 }
 
 // export interface Event {
