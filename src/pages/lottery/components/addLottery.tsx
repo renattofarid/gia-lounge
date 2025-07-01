@@ -41,6 +41,9 @@ import RichTextEditor from "@/components/RichTextEditor";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { createRaffle } from "../lib/lottery.actions";
+import { LotteryItem } from "../lib/lottery.interface";
+import { useLotteryStore } from "../lib/lottery.store";
+import { errorToast, successToast } from "@/lib/core.function";
 
 const PrizeSchema = z.object({
   name: z.string().nonempty("El nombre del premio es obligatorio"),
@@ -65,7 +68,10 @@ const LotterySchema = z.object({
     .string()
     .optional()
     .refine(
-      (val) => val === undefined || val === "" || (!isNaN(Number(val)) && Number(val) > 0),
+      (val) =>
+        val === undefined ||
+        val === "" ||
+        (!isNaN(Number(val)) && Number(val) > 0),
       {
         message: "El factor de consumo debe ser un número mayor a 0",
       }
@@ -114,10 +120,7 @@ export default function CreateLotteryForm({
   const [selectedCompanyId, setSelectedCompanyId] = useState<number>(
     companyId || 0
   );
-
-  // useEffect(() => {
-  //   loadEvents(1, undefined, undefined, selectedCompanyId);
-  // }, [loadEvents, selectedCompanyId]);
+  const { raffles } = useLotteryStore() as { raffles: LotteryItem[] };
 
   useEffect(() => {
     loadCompanies(1);
@@ -169,8 +172,13 @@ export default function CreateLotteryForm({
       setIsSubmitting(true);
       // Llama a la API createRaffle
       await createRaffle(formData);
+      // Si la creación es exitosa, muestra un mensaje de éxito
+      successToast("Sorteo creada exitosamente");
       onClose();
     } catch (error) {
+      errorToast(
+        "Ocurrió un error al crear el sorteo. Por favor, inténtalo de nuevo."
+      );
       console.error("Error capturado:", error);
     } finally {
       setIsSubmitting(false);
@@ -224,50 +232,56 @@ export default function CreateLotteryForm({
                 <FormField
                   control={form.control}
                   name="event_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-normal font-poopins">
-                        Evento
-                      </FormLabel>
-                      <Select
-                        value={field.value?.toString() || "0"}
-                        onValueChange={(value) => {
-                          const eventId = Number(value);
-                          field.onChange(eventId);
-                        }}
-                        disabled={selectedCompanyId === 0}
-                      >
-                        <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                          <SelectValue
-                            placeholder={
-                              selectedCompanyId === 0
-                                ? "Primero selecciona una compañía"
-                                : "Seleccionar evento"
-                            }
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="0" className="hidden">
-                            Seleccionar evento
-                          </SelectItem>
-                          {events
-                            .filter(
-                              (event) => event.company_id === selectedCompanyId
-                            )
-                            .map((event) => (
-                              <SelectItem
-                                key={event.id}
-                                value={event.id.toString()}
-                              >
-                                {event.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    // Mostrar solo eventos que NO tienen un sorteo asociado
+                    const eventosDisponibles = events.filter(
+                      (event) =>
+                        event.company_id === selectedCompanyId &&
+                        !raffles.some(
+                          (raffle: LotteryItem) => raffle.event_id === event.id
+                        )
+                    );
+
+                    return (
+                      <FormItem>
+                        <FormLabel className="text-sm font-normal font-poopins">
+                          Evento
+                        </FormLabel>
+                        <Select
+                          value={field.value ? field.value.toString() : ""}
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                          disabled={selectedCompanyId === 0}
+                        >
+                          <SelectTrigger className="border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                            <SelectValue placeholder="Seleccionar evento" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {eventosDisponibles.length === 0 ? (
+                              <div className="p-2 text-sm text-muted-foreground">
+                                Todos los eventos de esta compañía ya tienen un
+                                sorteo asignado.
+                              </div>
+                            ) : (
+                              eventosDisponibles.map((event) => (
+                                <SelectItem
+                                  key={event.id}
+                                  value={event.id.toString()}
+                                >
+                                  {event.name}
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
                 />
+
                 {/* Nombre */}
                 <FormField
                   control={form.control}
