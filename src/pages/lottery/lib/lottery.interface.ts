@@ -17,31 +17,34 @@ export interface LotteryCollection {
 }
 
 export interface LotteryItem {
-   id:                    number;
-    code_serie:            string;
-    lottery_name:          string;
-    lottery_description:   string;
-    lottery_date:          Date;
-    lottery_price:         string;
-    lottery_by_event:      LotteryByEvent;
-    status:                string;
-    route:                 null | string;
-    company_id:            number;
-    company_business_name: string;
-    user_created_id:       number;
-    user_created_name:     string;
-    event_id:              number;
-    event_name:            string;
-    created_at:            Date;
-    updated_at:            Date;
-    prizes:                Prize[];
-    prizes_winners:        PrizesWinner[];
+  id: number;
+  code_serie: string;
+  lottery_name: string;
+  lottery_description: string;
+  lottery_date: Date;
+  lottery_price: string;
+  lottery_by_event: LotteryByEvent;
+  status: string;
+  price_factor_consumo?: string;
+  route: null | string;
+  company_id: number;
+  company_business_name: string;
+  user_created_id: number;
+  user_created_name: string;
+  event_id: number;
+  event_name: string;
+  main_image_url?: string; // <--- aquí
+
+  created_at: Date;
+  updated_at: Date;
+  prizes: Prize[];
+  prizes_winners: PrizesWinner[];
 }
 
 export interface PrizesWinner {
-    prize_name:       string;
-    code_correlative: null | string;
-    winner_name:      null | string;
+  prize_name: string;
+  code_correlative: null | string;
+  winner_name: null | string;
 }
 
 export interface LotteryByEvent {
@@ -93,21 +96,21 @@ export interface Person {
 }
 
 export interface Ticket {
-    id_ticket:               number;
-    ticket_code_correlative: string;
-    code:                    Code;
+  id_ticket: number;
+  ticket_code_correlative: string;
+  code: Code;
 }
 
 export interface Code {
-    id:                number;
-    description:       string;
-    barcode_path:      string;
-    qrcode_path:       null;
-    reservation_id:    null;
-    lottery_ticket_id: number;
-    entry_id:          null;
-    created_at:        Date;
-    total_scans:       number;
-    first_ok_scan:     null;
-    last_scan_attempt: null;
+  id: number;
+  description: string;
+  barcode_path: string;
+  qrcode_path: null;
+  reservation_id: null;
+  lottery_ticket_id: number;
+  entry_id: null;
+  created_at: Date;
+  total_scans: number;
+  first_ok_scan: null;
+  last_scan_attempt: null;
 }

@@ -26,6 +26,7 @@ import { useEffect, useState } from "react";
 import { useUserStore } from "@/pages/users/lib/user.store";
 import { createTicket } from "../lib/ticket.action";
 import { errorToast, successToast } from "@/lib/core.function";
+import { Input } from "@/components/ui/input";
 
 const TicketSchema = z.object({
   quantity: z.number().min(1, "Debe seleccionar al menos una cantidad"),
@@ -55,7 +56,7 @@ export default function CreateTicketForm({
     resolver: zodResolver(TicketSchema),
     defaultValues: {
       user_owner_id: 0,
-      quantity: 1, // Valor por defecto para la cantidad
+      quantity: 1,
     },
   });
 
@@ -76,14 +77,16 @@ export default function CreateTicketForm({
       };
 
       const response = await createTicket(ticketData);
+      console.log("Ticket created successfully:", response);
 
       // Detectar si es arreglo
-      const tickets = Array.isArray(response) ? response : [response];
+      // const tickets = Array.isArray(response) ? response : [response];
 
       successToast(
-        `Se crearon ${tickets.length} ticket${
-          tickets.length > 1 ? "s" : ""
-        } exitosamente`
+        // `Se crearon ${tickets.length} ticket${
+        //   tickets.length > 1 ? "s" : ""
+        // } exitosamente`
+        "Ticket/s creado exitosamente"
       );
 
       onClose();
@@ -172,10 +175,15 @@ export default function CreateTicketForm({
                     Cantidad de tickets
                   </FormLabel>
                   <FormControl>
-                    <input
+                    <Input
                       type="number"
                       min={1}
-                      {...field}
+                      value={field.value}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const numeric = val === "" ? "" : Number(val);
+                        field.onChange(numeric);
+                      }}
                       className="w-full border border-[#9A7FFF] rounded-md px-3 py-2 font-poopins text-sm focus:outline-none focus:ring-2 focus:ring-[#9A7FFF]"
                     />
                   </FormControl>
