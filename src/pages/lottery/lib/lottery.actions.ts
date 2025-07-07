@@ -36,6 +36,19 @@ export const createRaffle = async (data: FormData): Promise<LotteryCollection> =
   return response.data
 }
 
+// api ara eidtar 
+export const updateRaffle = async (
+  raffleId: number,
+  data: FormData
+): Promise<LotteryCollection> => {
+  const response = await api.post(`/lottery/${raffleId}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  })
+  return response.data
+}
+
 export const getRaffleParticipants = async (
   raffleId: number
 ): Promise<ParticipantesCollection> => {
@@ -47,6 +60,28 @@ export const deleteLottery = async (id: number) => {
   const response = await api.delete(`/lottery/${id}`)
   return response.data
 }
+
+
+
+// Ruta para exportar los ganadores a Excel
+
+export const exportLotteryToExcel = async (lotteryId: number): Promise<void> => {
+  const response = await api.post(`/lottery/${lotteryId}/export_excel`, null, {
+    responseType: "blob",
+  });
+
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  const fileName = `Sorteo_${lotteryId}_tickets.xlsx`;
+  link.setAttribute("download", fileName);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
+
+
 
 // Interfaz actualizada para incluir el ID real del ticket
 export interface WinnerAssignmentData {

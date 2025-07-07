@@ -81,7 +81,7 @@ const LotterySchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "La cantidad de premios debe ser un número mayor a 0",
     }),
-  main_image: z.any().optional(),
+  route: z.any().optional(),
   prizes: z.array(PrizeSchema).optional(),
 });
 
@@ -104,7 +104,7 @@ export default function CreateLotteryForm({
       lottery_price: "",
       price_factor_consumo: "",
       number_of_prizes: "",
-      main_image: null,
+      route: null,
       prizes: [],
       company_id: companyId,
     },
@@ -137,7 +137,7 @@ export default function CreateLotteryForm({
         setMainImagePreview(e.target?.result as string);
       };
       reader.readAsDataURL(file);
-      form.setValue("main_image", file);
+      form.setValue("route", file);
     }
   };
 
@@ -155,8 +155,8 @@ export default function CreateLotteryForm({
         formData.append("price_factor_consumo", data.price_factor_consumo);
       }
       formData.append("number_of_prizes", data.number_of_prizes);
-      if (data.main_image) {
-        formData.append("main_image", data.main_image);
+      if (data.route) {
+        formData.append("route", data.route);
       }
       if (data.prizes && Array.isArray(data.prizes)) {
         data.prizes.forEach((prize, idx) => {
@@ -175,11 +175,10 @@ export default function CreateLotteryForm({
       // Si la creación es exitosa, muestra un mensaje de éxito
       successToast("Sorteo creada exitosamente");
       onClose();
-    } catch (error) {
-      errorToast(
-        "Ocurrió un error al crear el sorteo. Por favor, inténtalo de nuevo."
-      );
-      console.error("Error capturado:", error);
+    } catch (error: any) {
+     console.error("Error capturado:", error); 
+      const errorMessage = error?.response?.data?.message || "Ocurrió un error al guardar el sorteo";
+      errorToast(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -321,7 +320,7 @@ export default function CreateLotteryForm({
 
               <FormField
                 control={form.control}
-                name="main_image"
+                name="route"
                 render={() => (
                   <FormItem>
                     <FormLabel className="font-poopins text-sm">
