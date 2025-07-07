@@ -17,28 +17,28 @@ export interface LotteryCollection {
 }
 
 export interface LotteryItem {
-  id: number;
-  code_serie: string;
-  lottery_name: string;
-  lottery_description: string;
-  lottery_date: Date;
-  lottery_price: string;
-  lottery_by_event: LotteryByEvent;
-  status: string;
-  price_factor_consumo?: string;
-  route: null | string;
-  company_id: number;
-  company_business_name: string;
-  user_created_id: number;
-  user_created_name: string;
-  event_id: number;
-  event_name: string;
-  main_image_url?: string; // <--- aquí
+   id:                    number;
+    code_serie:            string;
+    lottery_name:          string;
+    lottery_description:   string;
+    lottery_date:          Date;
+    lottery_price:         string;
+    lottery_by_event:      LotteryByEvent;
+    status:                string;
+    route:                 null | string;
+    company_id:            number;
+    company_business_name: string;
+    user_created_id:       number;
+    user_created_name:     string;
+    event_id:              number;
+    event_name:            string;
+    created_at:            Date;
+    updated_at:            Date;
+    prizes:                Prize[];
+    prizes_winners:        PrizesWinner[];
 
-  created_at: Date;
-  updated_at: Date;
-  prizes: Prize[];
-  prizes_winners: PrizesWinner[];
+
+  
 }
 
 export interface PrizesWinner {
