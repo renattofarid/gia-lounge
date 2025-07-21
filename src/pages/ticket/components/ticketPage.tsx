@@ -223,7 +223,7 @@ export default function TicketsPage() {
               <h1 className="text-xl font-bold font-poppins">
                 Lista de Tickets del sorteo:{" "}
                 {currentLottery?.lottery_name || `#${isNaN(id) ? "N/A" : id}`}
-                { " - " + currentLottery?.event_name}
+                {" - " + currentLottery?.event_name}
               </h1>
               <p className="text-gray-500 text-base font-inter">
                 Gestionar los tickets del sorteo seleccionado.
@@ -231,8 +231,15 @@ export default function TicketsPage() {
             </div>
 
             {/* Botón agregar */}
+            {isDialogOpen && (
+              <div className="fixed inset-0 z-40 bg-black/70"></div>
+            )}
             {canCreateTicket && currentLottery && (
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <Dialog
+                modal={false}
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+              >
                 <DialogTrigger asChild>
                   <Button
                     className="bg-violet-500 hover:bg-violet-600 font-inter"

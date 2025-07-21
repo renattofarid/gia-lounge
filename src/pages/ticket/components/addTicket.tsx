@@ -13,13 +13,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DialogFooter } from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
 import { Loader2 } from "lucide-react";
 
 import { useEffect, useState } from "react";
@@ -27,6 +27,7 @@ import { useUserStore } from "@/pages/users/lib/user.store";
 import { createTicket } from "../lib/ticket.action";
 import { errorToast, successToast } from "@/lib/core.function";
 import { Input } from "@/components/ui/input";
+import { FormSelect } from "@/components/FormSelect";
 
 const TicketSchema = z.object({
   quantity: z.number().min(1, "Debe seleccionar al menos una cantidad"),
@@ -66,6 +67,11 @@ export default function CreateTicketForm({
   useEffect(() => {
     loadUsers(1);
   }, [loadUsers]);
+
+  const userOptions = users.map((user) => ({
+    label: `${user.name} ${user.person.father_surname} ${user.person.mother_surname}`,
+    value: user.id.toString(), 
+  }));
 
   const handleFormSubmit = async (data: z.infer<typeof TicketSchema>) => {
     try {
@@ -128,7 +134,15 @@ export default function CreateTicketForm({
       <div className="bg-secondary p-5 rounded-md">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-            <FormField
+            <FormSelect
+              name="user_owner_id"
+              label="Usuarios"
+              placeholder="Seleccionar usuario"
+              options={userOptions}
+              control={form.control}
+            />
+
+            {/* <FormField
               control={form.control}
               name="user_owner_id"
               render={({ field }) => (
@@ -165,7 +179,7 @@ export default function CreateTicketForm({
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
             <FormField
               control={form.control}
               name="quantity"
