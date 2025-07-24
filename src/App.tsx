@@ -165,6 +165,15 @@ export default function App() {
             }
           />
           <Route
+            path="/eventos/reservas"
+            element={
+              <ProtectedRoute requiredPermission="Leer" requiredType="Reservas">
+                <ReservationsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
             path="/eventos/reservas/:eventId"
             element={
               <ProtectedRoute requiredPermission="Leer" requiredType="Reservas">
