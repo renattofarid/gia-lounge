@@ -390,43 +390,46 @@ export default function EventPage() {
                           {event.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="font-inter er py-2 px-2 text-sm">
+
+                      <TableCell className="font-inter py-2 px-2 text-sm">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="bg-transparent hover:bg-gray-100"
+                              className="bg-transparent hover:bg-gray-100 "
                             >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent className="w-48">
-                            {canUpdateEvent && (
-                              <DropdownMenuItem
-                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => handleClickUpdate(event)}
-                              >
-                                <span className="font-inter">Editar</span>
-                              </DropdownMenuItem>
+                          <DropdownMenuContent className="w-32">
+                            {event.is_daily_event === "0" && (
+                              <>
+                                {canUpdateEvent && (
+                                  <DropdownMenuItem
+                                    className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                    onClick={() => handleClickUpdate(event)}
+                                  >
+                                    <span className="font-inter">Editar</span>
+                                  </DropdownMenuItem>
+                                )}
+
+                                {canDeleteEvent && (
+                                  <DropdownMenuItem
+                                    onClick={() => handleClickDelete(event.id)}
+                                    className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
+                                  >
+                                    <span>Eliminar</span>
+                                  </DropdownMenuItem>
+                                )}
+                              </>
                             )}
 
-                            {canDeleteEvent && (
-                              <DropdownMenuItem
-                                onClick={() => handleClickDelete(event.id)}
-                                className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
-                              >
-                                <span>Eliminar</span>
-                              </DropdownMenuItem>
-                            )}
-
-                            {/* Detalles opción con submenú */}
                             <DropdownMenuSub>
                               <DropdownMenuSubTrigger className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer">
                                 <span>Detalles</span>
                               </DropdownMenuSubTrigger>
                               <DropdownMenuSubContent className="w-48">
-                                {/* Subopciones dentro de Detalles */}
                                 <DropdownMenuItem
                                   className="flex items-center space-x-2 hover:bg-gray-100 cursor-pointer"
                                   onClick={() =>

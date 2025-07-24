@@ -42,7 +42,7 @@ import { updateRaffle } from "../lib/lottery.actions";
 const PrizeSchema = z.object({
   name: z.string().nonempty("El nombre del premio es obligatorio"),
   description: z.string().nonempty("La descripción del premio es obligatoria"),
-  route: z.any().optional(),
+  route: z.union([z.instanceof(File), z.string(), z.null()]).optional(),
 });
 
 const LotterySchema = z.object({
