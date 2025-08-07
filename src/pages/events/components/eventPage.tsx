@@ -313,10 +313,10 @@ export default function EventPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
-                    Fecha
+                    Nombre del Evento
                   </TableHead>
                   <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
-                    Nombre del Evento
+                    Fecha
                   </TableHead>
                   <TableHead className="font-inter text-[15px] text-foreground text-center p-2">
                     Comentario
@@ -333,6 +333,19 @@ export default function EventPage() {
                 {filteredEvents.length > 0 ? (
                   filteredEvents.map((event) => (
                     <TableRow key={event.id} className="text-nowrap">
+                      <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
+                        <div className="flex items-center gap-2 justify-start">
+                          {event.route && (
+                            <img
+                              src={event.route}
+                              alt={event.name}
+                              className="w-10 h-10 rounded-md object-cover"
+                            />
+                          )}
+                          <span className="text-left">{event.name}</span>
+                        </div>
+                      </TableCell>
+
                       <TableCell className="text-center py-2 px-2 text-[13px] font-inter">
                         <div className="flex gap-2 justify-center items-center">
                           <CalendarIcon className="w-5 h-5" />
@@ -345,9 +358,7 @@ export default function EventPage() {
                           )}
                         </div>
                       </TableCell>
-                      <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
-                        {event.name}
-                      </TableCell>
+
                       <TableCell className="font-inter text-center py-2 px-2 text-[13px]">
                         {event.comment}
                       </TableCell>

@@ -36,6 +36,7 @@ import { Upload, ImageIcon, X } from "lucide-react";
 
 const GallerySchema = z.object({
   company_id: z.string().nonempty("El ID de la empresa es obligatorio"),
+  route_drive: z.string().url("Debe ser una URL válida"),
   images: z
     .array(
       z.object({
@@ -68,6 +69,7 @@ export default function CreateGalleryPage({ onClose }: AddGalleryProps) {
     resolver: zodResolver(GallerySchema),
     defaultValues: {
       company_id: "",
+      route_drive: "",
       images: [],
     },
   });
@@ -118,6 +120,7 @@ export default function CreateGalleryPage({ onClose }: AddGalleryProps) {
       setIsSubmitting(true);
       const formData = new FormData();
       formData.append("company_id", data.company_id.toString());
+      formData.append("route_drive", data.route_drive);
 
       data.images.forEach((image, index) => {
         formData.append(`images[${index}][name]`, image.name);
@@ -152,7 +155,7 @@ export default function CreateGalleryPage({ onClose }: AddGalleryProps) {
       <div className="flex flex-col">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleFormSubmit)}>
-            <div className="w-full rounded-lg bg-[#f8f5ff] p-4 text-sm mb-4">
+            <div className="w-full rounded-lg bg-[#f8f5ff] p-4 text-sm mb-4 space-y-3">
               <FormField
                 control={form.control}
                 name="company_id"
@@ -181,6 +184,25 @@ export default function CreateGalleryPage({ onClose }: AddGalleryProps) {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="route_drive"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-inter">
+                      Link del Álbum
+                    </FormLabel>
+                    <FormControl>
+                      <Input
+                        className="border-[#9A7FFF]"
+                        placeholder="https://drive.google.com/..."
+                        {...field}
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
