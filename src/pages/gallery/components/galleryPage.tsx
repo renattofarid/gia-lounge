@@ -10,7 +10,16 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, MoreVertical, Plus, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, FolderOpen } from 'lucide-react';
+import {
+  Loader2,
+  MoreVertical,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
+  FolderOpen,
+} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -59,7 +68,7 @@ export default function GalleryPage() {
   const canUpdateGallery = true;
   const canDeleteGallery = true;
 
-  const { gallery, loadGallerys, loading} = useGalleryStore();
+  const { gallery, loadGallerys, loading } = useGalleryStore();
   const { companies, loadCompanies } = useComapanyStore();
 
   // STATE
@@ -67,7 +76,9 @@ export default function GalleryPage() {
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isAlbumModalOpen, setIsAlbumModalOpen] = useState(false);
-  const [gallerySelected, setGallerySelected] = useState<GalleryItem | null>(null);
+  const [gallerySelected, setGallerySelected] = useState<GalleryItem | null>(
+    null
+  );
   const [previewImage, setPreviewImage] = useState<string>("");
   const [search] = useState("");
   const [idSelected, setIdSelected] = useState(0);
@@ -75,10 +86,13 @@ export default function GalleryPage() {
   const [albumImages, setAlbumImages] = useState<GalleryItem[]>([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
-  const [expandedCompanies, setExpandedCompanies] = useState<Record<string, boolean>>({});
+  const [expandedCompanies, setExpandedCompanies] = useState<
+    Record<string, boolean>
+  >({});
   const [selectedAlbum, setSelectedAlbum] = useState<AlbumGroup | null>(null);
 
-  const stateSelectedCompany = selectedCompanyId === "all" ? undefined : Number(selectedCompanyId);
+  const stateSelectedCompany =
+    selectedCompanyId === "all" ? undefined : Number(selectedCompanyId);
 
   useEffect(() => {
     loadCompanies(1);
@@ -132,7 +146,8 @@ export default function GalleryPage() {
     if (direction === "next") {
       newIndex = (currentImageIndex + 1) % albumImages.length;
     } else {
-      newIndex = (currentImageIndex - 1 + albumImages.length) % albumImages.length;
+      newIndex =
+        (currentImageIndex - 1 + albumImages.length) % albumImages.length;
     }
 
     setCurrentImageIndex(newIndex);
@@ -154,7 +169,8 @@ export default function GalleryPage() {
       item.name_image.toLowerCase().includes(search.toLowerCase()) ||
       item.company_name.toLowerCase().includes(search.toLowerCase());
     const matchesCompany =
-      selectedCompanyId === "all" || item.company_id.toString() === selectedCompanyId;
+      selectedCompanyId === "all" ||
+      item.company_id.toString() === selectedCompanyId;
     return matchesSearch && matchesCompany;
   });
 
@@ -206,7 +222,8 @@ export default function GalleryPage() {
             <div className="w-full sm:w-auto">
               <h1 className="text-2xl font-bold font-inter">Galería</h1>
               <p className="text-gray-500 font-inter text-sm">
-                Gestionar todas las imágenes de la galería organizadas por álbumes
+                Gestionar todas las imágenes de la galería organizadas por
+                álbumes
               </p>
             </div>
             <div className="flex flex-col sm:flex-row w-full sm:w-auto gap-2 sm:space-x-3">
@@ -227,7 +244,10 @@ export default function GalleryPage() {
                 </SelectContent>
               </Select>
               {canCreateGallery && (
-                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <Dialog
+                  open={isAddDialogOpen}
+                  onOpenChange={setIsAddDialogOpen}
+                >
                   <DialogTrigger asChild>
                     <Button className="bg-violet-500 hover:bg-violet-600 font-inter w-full sm:w-auto">
                       <Plus className="h-4 w-4 mr-2" />
@@ -236,7 +256,9 @@ export default function GalleryPage() {
                   </DialogTrigger>
                   <DialogContent className="max-w-xl p-6">
                     <DialogHeader>
-                      <DialogTitle className="font-inter">Agregar Imágenes</DialogTitle>
+                      <DialogTitle className="font-inter">
+                        Agregar Imágenes
+                      </DialogTitle>
                       <DialogDescription>
                         Sube nuevas imágenes a la galería
                       </DialogDescription>
@@ -269,7 +291,7 @@ export default function GalleryPage() {
                         </h2>
                       </div>
                       <Badge className="ml-2">
-                        {albums.length} álbum{albums.length !== 1 ? 'es' : ''}
+                        {albums.length} álbum{albums.length !== 1 ? "es" : ""}
                       </Badge>
                     </div>
 
@@ -287,22 +309,32 @@ export default function GalleryPage() {
                             <div className="aspect-square overflow-hidden bg-gray-100 relative">
                               {album.previewImages.length > 0 ? (
                                 <div className="w-full h-full grid grid-cols-2 gap-1 p-1">
-                                  {album.previewImages.slice(0, 4).map((image, index) => (
-                                    <div
-                                      key={image.id}
-                                      className={`overflow-hidden rounded ${
-                                        album.previewImages.length === 1 ? 'col-span-2 row-span-2' :
-                                        album.previewImages.length === 2 && index < 2 ? 'col-span-1 row-span-2' :
-                                        album.previewImages.length === 3 && index === 0 ? 'col-span-2' : ''
-                                      }`}
-                                    >
-                                      <img
-                                        src={image.route || "/placeholder.svg"}
-                                        alt={image.name_image}
-                                        className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                                      />
-                                    </div>
-                                  ))}
+                                  {album.previewImages
+                                    .slice(0, 4)
+                                    .map((image, index) => (
+                                      <div
+                                        key={image.id}
+                                        className={`overflow-hidden rounded ${
+                                          album.previewImages.length === 1
+                                            ? "col-span-2 row-span-2"
+                                            : album.previewImages.length ===
+                                                2 && index < 2
+                                            ? "col-span-1 row-span-2"
+                                            : album.previewImages.length ===
+                                                3 && index === 0
+                                            ? "col-span-2"
+                                            : ""
+                                        }`}
+                                      >
+                                        <img
+                                          src={
+                                            image.route || "/placeholder.svg"
+                                          }
+                                          alt={image.name_image}
+                                          className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                                        />
+                                      </div>
+                                    ))}
                                 </div>
                               ) : (
                                 <div className="flex flex-col items-center justify-center text-gray-400 h-full">
@@ -310,7 +342,7 @@ export default function GalleryPage() {
                                   <p>Álbum vacío</p>
                                 </div>
                               )}
-                              
+
                               {/* Overlay con información del álbum */}
                               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all flex items-center justify-center">
                                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
@@ -324,18 +356,46 @@ export default function GalleryPage() {
                               <div className="flex justify-between items-start">
                                 <div className="flex-1">
                                   <h3 className="font-medium text-sm truncate max-w-[180px] mb-1">
-                                    Álbum: {album.route_drive}
+                                    Álbum:{" "}
+                                    {album.route_drive ? "Drive" : "Sin enlace"}
                                   </h3>
-                                  <p className="text-xs text-gray-500">
-                                    {album.images.length} imagen{album.images.length !== 1 ? 'es' : ''}
-                                  </p>
+                                  <div className="flex space-x-3 items-center">
+                                    <p className="text-xs text-gray-500">
+                                      {album.images.length} imagen
+                                      {album.images.length !== 1 ? "es" : ""}
+                                    </p>
+
+                                    {album.route_drive && (
+                                      <div
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="text-xs"
+                                      >
+                                        <a
+                                          href={album.route_drive}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                        >
+                                          <Button variant="secondary" size="sm">
+                                            Visitar Link
+                                          </Button>
+                                        </a>
+                                      </div>
+                                    )}
+                                  </div>
                                 </div>
-                                
+
                                 {/* Menú de opciones del álbum */}
                                 {(canUpdateGallery || canDeleteGallery) && (
                                   <DropdownMenu>
-                                    <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                      <Button variant="ghost" size="icon" className="h-8 w-8">
+                                    <DropdownMenuTrigger
+                                      asChild
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        className="h-8 w-8"
+                                      >
                                         <MoreVertical className="h-4 w-4" />
                                       </Button>
                                     </DropdownMenuTrigger>
@@ -374,7 +434,9 @@ export default function GalleryPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-gray-500">
                 <FolderOpen className="h-16 w-16 mb-4 opacity-30" />
-                <p className="text-lg font-medium">No hay álbumes disponibles</p>
+                <p className="text-lg font-medium">
+                  No hay álbumes disponibles
+                </p>
                 <p className="text-sm">
                   {search
                     ? `No se encontraron resultados para "${search}"`
@@ -397,7 +459,8 @@ export default function GalleryPage() {
                       Álbum: {selectedAlbum?.route_drive}
                     </DialogTitle>
                     <DialogDescription>
-                      {albumImages.length} imagen{albumImages.length !== 1 ? 'es' : ''} en este álbum
+                      {albumImages.length} imagen
+                      {albumImages.length !== 1 ? "es" : ""} en este álbum
                     </DialogDescription>
                   </DialogHeader>
                 </div>
@@ -452,15 +515,17 @@ export default function GalleryPage() {
 
                   {/* Grid de todas las imágenes del álbum */}
                   <div className="p-4">
-                    <h4 className="font-medium mb-4">Todas las imágenes del álbum</h4>
+                    <h4 className="font-medium mb-4">
+                      Todas las imágenes del álbum
+                    </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
                       {albumImages.map((image, index) => (
                         <div
                           key={image.id}
                           className={`relative group overflow-hidden rounded-lg border cursor-pointer transition-all ${
                             currentImageIndex === index
-                              ? 'border-violet-500 ring-2 ring-violet-200'
-                              : 'border-gray-200 hover:border-gray-300'
+                              ? "border-violet-500 ring-2 ring-violet-200"
+                              : "border-gray-200 hover:border-gray-300"
                           }`}
                           onClick={() => {
                             setCurrentImageIndex(index);
@@ -475,13 +540,20 @@ export default function GalleryPage() {
                               className="w-full h-full object-cover transition-transform group-hover:scale-105"
                             />
                           </div>
-                          
+
                           {/* Opciones de imagen individual */}
                           {(canUpdateGallery || canDeleteGallery) && (
                             <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <DropdownMenu>
-                                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                                  <Button variant="ghost" size="icon" className="h-6 w-6 bg-black/50 hover:bg-black/70 text-white">
+                                <DropdownMenuTrigger
+                                  asChild
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6 bg-black/50 hover:bg-black/70 text-white"
+                                  >
                                     <MoreVertical className="h-3 w-3" />
                                   </Button>
                                 </DropdownMenuTrigger>
@@ -510,10 +582,15 @@ export default function GalleryPage() {
           </Dialog>
 
           {/* Diálogo para actualizar imagen */}
-          <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
+          <Dialog
+            open={isUpdateDialogOpen}
+            onOpenChange={setIsUpdateDialogOpen}
+          >
             <DialogContent className="max-w-2xl p-6">
               <DialogHeader>
-                <DialogTitle className="font-inter">Actualizar Imagen</DialogTitle>
+                <DialogTitle className="font-inter">
+                  Actualizar Imagen
+                </DialogTitle>
                 <DialogDescription>
                   Modifica los detalles de la imagen
                 </DialogDescription>
