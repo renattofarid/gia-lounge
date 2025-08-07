@@ -95,10 +95,16 @@ export default function StationPage() {
   const [selectedStation, setSelectedStation] = useState<StationItem | null>(
     null
   );
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  // const [date, setDate] = useState<Date | undefined>(undefined);
+  // const [dateSelected, setDateSelected] = useState<string | undefined>(
+  //   undefined
+  // );
+  const today = new Date();
+  const [date, setDate] = useState<Date | undefined>(today);
   const [dateSelected, setDateSelected] = useState<string | undefined>(
-    undefined
+    format(today, "yyyy-MM-dd")
   );
+
   const [search, setSearch] = useState("");
   const [statusFilter] = useState("Todos");
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>(
@@ -117,7 +123,9 @@ export default function StationPage() {
     loadEvents(1, companyId, undefined, 0);
 
     if (environmentId) {
-      loadStations(1, environmentId, dateSelected, selectedEventId);
+      const formattedToday = format(new Date(), "yyyy-MM-dd");
+
+      loadStations(1, environmentId, formattedToday, selectedEventId);
     } else {
       navigator("/empresas/salones");
     }
@@ -176,10 +184,11 @@ export default function StationPage() {
   const handleEnvironmentChange = (value: string) => {
     if (value === "all") {
       setEnvironmentId(undefined);
-      loadStations(1, undefined, dateSelected, selectedEventId);
+      loadStations(1, undefined, dateSelected, selectedEventId, companyId);
     } else {
-      setEnvironmentId(Number(value));
-      loadStations(1, Number(value), dateSelected, selectedEventId);
+      const envId = Number(value);
+      setEnvironmentId(envId);
+      loadStations(1, envId, dateSelected, selectedEventId); // sin companyId
     }
   };
 
@@ -270,8 +279,7 @@ export default function StationPage() {
         type: "Lotería",
         link: "/empresas/sorteos",
       },
-    }
-    
+    },
   ];
 
   // const filteredOptions = options.filter((option) =>
@@ -476,9 +484,9 @@ export default function StationPage() {
                                 variant="outline"
                                 className="bg-blue-50/50 text-blue-700 border-blue-200 hover:bg-blue-100/50 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50 dark:hover:bg-blue-900/30 font-normal py-0.5 text-center"
                               >
-                                P. Unit. S/ {station.price_unitario ?? 0}{" "}
-                               x {Number(station.quantity_people ?? 0)} pers. = S/{" "}
-                                {station.price}
+                                P. Unit. S/ {station.price_unitario ?? 0} x{" "}
+                                {Number(station.quantity_people ?? 0)} pers. =
+                                S/ {station.price}
                               </Badge>
                             </div>
 

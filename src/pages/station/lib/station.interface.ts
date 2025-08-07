@@ -10,11 +10,12 @@ export interface StationItem {
   id: number;
   name: string;
   description: string;
+  type: string;
+
   price: string;
   price_unitario: string;
   quantity_people: number;
   sort: number | null;
-  type: string;
   status: string;
   route: null | string;
   server_id: null;
@@ -61,6 +62,8 @@ export interface StationRequest {
 export interface Reservation {
   person: Person;
   nro_people: string;
+  event_name: string;
+  event_datetime: Date;
 }
 
 export interface Person {
@@ -78,4 +81,5 @@ export interface Person {
   ocupation: string;
   status: string;
   server_id: null;
+  date_birth: null;
 }

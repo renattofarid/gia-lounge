@@ -332,7 +332,7 @@ export default function UpdateStation({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Disponible">Disponible</SelectItem>
-                        <SelectItem value="Reservado">Reservado</SelectItem>
+                        {/* <SelectItem value="Reservado">Reservado</SelectItem> */}
                         <SelectItem value="Inhabilitado">
                           Inhabilitado
                         </SelectItem>
