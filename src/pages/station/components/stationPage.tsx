@@ -1,10 +1,8 @@
 "use client";
 
 import type React from "react";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Layout from "@/components/layouts/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +12,6 @@ import { ReservationDetails } from "./detailReserva";
 import CreateStation from "./addStation";
 import UpdateStation from "./updateStation";
 import { AutocompleteFilter } from "@/components/AutocompleteFilter";
-
 import {
   Dialog,
   DialogContent,
@@ -44,7 +41,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import {
   Hash,
   MoreVertical,
@@ -55,8 +51,6 @@ import {
 } from "lucide-react";
 import { useStationStore } from "../lib/station.store";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
-// import { useAuthStore } from "@/pages/auth/lib/auth.store"
-// import { useHasPermission } from "@/hooks/useHasPermission"
 import { deleteStation } from "../lib/station.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import type { StationItem } from "../lib/station.interface";
@@ -67,11 +61,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { es } from "date-fns/locale";
 import { useEventStore } from "@/pages/events/lib/event.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { EventItem } from "@/pages/events/lib/event.interface";
 
 export default function StationPage() {
   const navigator = useNavigate();
@@ -81,7 +76,6 @@ export default function StationPage() {
   const { events, loadEvents } = useEventStore();
   const { companyId } = useComapanyStore();
 
-  // const { permisos } = useAuthStore()
 
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
@@ -146,17 +140,27 @@ export default function StationPage() {
   const handleClearDateFilter = () => {
     setDate(undefined);
     setDateSelected(undefined);
-    loadStations(1, environmentId, undefined, selectedEventId);
+    setSelectedEventId(undefined);
+    loadStations(1, environmentId, undefined, undefined);
   };
 
-  const handleEventChange = (value: string) => {
-    setSelectedEventId(value === "all" ? undefined : value);
-    loadStations(
-      1,
-      environmentId,
-      dateSelected,
-      value === "all" ? undefined : value
-    );
+  const handleEventChange = (value: EventItem | "all") => {
+    if (typeof value === "string") {
+      if (value === "all") {
+        setSelectedEventId(undefined);
+        loadStations(1, environmentId, dateSelected, undefined);
+        return;
+      }
+      return;
+    } else {
+      setSelectedEventId(value.id.toString());
+      const eventDate = value.event_datetime.split(" ")[0];
+      const formattedDate = parse(eventDate, "yyyy-MM-dd", new Date());
+      setDateSelected(eventDate);
+      setDate(formattedDate);
+      loadStations(1, environmentId, value.event_datetime, value.id.toString());
+      return;
+    }
   };
 
   const filteredStations = stations.filter((station) => {
@@ -356,6 +360,7 @@ export default function StationPage() {
               <AutocompleteFilter
                 list={events}
                 label="name"
+                sendObject={true}
                 handleSelect={handleEventChange}
                 id="id"
                 condition={!selectedEventId}
@@ -416,7 +421,7 @@ export default function StationPage() {
                   />
                 </PopoverContent>
               </Popover>
-              {date && (
+              {(date || selectedEventId) && (
                 <Button
                   variant="ghost"
                   size="icon"
