@@ -45,12 +45,12 @@ export function ReservationDetails({ station, onClose }: ReservationDetailsProps
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="font-sm font-poopins font-semibold text-black">Nombres</TableHead>
-            <TableHead className="font-sm font-poopins font-semibold text-black">Apellidos</TableHead>
-            <TableHead className="font-sm font-poopins font-semibold text-black">DNI</TableHead>
-            <TableHead className="font-sm font-poopins font-semibold text-black">Teléfono</TableHead>
-            <TableHead className="font-sm font-poopins font-semibold text-black">E-mail</TableHead>
-            <TableHead className="font-sm font-poopins font-semibold text-black">N° de 
+            <TableHead className="font-sm font-poopins font-semibold ">Nombres</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold">Apellidos</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold">DNI</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold">Teléfono</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold">E-mail</TableHead>
+            <TableHead className="font-sm font-poopins font-semibold">N° de 
               <br/>
               personas</TableHead>
           </TableRow>

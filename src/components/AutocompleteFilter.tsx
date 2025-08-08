@@ -1,8 +1,4 @@
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "./ui/popover.tsx";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover.tsx";
 import {
   Command,
   CommandEmpty,
@@ -19,6 +15,7 @@ interface AutocompleteProps<T> {
   list: T[];
   label: string;
   handleSelect: (value: any) => void;
+  sendObject?: boolean;
   id: string;
   condition: boolean;
   active: string;
@@ -32,6 +29,7 @@ export const AutocompleteFilter = ({
   list,
   label,
   handleSelect,
+  sendObject = false,
   id,
   condition,
   active,
@@ -53,7 +51,7 @@ export const AutocompleteFilter = ({
           )}
         >
           <span className="overflow-hidden font-normal">{active} </span>
-          <ChevronsUpDown  className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent align="start" className={cn(widthPop, "p-0")}>
@@ -74,7 +72,11 @@ export const AutocompleteFilter = ({
                 <CommandItem
                   className="text-[13px] font-inter"
                   key={option[id]}
-                  onSelect={() => handleSelect(option[id])}
+                  onSelect={
+                    sendObject
+                      ? () => handleSelect(option)
+                      : () => handleSelect(option[id])
+                  }
                 >
                   {option[label]}
                 </CommandItem>

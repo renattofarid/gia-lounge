@@ -26,6 +26,7 @@ export interface EventItem {
   activeStations: ActiveStation[];
   lotteries: LotteryItem[] | null;
   flag_lottery: boolean;
+  route: string | null;
 }
 
 export interface ActiveStation {

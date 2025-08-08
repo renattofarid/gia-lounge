@@ -1,10 +1,8 @@
 "use client";
 
 import type React from "react";
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
 import Layout from "@/components/layouts/layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +12,6 @@ import { ReservationDetails } from "./detailReserva";
 import CreateStation from "./addStation";
 import UpdateStation from "./updateStation";
 import { AutocompleteFilter } from "@/components/AutocompleteFilter";
-
 import {
   Dialog,
   DialogContent,
@@ -44,7 +41,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import {
   Hash,
   MoreVertical,
@@ -55,8 +51,6 @@ import {
 } from "lucide-react";
 import { useStationStore } from "../lib/station.store";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
-// import { useAuthStore } from "@/pages/auth/lib/auth.store"
-// import { useHasPermission } from "@/hooks/useHasPermission"
 import { deleteStation } from "../lib/station.actions";
 import { errorToast, successToast } from "@/lib/core.function";
 import type { StationItem } from "../lib/station.interface";
@@ -67,11 +61,12 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, parse } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
 import { es } from "date-fns/locale";
 import { useEventStore } from "@/pages/events/lib/event.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { EventItem } from "@/pages/events/lib/event.interface";
 
 export default function StationPage() {
   const navigator = useNavigate();
@@ -81,7 +76,6 @@ export default function StationPage() {
   const { events, loadEvents } = useEventStore();
   const { companyId } = useComapanyStore();
 
-  // const { permisos } = useAuthStore()
 
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
@@ -95,10 +89,16 @@ export default function StationPage() {
   const [selectedStation, setSelectedStation] = useState<StationItem | null>(
     null
   );
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  // const [date, setDate] = useState<Date | undefined>(undefined);
+  // const [dateSelected, setDateSelected] = useState<string | undefined>(
+  //   undefined
+  // );
+  const today = new Date();
+  const [date, setDate] = useState<Date | undefined>(today);
   const [dateSelected, setDateSelected] = useState<string | undefined>(
-    undefined
+    format(today, "yyyy-MM-dd")
   );
+
   const [search, setSearch] = useState("");
   const [statusFilter] = useState("Todos");
   const [selectedEventId, setSelectedEventId] = useState<string | undefined>(
@@ -117,7 +117,9 @@ export default function StationPage() {
     loadEvents(1, companyId, undefined, 0);
 
     if (environmentId) {
-      loadStations(1, environmentId, dateSelected, selectedEventId);
+      const formattedToday = format(new Date(), "yyyy-MM-dd");
+
+      loadStations(1, environmentId, formattedToday, selectedEventId);
     } else {
       navigator("/empresas/salones");
     }
@@ -138,17 +140,27 @@ export default function StationPage() {
   const handleClearDateFilter = () => {
     setDate(undefined);
     setDateSelected(undefined);
-    loadStations(1, environmentId, undefined, selectedEventId);
+    setSelectedEventId(undefined);
+    loadStations(1, environmentId, undefined, undefined);
   };
 
-  const handleEventChange = (value: string) => {
-    setSelectedEventId(value === "all" ? undefined : value);
-    loadStations(
-      1,
-      environmentId,
-      dateSelected,
-      value === "all" ? undefined : value
-    );
+  const handleEventChange = (value: EventItem | "all") => {
+    if (typeof value === "string") {
+      if (value === "all") {
+        setSelectedEventId(undefined);
+        loadStations(1, environmentId, dateSelected, undefined);
+        return;
+      }
+      return;
+    } else {
+      setSelectedEventId(value.id.toString());
+      const eventDate = value.event_datetime.split(" ")[0];
+      const formattedDate = parse(eventDate, "yyyy-MM-dd", new Date());
+      setDateSelected(eventDate);
+      setDate(formattedDate);
+      loadStations(1, environmentId, value.event_datetime, value.id.toString());
+      return;
+    }
   };
 
   const filteredStations = stations.filter((station) => {
@@ -176,10 +188,11 @@ export default function StationPage() {
   const handleEnvironmentChange = (value: string) => {
     if (value === "all") {
       setEnvironmentId(undefined);
-      loadStations(1, undefined, dateSelected, selectedEventId);
+      loadStations(1, undefined, dateSelected, selectedEventId, companyId);
     } else {
-      setEnvironmentId(Number(value));
-      loadStations(1, Number(value), dateSelected, selectedEventId);
+      const envId = Number(value);
+      setEnvironmentId(envId);
+      loadStations(1, envId, dateSelected, selectedEventId); // sin companyId
     }
   };
 
@@ -270,8 +283,7 @@ export default function StationPage() {
         type: "Lotería",
         link: "/empresas/sorteos",
       },
-    }
-    
+    },
   ];
 
   // const filteredOptions = options.filter((option) =>
@@ -348,6 +360,7 @@ export default function StationPage() {
               <AutocompleteFilter
                 list={events}
                 label="name"
+                sendObject={true}
                 handleSelect={handleEventChange}
                 id="id"
                 condition={!selectedEventId}
@@ -408,7 +421,7 @@ export default function StationPage() {
                   />
                 </PopoverContent>
               </Popover>
-              {date && (
+              {(date || selectedEventId) && (
                 <Button
                   variant="ghost"
                   size="icon"
@@ -476,9 +489,9 @@ export default function StationPage() {
                                 variant="outline"
                                 className="bg-blue-50/50 text-blue-700 border-blue-200 hover:bg-blue-100/50 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50 dark:hover:bg-blue-900/30 font-normal py-0.5 text-center"
                               >
-                                P. Unit. S/ {station.price_unitario ?? 0}{" "}
-                               x {Number(station.quantity_people ?? 0)} pers. = S/{" "}
-                                {station.price}
+                                P. Unit. S/ {station.price_unitario ?? 0} x{" "}
+                                {Number(station.quantity_people ?? 0)} pers. =
+                                S/ {station.price}
                               </Badge>
                             </div>
 

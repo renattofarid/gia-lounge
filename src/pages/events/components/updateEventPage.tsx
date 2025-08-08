@@ -43,6 +43,7 @@ const EventSchema = z.object({
   pricebox: z.string().optional(),
   pricetable: z.string().optional(),
   price_entry: z.string().optional(),
+  route: z.any().optional(),
 });
 
 interface UpdateEventProps {
@@ -69,6 +70,9 @@ export default function UpdateEvent({
     },
   });
 
+  const [previewImage, setPreviewImage] = useState<string | null>(
+    event.route || null
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { loading } = useEventStore();
 
@@ -78,13 +82,44 @@ export default function UpdateEvent({
     loadCompanies(1);
   }, []);
 
+  // const handleFormSubmit = async (data: z.infer<typeof EventSchema>) => {
+  //   try {
+  //     const formattedDate = format(data.event_datetime, "yyyy-MM-dd HH:mm");
+  //     const payload = { ...data, event_datetime: formattedDate };
+
+  //     setIsSubmitting(true);
+  //     await updateEvent(event.id, payload);
+  //     successToast("Evento editado correctamente");
+  //     onClose();
+  //   } catch (error: any) {
+  //     console.error("Error capturado:", error);
+  //     const errorMessage =
+  //       error?.response?.data?.message ||
+  //       "Ocurrió un error al editar el evento";
+  //     errorToast(errorMessage);
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
   const handleFormSubmit = async (data: z.infer<typeof EventSchema>) => {
     try {
       const formattedDate = format(data.event_datetime, "yyyy-MM-dd HH:mm");
-      const payload = { ...data, event_datetime: formattedDate };
+      const formData = new FormData();
+      formData.append("name", data.name);
+      formData.append("comment", data.comment || "");
+      formData.append("event_datetime", formattedDate);
+      formData.append("company_id", data.company_id.toString());
+      formData.append("pricebox", data.pricebox || "");
+      formData.append("pricetable", data.pricetable || "");
+      formData.append("price_entry", data.price_entry || "");
+
+      if (data.route instanceof File) {
+        formData.append("route", data.route);
+      }
 
       setIsSubmitting(true);
-      await updateEvent(event.id, payload);
+      await updateEvent(event.id, formData); // Asegúrate de que updateEvent acepte FormData
       successToast("Evento editado correctamente");
       onClose();
     } catch (error: any) {
@@ -116,58 +151,62 @@ export default function UpdateEvent({
 
             <div className="flex flex-col gap-6">
               <div className="w-full space-y-4 rounded-lg bg-secondary p-6 text-sm">
-                <FormField
-                  control={form.control}
-                  name="company_id"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-normal">
-                        Compañía
-                      </FormLabel>
-                      <Select
-                        value={field.value?.toString()}
-                        onValueChange={(value) => field.onChange(Number(value))}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                            <SelectValue placeholder="Seleccione compañía" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {companies.map((company) => (
-                            <SelectItem
-                              key={company.id}
-                              value={company.id.toString()}
-                            >
-                              {company.business_name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="flex flex-col gap-4 sm:flex-row sm:justify-between">
+                  <FormField
+                    control={form.control}
+                    name="company_id"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormLabel className="text-sm font-normal">
+                          Compañía
+                        </FormLabel>
+                        <Select
+                          value={field.value?.toString()}
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                        >
+                          <FormControl>
+                            <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
+                              <SelectValue placeholder="Seleccione compañía" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {companies.map((company) => (
+                              <SelectItem
+                                key={company.id}
+                                value={company.id.toString()}
+                              >
+                                {company.business_name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-sm font-normal font-poopins">
-                        Nombre
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Nombre del evento"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem className="w-1/2">
+                        <FormLabel className="text-sm font-normal font-poopins">
+                          Nombre
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                            placeholder="Nombre del evento"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
 
                 <FormField
                   control={form.control}
@@ -183,6 +222,41 @@ export default function UpdateEvent({
                           placeholder="Comentario"
                           {...field}
                         />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="route"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-normal font-poopins">
+                        Imagen del evento
+                      </FormLabel>
+                      <FormControl>
+                        <div className="flex items-center gap-4">
+                          <Input
+                            type="file"
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setPreviewImage(URL.createObjectURL(file));
+                                field.onChange(file);
+                              }
+                            }}
+                          />
+                          {previewImage && (
+                            <img
+                              src={previewImage}
+                              alt="Preview"
+                              className="h-28 w-28 object-cover rounded-full border"
+                            />
+                          )}
+                        </div>
                       </FormControl>
                       <FormMessage />
                     </FormItem>

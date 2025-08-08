@@ -34,16 +34,27 @@ export const getEvent = async (id: number) => {
   return response.data;
 };
 
+
+
 export const createEvent = async (data: any) => {
-  const response = await api.post(`/event`, data);
+  const axiosConfig: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await api.post(`/event`, data, axiosConfig);
   return response.data;
 };
 
 export const updateEvent = async (id: number, data: any) => {
-  const response = await api.post(`/event/${id}`, data);
+  const axiosConfig: AxiosRequestConfig = {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  };
+  const response = await api.post(`/event/${id}`, data, axiosConfig);
   return response.data;
 };
-
 export const deleteEvent = async (id: number) => {
   const response = await api.delete(`/event/${id}`);
   return response.data;

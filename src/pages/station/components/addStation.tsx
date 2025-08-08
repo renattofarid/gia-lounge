@@ -61,7 +61,7 @@ export default function CreateStation({
       name: "",
       type: "",
       description: "",
-      status: "",
+      status: "Disponible",
       price: "",
       sort: 0,
       environment_id: environmentId,
@@ -112,7 +112,7 @@ export default function CreateStation({
         name: data.name,
         description: data.description ?? "",
         type: data.type,
-        status: data.status,
+        status: "Disponible",
         environment_id: Number(data.environment_id),
         price: data.price ?? "0",
         sort: data.sort ?? 0,
@@ -319,6 +319,7 @@ export default function CreateStation({
                       Estado
                     </FormLabel>
                     <Select
+                      disabled
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
