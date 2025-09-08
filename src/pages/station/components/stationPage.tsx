@@ -209,10 +209,14 @@ export default function StationPage() {
     try {
       await deleteStation(idDeleteSelected);
       loadStations(1, environmentId, dateSelected, selectedEventId);
-      successToast("Mesa eliminada correctamente");
+
+      const deletedStation = stations.find(s => s.id === idDeleteSelected);
+      const type = deletedStation?.type === "MESA" ? "Mesa" : "Box";
+      successToast(`${type} eliminada correctamente`);
+
       setIsDeleteDialogOpen(false);
     } catch {
-      errorToast("Error al eliminar la mesa");
+      errorToast("Error al eliminar");
     }
   };
 
@@ -336,7 +340,7 @@ export default function StationPage() {
                   </DialogTrigger>
                   <DialogContent className="p-6 max-w-3xl">
                     <DialogHeader>
-                      <DialogTitle>Agregar Mesa</DialogTitle>
+                      <DialogTitle>Agregar</DialogTitle>
                       <DialogDescription>
                         Gestione las mesas de la empresa seleccionada.
                       </DialogDescription>
