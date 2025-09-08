@@ -76,7 +76,6 @@ export default function StationPage() {
   const { events, loadEvents } = useEventStore();
   const { companyId } = useComapanyStore();
 
-
   const [stationUpdate, setStationUpdate] = useState<StationItem>(
     {} as StationItem
   );
@@ -210,10 +209,14 @@ export default function StationPage() {
     try {
       await deleteStation(idDeleteSelected);
       loadStations(1, environmentId, dateSelected, selectedEventId);
-      successToast("Mesa eliminada correctamente");
+
+      const deletedStation = stations.find(s => s.id === idDeleteSelected);
+      const type = deletedStation?.type === "MESA" ? "Mesa" : "Box";
+      successToast(`${type} eliminada correctamente`);
+
       setIsDeleteDialogOpen(false);
     } catch {
-      errorToast("Error al eliminar la mesa");
+      errorToast("Error al eliminar");
     }
   };
 
@@ -337,7 +340,7 @@ export default function StationPage() {
                   </DialogTrigger>
                   <DialogContent className="p-6 max-w-3xl">
                     <DialogHeader>
-                      <DialogTitle>Agregar Mesa</DialogTitle>
+                      <DialogTitle>Agregar</DialogTitle>
                       <DialogDescription>
                         Gestione las mesas de la empresa seleccionada.
                       </DialogDescription>
@@ -514,6 +517,13 @@ export default function StationPage() {
                             >
                               Precio S/ {station.price}
                             </Badge>
+                            <Badge
+                              variant="outline"
+                              className="bg-blue-50/50 text-blue-700 border-blue-200 hover:bg-blue-100/50 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800/50 dark:hover:bg-blue-900/30 font-normal py-0.5 text-center"
+                            >
+                              Personas {station.quantity_people ?? 0}
+                            </Badge>
+
                             <Badge
                               variant="outline"
                               className="bg-gray-50/50 text-gray-700 border-gray-200 hover:bg-gray-100/50 dark:bg-gray-900/20 dark:text-gray-300 dark:border-gray-800/50 dark:hover:bg-gray-900/30 font-normal py-0.5"

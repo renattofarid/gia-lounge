@@ -33,15 +33,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { DateTimePickerInline } from "@/components/DateTimePickerInline";
+import { RequiredForm } from "@/components/RequiredForm";
 
 const EventSchema = z.object({
   name: z.string().nonempty("El nombre es obligatorio"),
   comment: z.string().optional(),
   event_datetime: z.date(),
   company_id: z.number(),
-  pricebox: z.string().optional(),
-  pricetable: z.string().optional(),
-  price_entry: z.string().optional(),
+  pricebox: z.string().min(1, "El precio del box es obligatorio"),
+  pricetable: z.string().min(1, "El precio de la mesa es obligatorio"),
+  price_entry: z.string().min(1, "El precio de la entrada es obligatorio"),
   route: z.any().optional(),
 });
 
@@ -68,6 +69,7 @@ export default function CreateEvent({
       price_entry: "",
       route: "",
     },
+    mode: "onChange",
   });
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -169,7 +171,7 @@ export default function CreateEvent({
                     render={({ field }) => (
                       <FormItem className="w-1/2">
                         <FormLabel className="text-sm font-normal font-poopins">
-                          Nombre
+                          Nombre <RequiredForm />
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -265,7 +267,7 @@ export default function CreateEvent({
                     render={({ field }) => (
                       <FormItem className="w-full sm:w-1/2">
                         <FormLabel className="text-sm font-normal font-poopins">
-                          Precio del Box
+                          Precio del Box <RequiredForm />
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -286,7 +288,7 @@ export default function CreateEvent({
                     render={({ field }) => (
                       <FormItem className="w-full sm:w-1/2">
                         <FormLabel className="text-sm font-normal font-poopins">
-                          Precio de la Mesa
+                          Precio de la Mesa <RequiredForm />
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -307,7 +309,7 @@ export default function CreateEvent({
                     render={({ field }) => (
                       <FormItem className="w-full sm:w-1/2">
                         <FormLabel className="text-sm font-normal font-poopins">
-                          Precio de Entrada
+                          Precio de Entrada <RequiredForm />
                         </FormLabel>
                         <FormControl>
                           <Input
@@ -338,7 +340,7 @@ export default function CreateEvent({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !form.formState.isValid}
                   className={`bg-[#818cf8] hover:bg-[#6366f1] ${
                     isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}

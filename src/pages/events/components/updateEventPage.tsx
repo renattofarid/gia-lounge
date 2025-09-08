@@ -61,13 +61,14 @@ export default function UpdateEvent({
     resolver: zodResolver(EventSchema),
     defaultValues: {
       name: event.name,
-      comment: event.comment,
+      comment: event.comment || "",
       event_datetime: new Date(event.event_datetime),
       company_id: event.company_id,
       pricebox: event.pricebox || "",
       pricetable: event.pricetable || "",
       price_entry: event.price_entry || "",
     },
+    mode: "onChange",
   });
 
   const [previewImage, setPreviewImage] = useState<string | null>(
@@ -362,7 +363,7 @@ export default function UpdateEvent({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !form.formState.isValid}
                   className={`bg-[#818cf8] hover:bg-[#6366f1] ${
                     isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}

@@ -27,19 +27,62 @@ import {
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 import { Loader2 } from "lucide-react";
+import { RequiredForm } from "@/components/RequiredForm";
 
-const StationSchema = z.object({
-  name: z.string().nonempty(),
-  environment_id: z.number(),
-  description: z.string().optional(),
-  type: z.string().nonempty(),
-  status: z.string().nonempty(),
-  route: z.string().optional(),
-  price: z.string().optional(),
-  sort: z.number(),
-  price_unitario: z.string().optional(),
-  quantity_people: z.number().optional(),
-});
+const StationSchema = z
+  .object({
+    name: z.string().nonempty("El nombre es obligatorio"),
+    environment_id: z.number(),
+    description: z.string().nonempty("La descripción es obligatoria"),
+    type: z.enum(["MESA", "BOX"], { required_error: "Seleccione el tipo" }),
+    status: z.string().min(1, "El estado es obligatorio"),
+    route: z.string().optional(),
+    price: z.string().optional(), // total calculado o manual
+    sort: z.coerce
+      .number()
+      .int()
+      .min(1, { message: "El orden inicia en 1 (no se permite 0)" }),
+    price_unitario: z.string().optional(),
+    quantity_people: z.coerce.number().int().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === "MESA") {
+      const qty = data.quantity_people ?? 0;
+      if (qty < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["quantity_people"],
+          message: "Ingrese la cantidad de personas (mínimo 1)",
+        });
+      }
+      if (qty > 4) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["quantity_people"],
+          message: "Máximo 4 personas para MESA",
+        });
+      }
+    }
+
+    if (data.type === "BOX") {
+      const unit = parseFloat(data.price_unitario ?? "");
+      if (!Number.isFinite(unit) || unit <= 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["price_unitario"],
+          message: "El precio unitario debe ser mayor que 0",
+        });
+      }
+      const qty = data.quantity_people ?? 0;
+      if (qty < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["quantity_people"],
+          message: "Ingrese la cantidad de personas (mínimo 1)",
+        });
+      }
+    }
+  });
 
 interface AddStationProps {
   environmentId: number;
@@ -50,58 +93,64 @@ export default function CreateStation({
   environmentId,
   onClose,
 }: AddStationProps) {
-  // const [previewImage, setPreviewImage] = useState<string | null>(null);
-  // const [isLoading, setIsLoading] = useState(false);
   const [isSending, setIsSending] = useState(false);
-  // const [file, setFile] = useState<File | null>(null);
 
   const form = useForm<z.infer<typeof StationSchema>>({
     resolver: zodResolver(StationSchema),
+    shouldUnregister: true,
     defaultValues: {
       name: "",
-      type: "",
+      type: "MESA",
       description: "",
       status: "Disponible",
       price: "",
-      sort: 0,
+      sort: 1,
       environment_id: environmentId,
       price_unitario: "",
-      quantity_people: 0,
+      quantity_people: 1,
     },
+    mode: "onChange",
   });
 
   const watchType = form.watch("type");
-  const watchUnit = form.watch("price_unitario");
   const watchQty = form.watch("quantity_people");
+  const watchPrice = form.watch("price");
 
   useEffect(() => {
-    if (watchType === "BOX") {
-      const unit = parseFloat(watchUnit || "0");
-      const qty = watchQty || 0;
-      const total = (unit * qty).toFixed(2);
-      form.setValue("price", total);
-    }
-  }, [watchUnit, watchQty, watchType, form]);
+    form.trigger("quantity_people");
+  }, [watchQty, form]);
 
-  // const handleFileChange = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement>) => {
-  //     if (event.target.files && event.target.files[0]) {
-  //       const file = event.target.files[0];
-  //       const imageUrl = URL.createObjectURL(file);
-  //       setPreviewImage(imageUrl);
-  //       setFile(file);
-  //     }
-  //   },
-  //   [form]
-  // );
+  useEffect(() => {
+    if (watchType === "BOX" && Number(watchQty) && Number(watchQty) > 0) {
+      form.setValue(
+        "price_unitario",
+        Number(watchPrice) / (watchQty || 1) + "",
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+        }
+      );
+    }
+  }, [watchType, watchPrice, watchQty, form]);
 
   const { environments, loading, loadEnvironments } = useEnvironmentStore();
   const { companyId } = useComapanyStore();
 
   useEffect(() => {
     loadEnvironments(1, companyId);
-    console.log(loadEnvironments);
-  }, []);
+  }, [loadEnvironments, companyId]);
+
+  useEffect(() => {
+    if (watchType === "MESA") {
+      const qp = form.getValues("quantity_people");
+      if (qp == null || qp < 1) {
+        form.setValue("quantity_people", 4, {
+          shouldValidate: true,
+          shouldDirty: true,
+        });
+      }
+    }
+  }, [watchType, form]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -110,18 +159,17 @@ export default function CreateStation({
       const data = form.getValues();
       const stationData: StationRequest = {
         name: data.name,
-        description: data.description ?? "",
+        description: data.description ?? "Sin descripción",
         type: data.type,
         status: "Disponible",
         environment_id: Number(data.environment_id),
         price: data.price ?? "0",
-        sort: data.sort ?? 0,
+        sort: data.sort ?? 1,
         price_unitario: data.price_unitario ?? "0",
-        quantity_people: data.quantity_people ?? 0,
-        // route: file ?? undefined,
+        quantity_people: data.quantity_people ?? 1,
       };
       await createStation(stationData);
-      //PONER MESA O BOX SEGUN EL TIPO
+
       successToast(
         `${
           data.type === "MESA" ? "Mesa guardada" : "Box guardado"
@@ -132,7 +180,6 @@ export default function CreateStation({
     } catch (error: any) {
       const errorMessage =
         error?.response?.data?.message || "Error desconocido";
-
       errorToast(errorMessage);
       setIsSending(false);
     }
@@ -151,7 +198,7 @@ export default function CreateStation({
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary rounded-lg">
-            {/* Formulario */}
+            {/* Columna izquierda */}
             <div className="flex flex-col gap-4">
               <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
                 <FormField
@@ -160,21 +207,17 @@ export default function CreateStation({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-normal">
-                        Salon
+                        Salón
                       </FormLabel>
-                      {/* <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value.toString()}
-                      > */}
                       <Select
-                        onValueChange={(value) => field.onChange(Number(value))} // Convierte a número
+                        onValueChange={(value) => field.onChange(Number(value))}
                         defaultValue={
                           field.value ? field.value.toString() : undefined
                         }
                       >
                         <FormControl>
                           <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                            <SelectValue placeholder="Seleccione salon" />
+                            <SelectValue placeholder="Seleccione salón" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -192,13 +235,14 @@ export default function CreateStation({
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="name"
                   render={({ field }) => (
                     <FormItem className="relative">
                       <FormLabel className="text-sm font-medium">
-                        Nombre
+                        Nombre <RequiredForm />
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -220,7 +264,7 @@ export default function CreateStation({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Descripción
+                        Descripción <RequiredForm />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -236,7 +280,8 @@ export default function CreateStation({
               </div>
             </div>
 
-            <div className="flex flex-col gap-4  rounded-lg p-4">
+            {/* Columna derecha */}
+            <div className="flex flex-col gap-4 rounded-lg p-4">
               <FormField
                 control={form.control}
                 name="type"
@@ -262,23 +307,62 @@ export default function CreateStation({
                 )}
               />
 
+              {/* MESA: solo cantidad (1-4) */}
+              {watchType === "MESA" && (
+                <FormField
+                  control={form.control}
+                  name="quantity_people"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-sm font-inter font-medium flex items-center gap-2">
+                        Cantidad de personas{" "}
+                        <span className="text-xs text-muted-foreground font-inter ml-1">
+                          (Máximo 4)
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          min={1}
+                          max={4}
+                          step={1}
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Cantidad"
+                          value={field.value ?? 4}
+                          onChange={(e) =>
+                            field.onChange(e.currentTarget.valueAsNumber)
+                          }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
+
+              {/* BOX: precio unitario + cantidad (>=1) */}
               {watchType === "BOX" && (
                 <div className="flex flex-row gap-4">
                   <FormField
                     control={form.control}
                     name="price_unitario"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="flex-1">
                         <FormLabel className="text-sm font-medium">
                           Precio unitario
                         </FormLabel>
                         <FormControl>
                           <Input
+                            disabled
                             type="number"
                             step="0.01"
+                            min={0}
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Precio unitario"
-                            {...field}
+                            value={field.value ?? ""}
+                            onChange={(e) =>
+                              field.onChange(e.currentTarget.value)
+                            } // string; Zod valida > 0
                           />
                         </FormControl>
                         <FormMessage />
@@ -290,7 +374,7 @@ export default function CreateStation({
                     control={form.control}
                     name="quantity_people"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem className="flex-1">
                         <FormLabel className="text-sm font-medium">
                           Cantidad de personas
                         </FormLabel>
@@ -298,9 +382,13 @@ export default function CreateStation({
                           <Input
                             type="number"
                             min={1}
+                            step={1}
                             className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                             placeholder="Cantidad"
-                            {...field}
+                            value={field.value ?? 1}
+                            onChange={(e) =>
+                              field.onChange(e.currentTarget.valueAsNumber)
+                            }
                           />
                         </FormControl>
                         <FormMessage />
@@ -346,7 +434,7 @@ export default function CreateStation({
                   control={form.control}
                   name="price"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel className="text-sm font-medium">
                         Precio por defecto
                       </FormLabel>
@@ -362,20 +450,26 @@ export default function CreateStation({
                     </FormItem>
                   )}
                 />
+
                 <FormField
                   control={form.control}
                   name="sort"
                   render={({ field }) => (
-                    <FormItem>
+                    <FormItem className="flex-1">
                       <FormLabel className="text-sm font-medium">
                         Orden
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
+                          min={1}
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                           placeholder="Orden"
                           {...field}
+                          onBlur={(e) => {
+                            const v = Math.max(1, Number(e.target.value || 1));
+                            form.setValue("sort", v);
+                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -383,47 +477,12 @@ export default function CreateStation({
                   )}
                 />
               </div>
-
-              {/* <FormField
-                control={form.control}
-                name="route"
-                render={() => (
-                  <FormItem className="col-span-2">
-                    <FormLabel className="text-sm font-medium">
-                      Imagen de la empresa
-                    </FormLabel>
-                    <FormControl>
-                      <div className="flex flex-col items-start gap-4">
-                        <div className="flex-1">
-                          <Input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          />
-                        </div>
-                        {previewImage && (
-                          <div className="relative w-full flex justify-center items-center overflow-hidden rounded-full">
-                            <img
-                              src={previewImage}
-                              alt="Preview"
-                              className="object-cover size-24 flex justify-center items-center rounded-full"
-                            />
-                          </div>
-                        )}
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
             </div>
           </div>
 
           <div className="flex justify-end gap-2">
             <Button
               variant="secondary"
-              // type="reset"
               onClick={onClose}
               className="font-inter text-sm"
             >
@@ -431,7 +490,7 @@ export default function CreateStation({
             </Button>
             <Button
               type="submit"
-              disabled={isSending}
+              disabled={isSending || !form.formState.isValid}
               className="font-inter text-sm"
               variant="default"
             >
