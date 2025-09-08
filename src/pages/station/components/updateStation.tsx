@@ -27,12 +27,13 @@ import {
 import { Loader2, LoaderCircle } from "lucide-react";
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
+import { RequiredForm } from "@/components/RequiredForm";
 
 const StationSchema = z
   .object({
     name: z.string().min(1, "El nombre es obligatorio"),
     environment_id: z.number(),
-    description: z.string().optional(),
+    description: z.string().nonempty("La descripción es obligatoria"),
     type: z.enum(["MESA", "BOX"], { required_error: "Seleccione el tipo" }),
     status: z.string().min(1, "El estado es obligatorio"),
     route: z.string().optional(),
@@ -42,7 +43,7 @@ const StationSchema = z
       .int()
       .min(1, { message: "El orden inicia en 1 (no se permite 0)" }),
     price_unitario: z.string().optional(),
-    quantity_people: z.coerce.number().int().min(1).max(4),
+    quantity_people: z.coerce.number().int().min(1).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.type === "MESA") {
@@ -112,20 +113,25 @@ export default function UpdateStation({
           ? station.quantity_people
           : 1,
     },
+    mode: "onChange",
   });
 
   const watchType = form.watch("type");
-  const watchUnit = form.watch("price_unitario");
   const watchQty = form.watch("quantity_people");
+  const watchPrice = form.watch("price");
 
   useEffect(() => {
-    if (watchType === "BOX") {
-      const unit = parseFloat(watchUnit || "0");
-      const qty = Number(watchQty || 0);
-      const total = (unit * qty).toFixed(2);
-      form.setValue("price", total);
+    if (watchType === "BOX" && Number(watchQty) && Number(watchQty) > 0) {
+      form.setValue(
+        "price_unitario",
+        Number(watchPrice) / (watchQty || 1) + "",
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+        }
+      );
     }
-  }, [watchUnit, watchQty, watchType, form]);
+  }, [watchType, watchPrice, watchQty, form]);
 
   const { environments, loading, loadEnvironments } = useEnvironmentStore();
   const { companyId } = useComapanyStore();
@@ -142,7 +148,7 @@ export default function UpdateStation({
 
       const stantionData: StationRequest = {
         name: data.name,
-        description: data.description ?? "",
+        description: data.description ?? undefined,
         type: data.type,
         status: data.status,
         environment_id: Number(data.environment_id),
@@ -249,7 +255,7 @@ export default function UpdateStation({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Descripción
+                        Descripción <RequiredForm />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -475,7 +481,7 @@ export default function UpdateStation({
             <Button
               type="submit"
               variant="default"
-              disabled={isSending}
+              disabled={isSending || !form.formState.isValid}
               className="font-inter text-sm flex items-center gap-2"
             >
               {isSending ? "Guardando" : "Guardar"}

@@ -61,7 +61,7 @@ export default function UpdateEvent({
     resolver: zodResolver(EventSchema),
     defaultValues: {
       name: event.name,
-      comment: event.comment,
+      comment: event.comment || "",
       event_datetime: new Date(event.event_datetime),
       company_id: event.company_id,
       pricebox: event.pricebox || "",

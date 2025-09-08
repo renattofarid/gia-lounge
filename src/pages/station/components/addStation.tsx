@@ -99,29 +99,33 @@ export default function CreateStation({
     shouldUnregister: true,
     defaultValues: {
       name: "",
-      type: undefined,
+      type: "MESA",
       description: "",
       status: "Disponible",
       price: "",
       sort: 1,
       environment_id: environmentId,
       price_unitario: "",
-      quantity_people: undefined,
+      quantity_people: 1,
     },
   });
 
   const watchType = form.watch("type");
-  const watchUnit = form.watch("price_unitario");
   const watchQty = form.watch("quantity_people");
+  const watchPrice = form.watch("price");
 
   useEffect(() => {
-    if (watchType === "BOX") {
-      const unit = parseFloat(watchUnit || "0");
-      const qty = Number(watchQty || 0);
-      const total = (unit * qty).toFixed(2);
-      form.setValue("price", total);
+    if (watchType === "BOX" && Number(watchQty) && Number(watchQty) > 0) {
+      form.setValue(
+        "price_unitario",
+        Number(watchPrice) / (watchQty || 1) + "",
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+        }
+      );
     }
-  }, [watchUnit, watchQty, watchType, form]);
+  }, [watchType, watchPrice, watchQty, form]);
 
   const { environments, loading, loadEnvironments } = useEnvironmentStore();
   const { companyId } = useComapanyStore();
@@ -343,6 +347,7 @@ export default function CreateStation({
                         </FormLabel>
                         <FormControl>
                           <Input
+                            disabled
                             type="number"
                             step="0.01"
                             min={0}
@@ -430,7 +435,6 @@ export default function CreateStation({
                       <FormControl>
                         <Input
                           type="number"
-                          step="0.01"
                           className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
                           placeholder="Precio"
                           {...field}
