@@ -31,7 +31,7 @@ import { RequiredForm } from "@/components/RequiredForm";
 
 const StationSchema = z
   .object({
-    name: z.string().min(1, "El nombre es obligatorio"),
+    name: z.string().nonempty("El nombre es obligatorio"),
     environment_id: z.number(),
     description: z.string().nonempty("La descripción es obligatoria"),
     type: z.enum(["MESA", "BOX"], { required_error: "Seleccione el tipo" }),
@@ -233,7 +233,7 @@ export default function UpdateStation({
                   render={({ field }) => (
                     <FormItem className="relative">
                       <FormLabel className="text-sm font-medium">
-                        Nombre
+                        Nombre <RequiredForm />
                       </FormLabel>
                       <FormControl>
                         <div className="relative">

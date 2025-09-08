@@ -27,12 +27,13 @@ import {
 import { useEnvironmentStore } from "@/pages/environment/lib/environment.store";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 import { Loader2 } from "lucide-react";
+import { RequiredForm } from "@/components/RequiredForm";
 
 const StationSchema = z
   .object({
-    name: z.string().min(1, "El nombre es obligatorio"),
+    name: z.string().nonempty("El nombre es obligatorio"),
     environment_id: z.number(),
-    description: z.string().optional(),
+    description: z.string().nonempty("La descripción es obligatoria"),
     type: z.enum(["MESA", "BOX"], { required_error: "Seleccione el tipo" }),
     status: z.string().min(1, "El estado es obligatorio"),
     route: z.string().optional(),
@@ -108,11 +109,16 @@ export default function CreateStation({
       price_unitario: "",
       quantity_people: 1,
     },
+    mode: "onChange",
   });
 
   const watchType = form.watch("type");
   const watchQty = form.watch("quantity_people");
   const watchPrice = form.watch("price");
+
+  useEffect(() => {
+    form.trigger("quantity_people");
+  }, [watchQty, form]);
 
   useEffect(() => {
     if (watchType === "BOX" && Number(watchQty) && Number(watchQty) > 0) {
@@ -236,7 +242,7 @@ export default function CreateStation({
                   render={({ field }) => (
                     <FormItem className="relative">
                       <FormLabel className="text-sm font-medium">
-                        Nombre
+                        Nombre <RequiredForm />
                       </FormLabel>
                       <FormControl>
                         <div className="relative">
@@ -258,7 +264,7 @@ export default function CreateStation({
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-sm font-medium">
-                        Descripción
+                        Descripción <RequiredForm />
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -484,7 +490,7 @@ export default function CreateStation({
             </Button>
             <Button
               type="submit"
-              disabled={isSending}
+              disabled={isSending || !form.formState.isValid}
               className="font-inter text-sm"
               variant="default"
             >

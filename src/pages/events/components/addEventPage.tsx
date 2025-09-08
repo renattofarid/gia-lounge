@@ -69,6 +69,7 @@ export default function CreateEvent({
       price_entry: "",
       route: "",
     },
+    mode: "onChange",
   });
 
   const [previewImage, setPreviewImage] = useState<string | null>(null);
@@ -339,7 +340,7 @@ export default function CreateEvent({
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !form.formState.isValid}
                   className={`bg-[#818cf8] hover:bg-[#6366f1] ${
                     isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}
