@@ -68,12 +68,13 @@ export default function LotteryPage() {
     if (!companyId || companyId === 0) {
       navigate("/empresas");
     } else {
-      loadRaffles(companyId);
+      // loadRaffles(companyId);
+      loadRaffles(1, companyId);
     }
   }, [companyId, loadRaffles, navigate]);
 
   const handlePageChange = (page: number) => {
-    loadRaffles(companyId, page);
+    loadRaffles(page, companyId);
   };
 
   const handleEditLottery = (lottery: LotteryItem) => {
@@ -363,7 +364,11 @@ export default function LotteryPage() {
                         </Button>
                       </TableCell>
                       <TableCell className="text-center">
-                        {lottery.event_name}
+                        <Badge className="font-inter" variant="secondary">
+                          {lottery.event_name
+                            ? lottery.event_name
+                            : "Evento no vinculado"}
+                        </Badge>
                       </TableCell>
                       <TableCell className="text-center">
                         <Badge
@@ -471,7 +476,7 @@ export default function LotteryPage() {
                   onClose={() => {
                     setIsEditDialogOpen(false);
                     setLotteryToEdit(null);
-                    loadRaffles(companyId);
+                    loadRaffles(1, companyId);
                   }}
                 />
               </DialogContent>
