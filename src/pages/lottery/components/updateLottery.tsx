@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { DateTimePickerInline } from "@/components/DateTimePickerInline";
+// import { DateTimePickerInline } from "@/components/DateTimePickerInline";
 import RichTextEditor from "@/components/RichTextEditor";
 import { useComapanyStore } from "@/pages/company/lib/company.store";
 import { useEventStore } from "@/pages/events/lib/event.store";
@@ -38,6 +38,7 @@ import { useLotteryStore } from "../lib/lottery.store";
 import { errorToast, successToast } from "@/lib/core.function";
 import { LotteryItem } from "../lib/lottery.interface";
 import { updateRaffle } from "../lib/lottery.actions";
+import { DateTimePickerInlineLottery } from "@/components/DateTimePickerInlineLottery";
 
 const PrizeSchema = z.object({
   name: z.string().nonempty("El nombre del premio es obligatorio"),
@@ -50,7 +51,7 @@ const LotterySchema = z.object({
   lottery_name: z.string().nonempty("El nombre de la lotería es obligatorio"),
   lottery_description: z.string().nonempty("La descripción es obligatoria"),
   lottery_date: z.date(),
-  event_id: z.number().min(1, { message: "Debe seleccionar un evento" }),
+  event_id: z.number().optional().nullable(),
   lottery_price: z
     .string()
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
@@ -101,7 +102,7 @@ export default function UpdateLotteryForm({
       lottery_name: lottery.lottery_name,
       lottery_description: lottery.lottery_description,
       lottery_date: new Date(lottery.lottery_date),
-      event_id: lottery.event_id,
+      event_id: lottery.event_id ?? null,
       lottery_price: lottery.lottery_price,
       price_factor_consumo:
         lottery.lottery_by_event?.price_factor_consumo || "",
@@ -146,7 +147,9 @@ export default function UpdateLotteryForm({
       formData.append("lottery_name", data.lottery_name);
       formData.append("lottery_description", data.lottery_description);
       formData.append("lottery_date", formattedDate);
-      formData.append("event_id", data.event_id.toString());
+      if (data.event_id) {
+        formData.append("event_id", data.event_id.toString());
+      }
       formData.append("lottery_price", data.lottery_price);
       if (data.price_factor_consumo) {
         formData.append("price_factor_consumo", data.price_factor_consumo);
@@ -171,7 +174,8 @@ export default function UpdateLotteryForm({
     } catch (error: any) {
       console.error("Error capturado:", error);
       const errorMessage =
-        error?.response?.data?.message || "Ocurrió un error al guardar el sorteo";
+        error?.response?.data?.message ||
+        "Ocurrió un error al guardar el sorteo";
       errorToast(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -240,7 +244,7 @@ export default function UpdateLotteryForm({
                     return (
                       <FormItem>
                         <FormLabel className="text-sm font-normal font-poopins">
-                          Evento
+                          Evento 
                         </FormLabel>
                         <Select
                           value={field.value ? field.value.toString() : ""}
@@ -250,7 +254,7 @@ export default function UpdateLotteryForm({
                           disabled={selectedCompanyId === 0}
                         >
                           <SelectTrigger className="border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                            <SelectValue placeholder="Seleccionar evento" />
+                            <SelectValue placeholder="Seleccionar evento opcional" />
                           </SelectTrigger>
                           <SelectContent>
                             {eventosDisponibles.length === 0 ? (
@@ -370,7 +374,7 @@ export default function UpdateLotteryForm({
                       <FormLabel className="text-sm font-normal font-poopins">
                         Fecha y Hora
                       </FormLabel>
-                      <DateTimePickerInline
+                      <DateTimePickerInlineLottery
                         value={field.value}
                         onChange={(date) => form.setValue("lottery_date", date)}
                       />

@@ -36,7 +36,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEventStore } from "@/pages/events/lib/event.store";
-import { DateTimePickerInline } from "@/components/DateTimePickerInline";
 import RichTextEditor from "@/components/RichTextEditor";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -44,6 +43,7 @@ import { createRaffle } from "../lib/lottery.actions";
 import { LotteryItem } from "../lib/lottery.interface";
 import { useLotteryStore } from "../lib/lottery.store";
 import { errorToast, successToast } from "@/lib/core.function";
+import { DateTimePickerInlineLottery } from "@/components/DateTimePickerInlineLottery";
 
 const PrizeSchema = z.object({
   name: z.string().nonempty("El nombre del premio es obligatorio"),
@@ -56,9 +56,11 @@ const LotterySchema = z.object({
   lottery_name: z.string().nonempty("El nombre de la lotería es obligatorio"),
   lottery_description: z.string().nonempty("La descripción es obligatoria"),
   lottery_date: z.date({ required_error: "La fecha es obligatoria" }),
-  event_id: z.number().min(1, {
-    message: "Debe seleccionar un evento",
-  }),
+  // event_id: z.number().min(1, {
+  //   message: "Debe seleccionar un evento",
+  // }),
+  event_id: z.number().optional().nullable(),
+
   lottery_price: z
     .string()
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
@@ -100,7 +102,7 @@ export default function CreateLotteryForm({
       lottery_name: "",
       lottery_date: new Date(),
       lottery_description: "",
-      event_id: 0,
+      event_id: undefined, // antes era 0
       lottery_price: "",
       price_factor_consumo: "",
       number_of_prizes: "",
@@ -149,7 +151,11 @@ export default function CreateLotteryForm({
       formData.append("lottery_name", data.lottery_name);
       formData.append("lottery_description", data.lottery_description);
       formData.append("lottery_date", formattedDate);
-      formData.append("event_id", data.event_id.toString());
+      // formData.append("event_id", data.event_id.toString());
+      if (data.event_id) {
+        formData.append("event_id", data.event_id.toString());
+      }
+
       formData.append("lottery_price", data.lottery_price);
       if (data.price_factor_consumo) {
         formData.append("price_factor_consumo", data.price_factor_consumo);
@@ -176,8 +182,10 @@ export default function CreateLotteryForm({
       successToast("Sorteo creada exitosamente");
       onClose();
     } catch (error: any) {
-     console.error("Error capturado:", error); 
-      const errorMessage = error?.response?.data?.message || "Ocurrió un error al guardar el sorteo";
+      console.error("Error capturado:", error);
+      const errorMessage =
+        error?.response?.data?.message ||
+        "Ocurrió un error al guardar el sorteo";
       errorToast(errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -254,7 +262,7 @@ export default function CreateLotteryForm({
                           disabled={selectedCompanyId === 0}
                         >
                           <SelectTrigger className="border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
-                            <SelectValue placeholder="Seleccionar evento" />
+                            <SelectValue placeholder="Seleccionar evento opcional" />
                           </SelectTrigger>
                           <SelectContent>
                             {eventosDisponibles.length === 0 ? (
@@ -376,7 +384,7 @@ export default function CreateLotteryForm({
                       <FormLabel className="text-sm font-normal font-poopins">
                         Fecha y Hora
                       </FormLabel>
-                      <DateTimePickerInline
+                      <DateTimePickerInlineLottery
                         value={field.value}
                         onChange={(date) => form.setValue("lottery_date", date)}
                       />
