@@ -335,7 +335,7 @@ export default function StationPage() {
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                   <DialogTrigger asChild>
                     <Button className="bg-violet-500 hover:bg-violet-600 font-inter w-full sm:w-auto">
-                      Agregar mesa
+                      Agregar
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="p-6 max-w-3xl">

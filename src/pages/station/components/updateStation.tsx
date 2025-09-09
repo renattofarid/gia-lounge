@@ -43,7 +43,7 @@ const StationSchema = z
       .int()
       .min(1, { message: "El orden inicia en 1 (no se permite 0)" }),
     price_unitario: z.string().optional(),
-    quantity_people: z.coerce.number().int().min(1).optional(),
+    quantity_people: z.coerce.number().int().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.type === "MESA") {
@@ -62,16 +62,25 @@ const StationSchema = z
           message: "Máximo 4 personas para MESA",
         });
       }
+      if (data.sort < 1 || data.sort > 36) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["sort"],
+          message: "El orden de MESA debe estar entre 1 y 36",
+        });
+      }
     }
 
     if (data.type === "BOX") {
-      const unit = parseFloat(data.price_unitario ?? "");
-      if (!Number.isFinite(unit) || unit <= 0) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ["price_unitario"],
-          message: "El precio unitario debe ser mayor que 0",
-        });
+      if (data.price_unitario && data.price_unitario.trim() !== "") {
+        const unit = parseFloat(data.price_unitario);
+        if (!Number.isFinite(unit) || unit <= 0) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["price_unitario"],
+            message: "El precio unitario debe ser mayor que 0",
+          });
+        }
       }
       const qty = data.quantity_people ?? 0;
       if (qty < 1) {
@@ -81,12 +90,19 @@ const StationSchema = z
           message: "Ingrese la cantidad de personas (mínimo 1)",
         });
       }
+      if (data.sort < 1 || data.sort > 6) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["sort"],
+          message: "El orden de BOX debe estar entre 1 y 6",
+        });
+      }
     }
   });
 
 interface UpdateStationProps {
   station: StationItem;
-  environmentId: number;
+  environmentId?: number;
   onClose: () => void;
 }
 
@@ -102,7 +118,7 @@ export default function UpdateStation({
     defaultValues: {
       name: station.name ?? "",
       description: station.description ?? "",
-      type: (station.type as "MESA" | "BOX") ?? "MESA",
+      type: (station.type as "MESA" | "BOX") ?? undefined,
       status: station.status ?? "Disponible",
       environment_id: station.environment_id,
       price: station.price ?? "",
@@ -111,7 +127,7 @@ export default function UpdateStation({
       quantity_people:
         station.quantity_people && station.quantity_people > 0
           ? station.quantity_people
-          : 1,
+          : undefined,
     },
     mode: "onChange",
   });
@@ -146,7 +162,7 @@ export default function UpdateStation({
       setIsSending(true);
       const data = form.getValues();
 
-      const stantionData: StationRequest = {
+      const stationData: StationRequest = {
         name: data.name,
         description: data.description ?? undefined,
         type: data.type,
@@ -158,7 +174,7 @@ export default function UpdateStation({
         quantity_people: data.quantity_people ?? 1,
       };
 
-      await updateStation(station.id, stantionData);
+      await updateStation(station.id, stationData);
 
       successToast(
         `${
@@ -189,7 +205,7 @@ export default function UpdateStation({
       <Form {...form}>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-secondary rounded-lg">
-            {/* Izquierda */}
+            {/* Columna izquierda */}
             <div className="flex flex-col gap-4">
               <div className="w-full rounded-lg p-4 text-sm space-y-4 font-inter">
                 <FormField
@@ -236,13 +252,11 @@ export default function UpdateStation({
                         Nombre <RequiredForm />
                       </FormLabel>
                       <FormControl>
-                        <div className="relative">
-                          <Input
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Nombre del ambiente"
-                            {...field}
-                          />
-                        </div>
+                        <Input
+                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                          placeholder="Nombre del ambiente"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -271,7 +285,7 @@ export default function UpdateStation({
               </div>
             </div>
 
-            {/* Derecha */}
+            {/* Columna derecha */}
             <div className="flex flex-col gap-4 rounded-lg p-4">
               <FormField
                 control={form.control}
@@ -282,7 +296,6 @@ export default function UpdateStation({
                     <Select
                       onValueChange={field.onChange}
                       defaultValue={field.value}
-                      value={field.value}
                     >
                       <FormControl>
                         <SelectTrigger className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins">
@@ -299,18 +312,39 @@ export default function UpdateStation({
                 )}
               />
 
-              {/* MESA: solo cantidad (1–4) */}
+              <FormField
+                control={form.control}
+                name="sort"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-sm font-medium">Orden</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                        placeholder="Orden"
+                        {...field}
+                        onBlur={(e) => {
+                          const v = Math.max(1, Number(e.target.value || 1));
+                          form.setValue("sort", v);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* MESA */}
               {watchType === "MESA" && (
                 <FormField
                   control={form.control}
                   name="quantity_people"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-sm font-medium flex items-center gap-2">
-                        Cantidad de personas{" "}
-                        <span className="text-xs text-muted-foreground ml-2">
-                          (Máximo 4)
-                        </span>
+                      <FormLabel className="text-sm font-medium">
+                        Cantidad de personas (Máx 4)
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -332,19 +366,70 @@ export default function UpdateStation({
                 />
               )}
 
-              {/* BOX: precio unitario + cantidad (>=1) */}
+              {/* BOX */}
               {watchType === "BOX" && (
-                <div className="flex flex-row gap-4">
+                <>
+                  <div className="flex space-x-4">
+                    <FormField
+                      control={form.control}
+                      name="price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            Precio por defecto
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              step="0.01"
+                              className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              placeholder="Precio"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="quantity_people"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-medium">
+                            Cantidad de personas
+                          </FormLabel>
+                          <FormControl>
+                            <Input
+                              type="number"
+                              min={1}
+                              step={1}
+                              className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
+                              placeholder="Cantidad"
+                              value={field.value ?? 1}
+                              onChange={(e) =>
+                                field.onChange(e.currentTarget.valueAsNumber)
+                              }
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
                     name="price_unitario"
                     render={({ field }) => (
-                      <FormItem className="flex-1">
+                      <FormItem>
                         <FormLabel className="text-sm font-medium">
                           Precio unitario
                         </FormLabel>
                         <FormControl>
                           <Input
+                            disabled
                             type="number"
                             step="0.01"
                             min={0}
@@ -360,32 +445,7 @@ export default function UpdateStation({
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="quantity_people"
-                    render={({ field }) => (
-                      <FormItem className="flex-1">
-                        <FormLabel className="text-sm font-medium">
-                          Cantidad de personas
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            type="number"
-                            min={1}
-                            step={1}
-                            className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                            placeholder="Cantidad"
-                            value={field.value ?? 1}
-                            onChange={(e) =>
-                              field.onChange(e.currentTarget.valueAsNumber)
-                            }
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+                </>
               )}
 
               <FormField
@@ -407,6 +467,7 @@ export default function UpdateStation({
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="Disponible">Disponible</SelectItem>
+                        <SelectItem value="Reservado">Reservado</SelectItem>
                         <SelectItem value="Inhabilitado">
                           Inhabilitado
                         </SelectItem>
@@ -416,56 +477,6 @@ export default function UpdateStation({
                   </FormItem>
                 )}
               />
-
-              <div className="flex flex-row gap-4">
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel className="text-sm font-medium">
-                        Precio por defecto
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          step="0.01"
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Precio"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="sort"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel className="text-sm font-medium">
-                        Orden
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          type="number"
-                          min={1}
-                          className="border-[#9A7FFF] focus:border-[#9A7FFF] focus:ring-[#9A7FFF] font-poopins"
-                          placeholder="Orden"
-                          {...field}
-                          onBlur={(e) => {
-                            const v = Math.max(1, Number(e.target.value || 1));
-                            form.setValue("sort", v);
-                          }}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
           </div>
 
@@ -485,9 +496,7 @@ export default function UpdateStation({
               className="font-inter text-sm flex items-center gap-2"
             >
               {isSending ? "Guardando" : "Guardar"}
-              {isSending ? (
-                <LoaderCircle className="animate-spin h-6 w-6" />
-              ) : null}
+              {isSending && <LoaderCircle className="animate-spin h-6 w-6" />}
             </Button>
           </div>
         </form>
